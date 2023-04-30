@@ -8,9 +8,9 @@ UserConfig = {
     -- 开枪绑定的G键
     shootKeyG = 4,
     -- 连点按下延迟
-    pressShootDelay = { 28, 37 },
+    pressShootDelay = { 24, 36 },
     -- 连点释放延迟
-    releaseShootDelay = { 140, 155 },
+    releaseShootDelay = { 144, 155 },
     -- 闪蹲绑定按键
     ctrlKey = 'lctrl',
     -- 闪蹲绑定的G键
@@ -120,7 +120,7 @@ function TripleJump()
     ReleaseKey('lctrl')
     Sleep(math.random(25, 35))
     ReleaseKey('s')
-    Sleep(math.random(25, 35))
+    Sleep(math.random(50, 70))
     ReleaseKey('w')
 end
 
