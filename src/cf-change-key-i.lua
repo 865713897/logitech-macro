@@ -10,7 +10,7 @@ UserConfig = {
     -- 连点按下延迟
     pressShootDelay = { 24, 36 },
     -- 连点释放延迟
-    releaseShootDelay = { 144, 155 },
+    releaseShootDelay = { 144, 156 },
     -- 闪蹲绑定按键
     ctrlKey = 'lctrl',
     -- 闪蹲绑定的G键
@@ -109,18 +109,18 @@ function TripleJump()
     Sleep(math.random(50, 70))
     ReleaseKey('lctrl')
     -- 操作间隔
-    Sleep(math.random(100, 150))
+    Sleep(math.random(100, 110))
     -- 跳跳蹲
     PressKey('spacebar')
-    Sleep(math.random(120, 140))
+    Sleep(math.random(137, 139))
     ReleaseKey('spacebar')
-    Sleep(math.random(65, 81))
+    Sleep(math.random(94, 96))
     PressKey('lctrl')
-    Sleep(math.random(50, 70))
+    Sleep(math.random(65, 70))
     ReleaseKey('lctrl')
     Sleep(math.random(25, 35))
     ReleaseKey('s')
-    Sleep(math.random(50, 70))
+    Sleep(math.random(73, 83))
     ReleaseKey('w')
 end
 
