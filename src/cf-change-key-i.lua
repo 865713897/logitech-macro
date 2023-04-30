@@ -22,7 +22,7 @@ UserConfig = {
     -- 连刺绑定的G键
     stapKeyG = 5,
     -- 三级跳绑定G键
-    tripleJumpKeyG = 2
+    tripleJumpKeyG = 7
 }
 
 
@@ -87,42 +87,49 @@ end
 -- 三级跳
 function TripleJump()
     math.randomseed(GetRunningTime())
-    if (IsPressed(UserConfig.tripleJumpKeyG)) then
-        PressKey('w')
-        Sleep(math.random(200, 230))
-        PressKey('s')
-        -- 操作间隔
-        Sleep(math.random(540, 560))
-        -- 四次下蹲
-        PressKey('lctrl')
-        Sleep(math.random(50, 70))
-        ReleaseKey('lctrl')
-        Sleep(math.random(30, 49))
-        PressKey('lctrl')
-        Sleep(math.random(50, 70))
-        ReleaseKey('lctrl')
-        Sleep(math.random(30, 49))
-        PressKey('lctrl')
-        Sleep(math.random(50, 70))
-        ReleaseKey('lctrl')
-        Sleep(math.random(30, 49))
-        PressKey('lctrl')
-        Sleep(math.random(50, 70))
-        ReleaseKey('lctrl')
-        -- 操作间隔
-        Sleep(math.random(380, 400))
-        -- 跳跳蹲
-        PressKey('spacebar')
-        Sleep(math.random(120, 140))
-        ReleaseKey('spacebar')
-        Sleep(math.random(65, 81))
-        PressKey('lctrl')
-        Sleep(math.random(50, 70))
-        ReleaseKey('lctrl')
-        Sleep(math.random(25, 35))
-        ReleaseKey('s')
-        Sleep(math.random(25, 35))
-        ReleaseKey('w')
+    PressKey('w')
+    Sleep(math.random(200, 230))
+    PressKey('s')
+    -- 操作间隔
+    Sleep(math.random(200, 230))
+    -- 四次下蹲
+    PressKey('lctrl')
+    Sleep(math.random(50, 70))
+    ReleaseKey('lctrl')
+    Sleep(math.random(30, 49))
+    PressKey('lctrl')
+    Sleep(math.random(50, 70))
+    ReleaseKey('lctrl')
+    Sleep(math.random(30, 49))
+    PressKey('lctrl')
+    Sleep(math.random(50, 70))
+    ReleaseKey('lctrl')
+    Sleep(math.random(30, 49))
+    PressKey('lctrl')
+    Sleep(math.random(50, 70))
+    ReleaseKey('lctrl')
+    -- 操作间隔
+    Sleep(math.random(100, 150))
+    -- 跳跳蹲
+    PressKey('spacebar')
+    Sleep(math.random(120, 140))
+    ReleaseKey('spacebar')
+    Sleep(math.random(65, 81))
+    PressKey('lctrl')
+    Sleep(math.random(50, 70))
+    ReleaseKey('lctrl')
+    Sleep(math.random(25, 35))
+    ReleaseKey('s')
+    Sleep(math.random(25, 35))
+    ReleaseKey('w')
+end
+
+-- 是否系统可监听按钮
+function IsSystemMonitor(key)
+    if (key >= 1 and key <= 5) then
+        return true
+    else
+        return false
     end
 end
 
@@ -154,7 +161,7 @@ function OnEvent(event, arg, family)
     elseif (IsPressed(UserConfig.stapKeyG) and IsStartScript() and newArg == UserConfig.stapKeyG) then
         -- stapKeyG按下并且打开脚本，执行连刺脚本
         GatlingStab()
-    elseif (IsPressed(UserConfig.tripleJumpKeyG) and newArg == UserConfig.tripleJumpKeyG) then
+    elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == UserConfig.tripleJumpKeyG) then
         -- tripleJumpKeyG按下，执行三级跳脚本
         TripleJump()
     end
