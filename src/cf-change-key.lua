@@ -9,21 +9,13 @@ UserConfig = {
     shootKeyG = 4,
     -- 三级跳绑定G键
     tripleJumpKeyG = 7,
-    -- G键5绑定的事件
-    Gkey5BindEvents = {
-        GatlingStab,   -- 加特林连刺
-        XkQuickAttack, -- 虚空重刀
-        -- TapCtrl        -- 闪蹲
-    },
     -- G键5循环事件index
     Gkey5EventIndex = 1,
     -- 切换事件Gkey
     GkeyChangeEvent = 10
 }
 
-
 EnablePrimaryMouseButtonEvents(true)
-
 
 -- 是否开启宏
 function IsStartScript()
@@ -142,6 +134,12 @@ function IsSystemMonitor(key)
         return false
     end
 end
+
+UserConfig.Gkey5BindEvents = {
+    GatlingStab,   -- 加特林连刺
+    XkQuickAttack, -- 虚空重刀
+    -- TapCtrl        -- 闪蹲
+}
 
 -- 监听事件
 function OnEvent(event, arg, family)
