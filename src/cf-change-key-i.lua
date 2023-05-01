@@ -1,35 +1,31 @@
 ---@diagnostic disable: undefined-global
 -- 用户配置
 UserConfig = {
-    -- 开启加特林连点按键
+    -- 开启宏按键
     startScript = "capslock", -- scrolllock | capslock | numlock
     -- 绑定开枪按键
     shootKey = "i",
     -- 开枪绑定的G键
     shootKeyG = 4,
-    -- 连点按下延迟
-    pressShootDelay = { 24, 36 },
-    -- 连点释放延迟
-    releaseShootDelay = { 144, 156 },
-    -- 闪蹲绑定按键
-    ctrlKey = 'lctrl',
-    -- 闪蹲绑定的G键
-    ctrlKeyG = 0,
-    -- 闪蹲按下延迟
-    pressCtrlDelay = { 28, 44 },
-    -- 闪蹲释放延迟
-    releaseCtrlDelay = { 48, 69 },
-    -- 连刺绑定的G键
-    stapKeyG = 5,
     -- 三级跳绑定G键
-    tripleJumpKeyG = 7
+    tripleJumpKeyG = 7,
+    -- G键5绑定的事件
+    Gkey5BindEvents = {
+        GatlingStab,   -- 加特林连刺
+        XkQuickAttack, -- 虚空重刀
+        -- TapCtrl        -- 闪蹲
+    },
+    -- G键5循环事件index
+    Gkey5EventIndex = 1,
+    -- 切换事件Gkey
+    GkeyChangeEvent = 10
 }
 
 
 EnablePrimaryMouseButtonEvents(true)
 
 
--- 是否开启加特林连点
+-- 是否开启宏
 function IsStartScript()
     return IsKeyLockOn(UserConfig.startScript)
 end
@@ -47,16 +43,13 @@ end
 
 -- 加特林点击
 function GatlingShoot()
-    local rsdBefore = UserConfig.releaseShootDelay[1]
-    local rsdAfter = UserConfig.releaseShootDelay[2]
-    local psdBefore = UserConfig.pressShootDelay[1]
-    local psdAfter = UserConfig.pressShootDelay[2]
+    local baseDelay = 140
     repeat
         math.randomseed(GetRunningTime())
         PressKey(UserConfig.shootKey)
-        Sleep(math.random(math.random(rsdBefore, rsdBefore + 10), math.random(rsdAfter, rsdAfter + 10)))
+        Sleep(math.random(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 20, baseDelay + 30)))
         ReleaseKey(UserConfig.shootKey)
-        Sleep(math.random(psdBefore, psdAfter))
+        Sleep(math.random(28, 38))
     until not IsPressed(UserConfig.shootKeyG)
 end
 
@@ -70,7 +63,7 @@ function GatlingStab()
         -- 点击绑定攻击键
         PressAndReleaseKey(UserConfig.shootKey)
         Sleep(math.random(60, 93))
-    until not IsPressed(UserConfig.stapKeyG)
+    until not IsPressed(5)
 end
 
 -- 闪蹲
@@ -78,10 +71,10 @@ function TapCtrl()
     repeat
         math.randomseed(GetRunningTime())
         PressKey(UserConfig.ctrlKey)
-        Sleep(math.random(UserConfig.releaseCtrlDelay[1], UserConfig.releaseCtrlDelay[2]))
+        Sleep(math.random(48, 69))
         ReleaseKey(UserConfig.ctrlKey)
-        Sleep(math.random(UserConfig.pressCtrlDelay[1], UserConfig.pressCtrlDelay[2]))
-    until not IsPressed(UserConfig.ctrlKeyG)
+        Sleep(math.random(28, 44))
+    until not IsPressed(5)
 end
 
 -- 三级跳
@@ -124,6 +117,23 @@ function TripleJump()
     ReleaseKey('w')
 end
 
+-- 虚空重刀宏
+function XkQuickAttack()
+    repeat
+        math.randomseed(GetRunningTime())
+        PressMouseButton(3)
+        Sleep(math.random(45, 55))
+        ReleaseMouseButton(3)
+        Sleep(math.random(590, 610))
+        PressKey('f')
+        Sleep(math.random(30, 40))
+        ReleaseKey('f')
+        Sleep(math.random(30, 40))
+        PressAndReleaseMouseButton(3)
+        Sleep(math.random(100, 120))
+    until not IsPressed(5)
+end
+
 -- 是否系统可监听按钮
 function IsSystemMonitor(key)
     if (key >= 1 and key <= 5) then
@@ -146,23 +156,25 @@ function OnEvent(event, arg, family)
     elseif arg == 2 then
         newArg = 3
     end
-    if (IsPressed(UserConfig.shootKeyG) and IsStartScript()) then
+    if (IsPressed(4) and IsStartScript() and newArg == 4) then
         -- shootKeyG按下并且打开脚本，执行加特林连点
         GatlingShoot()
-    elseif (IsPressed(UserConfig.shootKeyG)) then
+    elseif (IsPressed(4) and newArg == 4) then
         -- shootKeyG按下，但未开启脚本，执行绑定按键按下操作
         PressKey(UserConfig.shootKey)
-    elseif (not IsPressed(UserConfig.shootKeyG) and newArg == UserConfig.shootKeyG) then
+    elseif (not IsPressed(4) and newArg == 4) then
         -- shootKeyG释放
         ReleaseKey(UserConfig.shootKey)
-    elseif (IsPressed(UserConfig.ctrlKeyG) and newArg == UserConfig.ctrlKeyG) then
-        -- ctrlKeyG按下，执行闪蹲脚本
-        TapCtrl()
-    elseif (IsPressed(UserConfig.stapKeyG) and IsStartScript() and newArg == UserConfig.stapKeyG) then
-        -- stapKeyG按下并且打开脚本，执行连刺脚本
-        GatlingStab()
+    elseif (IsPressed(5) and newArg == 5 and IsStartScript()) then
+        -- G5被按下，根据index执行Gkey5BindEvents中的事件
+        UserConfig.Gkey5BindEvents[UserConfig.Gkey5EventIndex]()
     elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == UserConfig.tripleJumpKeyG) then
         -- tripleJumpKeyG按下，执行三级跳脚本
         TripleJump()
+    elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == UserConfig.GkeyChangeEvent) then
+        -- 循环增大index
+        local len = #UserConfig.Gkey5BindEvents
+        local newIndex = (UserConfig.Gkey5EventIndex + 1) % len
+        UserConfig.Gkey5EventIndex = newIndex == 0 and 1 or newIndex
     end
 end
