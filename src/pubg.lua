@@ -22,7 +22,7 @@ UserConfig = {
 	-- 灵敏度调整 | Sensitivity adjustment
 	sensitivity = {
 		-- 开镜 | sighting mirror
-		ADS = 100,
+		ADS = 96,
 		-- 腰射 | take aim
 		Aim = 0.55,
 		-- 二倍 | twice scope
@@ -40,7 +40,7 @@ UserConfig = {
 	autoPressAimKey = "",
 
 	-- 启动控制 (capslock - 使用大写锁定键控制 | numlock - 小键盘锁定键控制 | G_bind - 使用指令控制) | Start up control
-	startControl = "numlock",
+	startControl = "capslock",
 
 	-- 瞄准设置 (default - 使用游戏默认设置 | recommend - 使用脚本推荐设置 | custom - 自定义设置 | ctrlmode - 下蹲模式) | Aiming setting
 	aimingSettings = "recommend",
@@ -74,7 +74,7 @@ UserConfig = {
 		},
 		["5.56"] = {
 			-- 枪械             模式         系数        下蹲系数 
-			{ "M416",           1,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 枪托 + 扩容 | Komp + Reddot + Triangular grip + Gunstock + Mag 
+			{ "M416",           1,          0.81,          0.2 }, -- 补偿 + 基础镜 + 直角 + 枪托 + 扩容 | Komp + Reddot + Triangular grip + Gunstock + Mag 
 			{ "M16A4",          2,          1,          0.8 }, -- 补偿 + 基础镜 + 枪托 + 扩容 | Komp + Reddot + Gunstock + Mag 
 			{ "QBZ",            1,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
 			{ "SCAR-L",         0,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
@@ -82,8 +82,8 @@ UserConfig = {
 		},
 		["7.62"] = {
 			-- 枪械             模式         系数        下蹲系数 
-			{ "AKM",            1,          1,          0.8 }, -- 补偿 + 基础镜 + 扩容 | Komp + Reddot + Mag 
-			{ "Beryl M762",     1,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
+			{ "AKM",            1,          1.3,          0.8 }, -- 补偿 + 基础镜 + 扩容 | Komp + Reddot + Mag 
+			{ "Beryl M762",     1,          1.3,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
 			{ "DP-28",          0,          1,          0.8 }, -- 基础镜 | Reddot
 		},
 	},
@@ -94,8 +94,8 @@ UserConfig = {
 	G_bind = {
 		-- G
 		["G3"] = "",
-		["G4"] = "next",
-		["G5"] = "",
+		["G4"] = "",
+		["G5"] = "next",
 		["G6"] = "9mm",
 		["G7"] = ".45",
 		["G8"] = "",
@@ -771,9 +771,13 @@ function Pubg.findInSeries (cmd)
 	if "first" == cmd then
 		Pubg.gunIndex = 1
 	elseif "next" == cmd then
-		if Pubg.gunIndex < #Pubg.gun[Pubg.bulletType] then
-			Pubg.gunIndex = Pubg.gunIndex + 1
-		end
+		-- if Pubg.gunIndex < #Pubg.gun[Pubg.bulletType] then
+		-- 	Pubg.gunIndex = Pubg.gunIndex + 1
+		-- end
+		local len = #Pubg.gun[Pubg.bulletType]
+		local nextIndex = (Pubg.gunIndex + 1) % (len + 1)
+		local realIndex = nextIndex == 0 and 1 or nextIndex
+		Pubg.gunIndex = realIndex
 	elseif "last" == cmd then
 		Pubg.gunIndex = #Pubg.gun[Pubg.bulletType]
 	end
