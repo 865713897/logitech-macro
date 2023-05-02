@@ -12,7 +12,7 @@ UserConfig = {
     -- G键5循环事件index
     Gkey5EventIndex = 1,
     -- 切换事件Gkey
-    GkeyChangeEvent = 10
+    GkeyChangeEvent = 10,
 }
 
 EnablePrimaryMouseButtonEvents(true)
@@ -111,19 +111,19 @@ end
 
 -- 虚空重刀宏
 function XkQuickAttack()
-    repeat
-        math.randomseed(GetRunningTime())
-        PressMouseButton(3)
-        Sleep(math.random(45, 55))
-        ReleaseMouseButton(3)
-        Sleep(math.random(590, 610))
-        PressKey('f')
-        Sleep(math.random(30, 40))
-        ReleaseKey('f')
-        Sleep(math.random(30, 40))
-        PressAndReleaseMouseButton(3)
-        Sleep(math.random(100, 120))
-    until not IsPressed(5)
+    math.randomseed(GetRunningTime())
+    PressMouseButton(3)
+    Sleep(math.random(45, 55))
+    ReleaseMouseButton(3)
+    Sleep(math.random(590, 610))
+    PressKey('f')
+    Sleep(math.random(35, 40))
+    ReleaseKey('f')
+    Sleep(math.random(50, 60))
+    PressMouseButton(3)
+    Sleep(math.random(45, 55))
+    ReleaseMouseButton(3)
+    Sleep(math.random(120, 140))
 end
 
 -- 是否系统可监听按钮
@@ -172,7 +172,8 @@ function OnEvent(event, arg, family)
     elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == UserConfig.GkeyChangeEvent) then
         -- 循环增大index
         local len = #UserConfig.Gkey5BindEvents
-        local newIndex = (UserConfig.Gkey5EventIndex + 1) % len
-        UserConfig.Gkey5EventIndex = newIndex == 0 and 1 or newIndex
+        local newIndex = (UserConfig.Gkey5EventIndex + 1) % (len + 1)
+        local realIndex = newIndex == 0 and 1 or newIndex
+        UserConfig.Gkey5EventIndex = realIndex
     end
 end
