@@ -22,15 +22,15 @@ UserConfig = {
 	-- 灵敏度调整 | Sensitivity adjustment
 	sensitivity = {
 		-- 开镜 | sighting mirror
-		ADS = 96,
+		ADS = 100,
 		-- 腰射 | take aim
 		Aim = 0.55,
 		-- 二倍 | twice scope
-		scopeX2 = 1.3,
+		scopeX2 = 1.7,
 		-- 三倍 | trebling scope
-		scopeX3 = 1.3,
+		scopeX3 = 2.5,
 		-- 四倍 | quadruple scope
-		scopeX4 = 3.9,
+		scopeX4 = 3.7,
 		-- 六倍 | sixfold scope
 		scopeX6 = 2.3,
 	},
@@ -83,7 +83,7 @@ UserConfig = {
 		["7.62"] = {
 			-- 枪械             模式         系数        下蹲系数 
 			{ "AKM",            1,          1.3,          0.8 }, -- 补偿 + 基础镜 + 扩容 | Komp + Reddot + Mag 
-			{ "Beryl M762",     1,          1.3,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
+			{ "Beryl M762",     1,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
 			{ "DP-28",          0,          1,          0.8 }, -- 基础镜 | Reddot
 		},
 	},
@@ -104,9 +104,9 @@ UserConfig = {
 		["G11"] = "7.62",
 		-- lalt + G
 	["lalt + G3"] = "",
-		["lalt + G4"] = "scopeX2",
-		["lalt + G5"] = "scopeX4",
-		["lalt + G6"] = "scopeX1",
+		["lalt + G4"] = "scopeX1",
+		["lalt + G5"] = "scopeX2",
+		["lalt + G6"] = "scopeX4",
 		["lalt + G7"] = "scopeX3",
 		["lalt + G8"] = "scopeX6",
 		["lalt + G9"] = "",
@@ -243,7 +243,7 @@ Pubg = {
 	bulletIndex = 0, -- 第几颗子弹 
 }
 
-Pubg.xLengthForDebug = Pubg.generalSensitivityRatio * 30 -- 调试模式下的水平移动单元长度 
+Pubg.xLengthForDebug = Pubg.generalSensitivityRatio * 4 -- 调试模式下的水平移动单元长度 
 -- 渲染节点 
 Pubg.renderDom = {
 	switchTable = "",
@@ -327,13 +327,15 @@ Pubg["Beryl M762"] = function (gunName)
 		interval = 86,
 		ballistic = {
 			{1, 0},
-			{2, 44},
-			{3, 24},
-			{5, 28},
-			{10, 33},
-			{15, 45},
-			{30, 47},
-			{40, 51},
+			{2, 42},
+			{3, 23},
+			{10, 25},
+			{15, 35},
+			{20, 33},
+			{23, 39},
+			{25, 42},
+			{30, 38},
+			{40, 38},
 		}
 	})
 
@@ -425,10 +427,21 @@ Pubg["AKM"] = function (gunName)
 		interval = 99,
 		ballistic = {
 			{1, 0},
-			{2, 42},
-			{5, 25},
-			{10, 32},
-			{40, 40},
+			{2, 33},
+			{4, 19},
+			{5, 18},
+			{6, 17},
+			{7, 20},
+			{8, 22},
+			{10, 23},
+			{15, 29},
+			{20, 34},
+			{22, 26},
+			{25, 28},
+			{27, 36},
+			{30, 32},
+			{35, 30},
+			{40, 33},
 		}
 	})
 
@@ -442,10 +455,13 @@ Pubg["M416"] = function (gunName)
 			{1, 0},
 			{2, 35},
 			{4, 18},
-			{10, 24},
+			{10, 25},
 			{15, 32},
-			{30, 30},
-			{40, 37},
+			{20, 34},
+			{25, 30},
+			{30, 32},
+			{35, 33},
+			{40, 35},
 		}
 	})
 
@@ -457,12 +473,12 @@ Pubg["QBZ"] = function (gunName)
 		interval = 92,
 		ballistic = {
 			{1, 0},
-			{2, 34},
+			{2, 28},
 			{5, 18},
-			{10, 22},
-			{15, 32},
-			{20, 34},
-			{40, 36},
+			{10, 21},
+			{15, 26},
+			{20, 31},
+			{40, 28},
 		}
 	})
 
