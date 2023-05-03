@@ -8,7 +8,7 @@ UserConfig = {
     -- 开枪绑定的G键
     shootKeyG = 4,
     -- 三级跳绑定G键
-    tripleJumpKeyG = 7,
+    tripleJumpKeyG = 11,
     -- G键5循环事件index
     Gkey5EventIndex = 1,
     -- 切换事件Gkey
@@ -72,41 +72,18 @@ end
 -- 三级跳
 function TripleJump()
     math.randomseed(GetRunningTime())
-    PressKey('w')
-    Sleep(math.random(200, 230))
-    PressKey('s')
-    -- 操作间隔
-    Sleep(math.random(200, 230))
-    -- 四次下蹲
-    PressKey('lctrl')
-    Sleep(math.random(50, 70))
-    ReleaseKey('lctrl')
-    Sleep(math.random(30, 49))
-    PressKey('lctrl')
-    Sleep(math.random(50, 70))
-    ReleaseKey('lctrl')
-    Sleep(math.random(30, 49))
-    PressKey('lctrl')
-    Sleep(math.random(50, 70))
-    ReleaseKey('lctrl')
-    Sleep(math.random(30, 49))
-    PressKey('lctrl')
-    Sleep(math.random(50, 70))
-    ReleaseKey('lctrl')
-    -- 操作间隔
-    Sleep(math.random(100, 110))
     -- 跳跳蹲
+    PressKey('spacebar')
+    Sleep(math.random(137, 139))
+    ReleaseKey('spacebar')
+    Sleep(math.random(490, 495))
     PressKey('spacebar')
     Sleep(math.random(137, 139))
     ReleaseKey('spacebar')
     Sleep(math.random(94, 96))
     PressKey('lctrl')
-    Sleep(math.random(65, 70))
+    Sleep(math.random(60, 65))
     ReleaseKey('lctrl')
-    Sleep(math.random(25, 35))
-    ReleaseKey('s')
-    Sleep(math.random(73, 83))
-    ReleaseKey('w')
 end
 
 -- 虚空重刀宏
@@ -117,7 +94,7 @@ function XkQuickAttack()
     ReleaseMouseButton(3)
     Sleep(math.random(590, 610))
     PressKey('f')
-    Sleep(math.random(35, 40))
+    Sleep(math.random(30, 40))
     ReleaseKey('f')
     Sleep(math.random(50, 60))
     PressMouseButton(3)
