@@ -196,7 +196,10 @@ RunConfig = {
   sleepRandom = { Config.cpuLoad, Config.cpuLoad + 5 },
   -- 当前弹药模式
   bulletType = '5.56',
-  weaponIndex = 1, -- 当前弹药下，枪械索引
+  -- 当前弹药下，枪械索引
+  weaponIndex = 1,
+  -- 当前枪械第几颗子弹
+  bulletIndex = 1,
   -- 枪械名称集合
   weaponNames = {
     ['5.56'] = {},
@@ -379,6 +382,11 @@ RunConfig.generateTrajectoryData = function(weaponName, weaponInfo)
   }
 end
 
+-- 设置随机数种子
+RunConfig.setRandomseed = function()
+  math.randomseed(GetRunningTime())
+end
+
 -- 初始化
 RunConfig.init = function()
   for i = 1, #BulletTypeList do
@@ -399,6 +407,7 @@ RunConfig.init = function()
       end
     end
   end
+  RunConfig.setRandomseed()
 end
 
 -- 输出当前枪械信息
@@ -506,15 +515,15 @@ RunConfig.calculateAndApplyRecoil = function(weaponInfo)
   local curDuration = GetRunningTime() - RunConfig.startTime
   -- 当前时间处于第几颗子弹
   local bulletIndex = math.ceil(curDuration == 0 and 1 or curDuration / weaponInfo.interval) + 1
-  if (bulletIndex > weaponInfo.amount) then
-    return true
+  if (bulletIndex > weaponInfo.amount or bulletIndex == RunConfig.bulletIndex) then
+    return
   end
+  RunConfig.bulletIndex = bulletIndex
   local x = 0
   local y = weaponInfo.trajectoryData[bulletIndex]
   local realY = RunConfig.getRealY(weaponInfo.crouchFactor, y)
   MoveMouseRelative(x, realY)
   Sleep(GenerateRandomNumber(RunConfig.sleepRandom[1], RunConfig.sleepRandom[2]))
-  return false;
 end
 
 -- 开枪
@@ -522,10 +531,7 @@ RunConfig.Shoot = function()
   local type = RunConfig.bulletType
   local index = RunConfig.weaponIndex
   repeat
-    local flag = RunConfig.calculateAndApplyRecoil(RunConfig.weaponInfos[type][index])
-    if (flag) then
-      break
-    end
+    RunConfig.calculateAndApplyRecoil(RunConfig.weaponInfos[type][index])
   until not IsMouseButtonPressed(1)
 end
 
@@ -550,5 +556,11 @@ function OnEvent(event, arg, family)
       return
     end
     RunConfig.startTime = GetRunningTime()
+    RunConfig.Shoot()
+  end
+  -- 释放鼠标左键
+  if (event == 'MOUSE_BUTTON_RELEASED' and arg == 1 and family == 'mouse') then
+    RunConfig.setRandomseed()
+    RunConfig.bulletIndex = 1
   end
 end
