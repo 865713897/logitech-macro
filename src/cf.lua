@@ -2,9 +2,9 @@
 -- 用户配置
 UserConfig = {
   -- 开启宏按键
-  startScript = "capslock", -- scrolllock | capslock | numlock
+  startScript = 'capslock', -- scrolllock | capslock | numlock
   -- 绑定开枪按键
-  shootKey = "i",
+  shootKey = 'i',
   -- 开枪绑定的G键
   shootKeyG = 4,
   -- 三级跳绑定G键
@@ -26,7 +26,7 @@ end
 function IsPressed(key)
   if (type(key) == 'number' and key <= 5 and key >= 1) then
       return IsMouseButtonPressed(key)
-  elseif type(key) == "string" then
+  elseif type(key) == 'string' then
       return IsModifierPressed(key)
   else
       return false

@@ -37,15 +37,15 @@ UserConfig = {
 
 	-- 自动腰射，不使用自动腰射留空，使用则设置为键盘上按键
 	-- Auto aim, leave blank without auto aim, set as the key on the keyboard when using.
-	autoPressAimKey = "",
+	autoPressAimKey = '',
 
 	-- 启动控制 (capslock - 使用大写锁定键控制 | numlock - 小键盘锁定键控制 | G_bind - 使用指令控制) | Start up control
-	startControl = "capslock",
+	startControl = 'capslock',
 
 	-- 瞄准设置 (default - 使用游戏默认设置 | recommend - 使用脚本推荐设置 | custom - 自定义设置 | ctrlmode - 下蹲模式) | Aiming setting
-	aimingSettings = "recommend",
+	aimingSettings = 'recommend',
 
-	-- 当 aimingSettings = "custom" ，需要在此处设置自定义判断条件，通常配合 IsMouseButtonPressed 或 IsModifierPressed 使用，使用方法请查阅 G-series Lua API 参考文档.docx
+	-- 当 aimingSettings = 'custom' ，需要在此处设置自定义判断条件，通常配合 IsMouseButtonPressed 或 IsModifierPressed 使用，使用方法请查阅 G-series Lua API 参考文档.docx
 	customAimingSettings = {
 		-- 开镜判断 
 		ADS = function ()
@@ -62,29 +62,29 @@ UserConfig = {
 	-- 系数：枪械自身系数，基于 ADS 进行调整 (ADS为全局系数，此处为自身系数)
 	-- 下蹲系数：下蹲时的系数，基于 ADS 和 自身系数 
 	canUse = {
-		[".45"] = {
+		['.45'] = {
 			-- 枪械             模式         系数        下蹲系数 
-			{ "UMP45",          1,          1,          0.8 }, -- 基础镜 + 扩容，Bizon (基础镜即可)，Vector (补偿 + 基础镜 + 扩容) | Reddot + Mag，Bizon (Reddot)，Vector (Komp + Reddot + Mag)
-			{ "Tommy Gun",      1,          1,          0.8 }, -- 扩容 | Mag
+			{ 'UMP45',          1,          1,          0.8 }, -- 基础镜 + 扩容，Bizon (基础镜即可)，Vector (补偿 + 基础镜 + 扩容) | Reddot + Mag，Bizon (Reddot)，Vector (Komp + Reddot + Mag)
+			{ 'Tommy Gun',      1,          1,          0.8 }, -- 扩容 | Mag
 		},
 			-- 枪械             模式         系数        下蹲系数 
-		["9mm"] = {
-			{ "Vector",         1,          1,          0.8 }, -- 基础镜 + 扩容 | Reddot + Mag 
-			{ "Micro UZI",      1,          1,          0.8 }, -- 扩容 | Mag 
+		['9mm'] = {
+			{ 'Vector',         1,          1,          0.8 }, -- 基础镜 + 扩容 | Reddot + Mag 
+			{ 'Micro UZI',      1,          1,          0.8 }, -- 扩容 | Mag 
 		},
-		["5.56"] = {
+		['5.56'] = {
 			-- 枪械             模式         系数        下蹲系数 
-			{ "M416",           1,          0.81,          0.2 }, -- 补偿 + 基础镜 + 直角 + 枪托 + 扩容 | Komp + Reddot + Triangular grip + Gunstock + Mag 
-			{ "M16A4",          2,          1,          0.8 }, -- 补偿 + 基础镜 + 枪托 + 扩容 | Komp + Reddot + Gunstock + Mag 
-			{ "QBZ",            1,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
-			{ "SCAR-L",         0,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
-			{ "G36C",           0,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
+			{ 'M416',           1,          0.81,          0.2 }, -- 补偿 + 基础镜 + 直角 + 枪托 + 扩容 | Komp + Reddot + Triangular grip + Gunstock + Mag 
+			{ 'M16A4',          2,          1,          0.8 }, -- 补偿 + 基础镜 + 枪托 + 扩容 | Komp + Reddot + Gunstock + Mag 
+			{ 'QBZ',            1,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
+			{ 'SCAR-L',         0,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
+			{ 'G36C',           0,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
 		},
-		["7.62"] = {
+		['7.62'] = {
 			-- 枪械             模式         系数        下蹲系数 
-			{ "AKM",            1,          1.3,          0.8 }, -- 补偿 + 基础镜 + 扩容 | Komp + Reddot + Mag 
-			{ "Beryl M762",     1,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
-			{ "DP-28",          0,          1,          0.8 }, -- 基础镜 | Reddot
+			{ 'AKM',            1,          1.3,          0.8 }, -- 补偿 + 基础镜 + 扩容 | Komp + Reddot + Mag 
+			{ 'Beryl M762',     1,          1,          0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag 
+			{ 'DP-28',          0,          1,          0.8 }, -- 基础镜 | Reddot
 		},
 	},
 	
@@ -93,88 +93,88 @@ UserConfig = {
 	-- 指令绑定演示参考: https://github.com/kiccer/Soldier76#g_bind-%E6%8C%87%E4%BB%A4%E7%BB%91%E5%AE%9A%E6%BC%94%E7%A4%BA
 	G_bind = {
 		-- G
-		["G3"] = "",
-		["G4"] = "",
-		["G5"] = "next",
-		["G6"] = "9mm",
-		["G7"] = ".45",
-		["G8"] = "",
-		["G9"] = "",
-		["G10"] = "5.56",
-		["G11"] = "7.62",
+		['G3'] = '',
+		['G4'] = '',
+		['G5'] = 'next',
+		['G6'] = '9mm',
+		['G7'] = '.45',
+		['G8'] = '',
+		['G9'] = '',
+		['G10'] = '5.56',
+		['G11'] = '7.62',
 		-- lalt + G
-	["lalt + G3"] = "",
-		["lalt + G4"] = "scopeX1",
-		["lalt + G5"] = "scopeX2",
-		["lalt + G6"] = "scopeX4",
-		["lalt + G7"] = "scopeX3",
-		["lalt + G8"] = "scopeX6",
-		["lalt + G9"] = "",
-		["lalt + G10"] = "",
-		["lalt + G11"] = "",
+	['lalt + G3'] = '',
+		['lalt + G4'] = 'scopeX1',
+		['lalt + G5'] = 'scopeX2',
+		['lalt + G6'] = 'scopeX4',
+		['lalt + G7'] = 'scopeX3',
+		['lalt + G8'] = 'scopeX6',
+		['lalt + G9'] = '',
+		['lalt + G10'] = '',
+		['lalt + G11'] = '',
 		-- lctrl + G
-		["lctrl + G3"] = "",
-		["lctrl + G4"] = "",
-		["lctrl + G5"] = "fast_pickup",
-		["lctrl + G6"] = "fast_lick_box",
-		["lctrl + G7"] = "",
-		["lctrl + G8"] = "",
-		["lctrl + G9"] = "",
-		["lctrl + G10"] = "",
-		["lctrl + G11"] = "",
+		['lctrl + G3'] = '',
+		['lctrl + G4'] = '',
+		['lctrl + G5'] = 'fast_pickup',
+		['lctrl + G6'] = 'fast_lick_box',
+		['lctrl + G7'] = '',
+		['lctrl + G8'] = '',
+		['lctrl + G9'] = '',
+		['lctrl + G10'] = '',
+		['lctrl + G11'] = '',
 		-- lshift + G		
-		["lshift + G3"] = "",
-		["lshift + G4"] = "",
-		["lshift + G5"] = "",
-		["lshift + G6"] = "",
-		["lshift + G7"] = "",
-		["lshift + G8"] = "",
-		["lshift + G9"] = "",
-		["lshift + G10"] = "",
-		["lshift + G11"] = "",
+		['lshift + G3'] = '',
+		['lshift + G4'] = '',
+		['lshift + G5'] = '',
+		['lshift + G6'] = '',
+		['lshift + G7'] = '',
+		['lshift + G8'] = '',
+		['lshift + G9'] = '',
+		['lshift + G10'] = '',
+		['lshift + G11'] = '',
 		-- ralt + G
-		["ralt + G3"] = "",
-		["ralt + G4"] = "",
-		["ralt + G5"] = "",
-		["ralt + G6"] = "",
-		["ralt + G7"] = "",
-		["ralt + G8"] = "",
-		["ralt + G9"] = "",
-		["ralt + G10"] = "",
-		["ralt + G11"] = "",
+		['ralt + G3'] = '',
+		['ralt + G4'] = '',
+		['ralt + G5'] = '',
+		['ralt + G6'] = '',
+		['ralt + G7'] = '',
+		['ralt + G8'] = '',
+		['ralt + G9'] = '',
+		['ralt + G10'] = '',
+		['ralt + G11'] = '',
 		-- rctrl + G
-		["rctrl + G3"] = "",
-		["rctrl + G4"] = "",
-		["rctrl + G5"] = "",
-		["rctrl + G6"] = "",
-		["rctrl + G7"] = "",
-		["rctrl + G8"] = "",
-		["rctrl + G9"] = "",
-		["rctrl + G10"] = "",
-		["rctrl + G11"] = "",
+		['rctrl + G3'] = '',
+		['rctrl + G4'] = '',
+		['rctrl + G5'] = '',
+		['rctrl + G6'] = '',
+		['rctrl + G7'] = '',
+		['rctrl + G8'] = '',
+		['rctrl + G9'] = '',
+		['rctrl + G10'] = '',
+		['rctrl + G11'] = '',
 		-- rshift + G		
-		["rshift + G3"] = "",
-		["rshift + G4"] = "",
-		["rshift + G5"] = "",
-		["rshift + G6"] = "fast_discard",
-		["rshift + G7"] = "",
-		["rshift + G8"] = "",
-		["rshift + G9"] = "",
-		["rshift + G10"] = "",
-		["rshift + G11"] = "",
+		['rshift + G3'] = '',
+		['rshift + G4'] = '',
+		['rshift + G5'] = '',
+		['rshift + G6'] = 'fast_discard',
+		['rshift + G7'] = '',
+		['rshift + G8'] = '',
+		['rshift + G9'] = '',
+		['rshift + G10'] = '',
+		['rshift + G11'] = '',
 		-- 非鼠标G键，可以使键盘或者耳机上的G键，默认使用键盘G键，请确保你使用的是可编程的罗技键盘 | F1~12 (Non-mouse G-key)		
-		["F1"] = "",
-		["F2"] = "",
-		["F3"] = "",
-		["F4"] = "",
-		["F5"] = "",
-		["F6"] = "",
-		["F7"] = "",
-		["F8"] = "",
-		["F9"] = "",
-		["F10"] = "",
-		["F11"] = "",
-		["F12"] = "",
+		['F1'] = '',
+		['F2'] = '',
+		['F3'] = '',
+		['F4'] = '',
+		['F5'] = '',
+		['F6'] = '',
+		['F7'] = '',
+		['F8'] = '',
+		['F9'] = '',
+		['F10'] = '',
+		['F11'] = '',
+		['F12'] = '',
 	},
 }
 
@@ -208,21 +208,21 @@ UserConfig = {
 -- internal configuration
 Pubg = {
 	gun = {
-		[".45"] = {},
-		["9mm"] = {},
-		["5.56"] = {},
-		["7.62"] = {},
+		['.45'] = {},
+		['9mm'] = {},
+		['5.56'] = {},
+		['7.62'] = {},
 	}, -- 枪械库 
 	gunOptions = {
-		[".45"] = {},
-		["9mm"] = {},
-		["5.56"] = {},
-		["7.62"] = {},
+		['.45'] = {},
+		['9mm'] = {},
+		['5.56'] = {},
+		['7.62'] = {},
 	}, -- 配置库 
 	allCanUse = {}, -- 所有可用枪械 
 	allCanUse_index = 1, -- 所有可用枪械列表索引 
 	allCanUse_count = 0, -- 所有可用总数量 
-	bulletType = "", -- 默认子弹型号 
+	bulletType = '', -- 默认子弹型号 
 	gunIndex = 1,	-- 选中枪械下标 
 	counter = 0, -- 计数器 
 	xCounter = 0, -- x计数器 
@@ -235,7 +235,7 @@ Pubg = {
 	scopeX3 = UserConfig.sensitivity.scopeX3, -- 三倍压枪倍率 
 	scopeX4 = UserConfig.sensitivity.scopeX4, -- 四倍压枪倍率 
 	scopeX6 = UserConfig.sensitivity.scopeX6, -- 六倍压枪倍率 
-	scope_current = "scopeX1", -- 当前使用倍镜 
+	scope_current = 'scopeX1', -- 当前使用倍镜 
 	generalSensitivityRatio = UserConfig.sensitivity.ADS / 100, -- 按比例调整灵敏度 
 	isStart = false, -- 是否是启动状态 
 	G1 = false, -- G1键状态 
@@ -246,11 +246,11 @@ Pubg = {
 Pubg.xLengthForDebug = Pubg.generalSensitivityRatio * 4 -- 调试模式下的水平移动单元长度 
 -- 渲染节点 
 Pubg.renderDom = {
-	switchTable = "",
-	separator = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n", -- 分割线 
-	combo_key = "G-key", -- 组合键 
-	cmd = "cmd", -- 指令 
-	autoLog = "No operational data yet.\n", -- 压枪过程产生的数据输出 
+	switchTable = '',
+	separator = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n', -- 分割线 
+	combo_key = 'G-key', -- 组合键 
+	cmd = 'cmd', -- 指令 
+	autoLog = 'No operational data yet.\n', -- 压枪过程产生的数据输出 
 }
 
 -- 是否开镜或瞄准 
@@ -258,31 +258,31 @@ function Pubg.isAimingState (mode)
 	local switch = {
 
 		-- 开镜 
-		["ADS"] = function ()
-			if UserConfig.aimingSettings == "recommend" then
-				return IsMouseButtonPressed(3) and not IsModifierPressed("lshift")
-			elseif UserConfig.aimingSettings == "default" then
-				return not IsModifierPressed("lshift") and not IsModifierPressed("lalt")
-			elseif UserConfig.aimingSettings == "ctrlmode" then
-				return IsMouseButtonPressed(3) and not IsModifierPressed("lshift")
-			elseif UserConfig.aimingSettings == "custom" then
+		['ADS'] = function ()
+			if UserConfig.aimingSettings == 'recommend' then
+				return IsMouseButtonPressed(3) and not IsModifierPressed('lshift')
+			elseif UserConfig.aimingSettings == 'default' then
+				return not IsModifierPressed('lshift') and not IsModifierPressed('lalt')
+			elseif UserConfig.aimingSettings == 'ctrlmode' then
+				return IsMouseButtonPressed(3) and not IsModifierPressed('lshift')
+			elseif UserConfig.aimingSettings == 'custom' then
 				return UserConfig.customAimingSettings.ADS()
 			end
 		end,
 
 		-- 腰射 
-		["Aim"] = function ()
-			if UserConfig.aimingSettings == "recommend" then
-				if UserConfig.autoPressAimKey == "" then
-					return IsModifierPressed("lctrl")
+		['Aim'] = function ()
+			if UserConfig.aimingSettings == 'recommend' then
+				if UserConfig.autoPressAimKey == '' then
+					return IsModifierPressed('lctrl')
 				else
-					return not IsModifierPressed("lshift") and not IsModifierPressed("lalt")
+					return not IsModifierPressed('lshift') and not IsModifierPressed('lalt')
 				end
-			elseif UserConfig.aimingSettings == "default" then
+			elseif UserConfig.aimingSettings == 'default' then
 				return IsMouseButtonPressed(3)
-			elseif UserConfig.aimingSettings == "ctrlmode" then
+			elseif UserConfig.aimingSettings == 'ctrlmode' then
 				return false
-			elseif UserConfig.aimingSettings == "custom" then
+			elseif UserConfig.aimingSettings == 'custom' then
 				return UserConfig.customAimingSettings.Aim()
 			end
 		end,
@@ -292,7 +292,7 @@ function Pubg.isAimingState (mode)
 	return switch[mode]()
 end
 
-Pubg["M16A4"] = function (gunName)
+Pubg['M16A4'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 108,
@@ -305,7 +305,7 @@ Pubg["M16A4"] = function (gunName)
 
 end
 
-Pubg["SCAR-L"] = function (gunName)
+Pubg['SCAR-L'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 96,
@@ -321,7 +321,7 @@ Pubg["SCAR-L"] = function (gunName)
 
 end
 
-Pubg["Beryl M762"] = function (gunName)
+Pubg['Beryl M762'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 86,
@@ -341,7 +341,7 @@ Pubg["Beryl M762"] = function (gunName)
 
 end
 
-Pubg["Tommy Gun"] = function (gunName)
+Pubg['Tommy Gun'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 84,
@@ -358,7 +358,7 @@ Pubg["Tommy Gun"] = function (gunName)
 
 end
 
-Pubg["G36C"] = function (gunName)
+Pubg['G36C'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 86,
@@ -375,7 +375,7 @@ Pubg["G36C"] = function (gunName)
 
 end
 
-Pubg["Vector"] = function (gunName)
+Pubg['Vector'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 55,
@@ -392,7 +392,7 @@ Pubg["Vector"] = function (gunName)
 
 end
 
-Pubg["Micro UZI"] = function (gunName)
+Pubg['Micro UZI'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 46,
@@ -407,7 +407,7 @@ Pubg["Micro UZI"] = function (gunName)
 
 end
 
-Pubg["UMP45"] = function (gunName)
+Pubg['UMP45'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 94,
@@ -421,7 +421,7 @@ Pubg["UMP45"] = function (gunName)
 
 end
 
-Pubg["AKM"] = function (gunName)
+Pubg['AKM'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 99,
@@ -447,7 +447,7 @@ Pubg["AKM"] = function (gunName)
 
 end
 
-Pubg["M416"] = function (gunName)
+Pubg['M416'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 85,
@@ -467,7 +467,7 @@ Pubg["M416"] = function (gunName)
 
 end
 
-Pubg["QBZ"] = function (gunName)
+Pubg['QBZ'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 92,
@@ -484,7 +484,7 @@ Pubg["QBZ"] = function (gunName)
 
 end
 
-Pubg["DP-28"] = function (gunName)
+Pubg['DP-28'] = function (gunName)
 
 	return Pubg.execOptions(gunName, {
 		interval = 100,
@@ -500,7 +500,7 @@ end
 
 -- [[通过枪械名查找在 canuse 中的项]]
 function Pubg.canUseFindByGunName (gunName)
-	local forList = { ".45", "9mm", "5.56", "7.62" }
+	local forList = { '.45', '9mm', '5.56', '7.62' }
 
 	for i = 1, #forList do
 		local bulletType = forList[i]
@@ -583,7 +583,7 @@ end
 function Pubg.init ()
 
 	-- Clean up the firearms Depot
-	local forList = { ".45", "9mm", "5.56", "7.62" }
+	local forList = { '.45', '9mm', '5.56', '7.62' }
 
 	for i = 1, #forList do
 
@@ -608,7 +608,7 @@ function Pubg.init ()
 				Pubg.allCanUse_count = Pubg.allCanUse_count + 1 -- Total plus one
 				Pubg.allCanUse[Pubg.allCanUse_count] = gunName -- All available firearms
 
-				if Pubg.bulletType == "" then Pubg.bulletType = type end -- Default Bullet type
+				if Pubg.bulletType == '' then Pubg.bulletType = type end -- Default Bullet type
 
 			end
 
@@ -637,7 +637,7 @@ function Pubg.auto (options)
 
 	if Pubg.bulletIndex > options.amount then return false end
 	-- Developer Debugging Mode
-	local d = (IsKeyLockOn("scrolllock") and { (Pubg.bulletIndex - 1) * Pubg.xLengthForDebug } or { 0 })[1]
+	local d = (IsKeyLockOn('scrolllock') and { (Pubg.bulletIndex - 1) * Pubg.xLengthForDebug } or { 0 })[1]
 	local x = math.ceil((Pubg.currentTime - Pubg.startTime) / (options.interval * (Pubg.bulletIndex - 1)) * d) - Pubg.xCounter
 	local y = math.ceil((Pubg.currentTime - Pubg.startTime) / (options.interval * (Pubg.bulletIndex - 1)) * options.ballistic[Pubg.bulletIndex]) - Pubg.counter
 	-- 4-fold pressure gun mode
@@ -655,7 +655,7 @@ function Pubg.auto (options)
 	Pubg.xCounter = Pubg.xCounter + x
 	Pubg.counter = Pubg.counter + y
 
-	Pubg.autoSleep(IsKeyLockOn("scrolllock"))
+	Pubg.autoSleep(IsKeyLockOn('scrolllock'))
 
 end
 
@@ -682,13 +682,13 @@ end
 function Pubg.getRealY (options, y)
 	local realY = y
 
-	if Pubg.isAimingState("ADS") then
+	if Pubg.isAimingState('ADS') then
 		realY = y * Pubg[Pubg.scope_current]
-	elseif Pubg.isAimingState("Aim") then
+	elseif Pubg.isAimingState('Aim') then
 		realY = y * UserConfig.sensitivity.Aim * Pubg.generalSensitivityRatio
 	end
 
-	if UserConfig.aimingSettings == "ctrlmode" and IsModifierPressed("lctrl") then
+	if UserConfig.aimingSettings == 'ctrlmode' and IsModifierPressed('lctrl') then
 		realY = realY * options.ctrlmodeRatio
 	end
 
@@ -699,11 +699,11 @@ end
 function Pubg.changeIsStart (isTrue)
 	Pubg.isStart = isTrue
 	if isTrue then
-		SetBacklightColor(0, 255, 150, "kb")
-		SetBacklightColor(0, 255, 150, "mouse")
+		SetBacklightColor(0, 255, 150, 'kb')
+		SetBacklightColor(0, 255, 150, 'mouse')
 	else
-		SetBacklightColor(255, 0, 90, "kb")
-		SetBacklightColor(255, 0, 90, "mouse")
+		SetBacklightColor(255, 0, 90, 'kb')
+		SetBacklightColor(255, 0, 90, 'mouse')
 	end
 end
 
@@ -713,7 +713,7 @@ function Pubg.setBulletType (bulletType)
 	Pubg.gunIndex = 1
 	Pubg.allCanUse_index = 0
 
-	local forList = { ".45", "9mm", "5.56", "7.62" }
+	local forList = { '.45', '9mm', '5.56', '7.62' }
 
 	for i = 1, #forList do
 		local type = forList[i]
@@ -736,7 +736,7 @@ end
 --[[ set current gun ]]
 function Pubg.setGun (gunName)
 
-	local forList = { ".45", "9mm", "5.56", "7.62" }
+	local forList = { '.45', '9mm', '5.56', '7.62' }
 	local allCanUse_index = 0
 
 	for i = 1, #forList do
@@ -769,13 +769,13 @@ end
 --[[ Consider all available firearms as an entire list ]]
 function Pubg.findInCanUse (cmd)
 
-	if "first_in_canUse" == cmd then
+	if 'first_in_canUse' == cmd then
 		Pubg.allCanUse_index = 1
-	elseif "next_in_canUse" == cmd then
+	elseif 'next_in_canUse' == cmd then
 		if Pubg.allCanUse_index < #Pubg.allCanUse then
 			Pubg.allCanUse_index = Pubg.allCanUse_index + 1
 		end
-	elseif "last_in_canUse" == cmd then
+	elseif 'last_in_canUse' == cmd then
 		Pubg.allCanUse_index = #Pubg.allCanUse
 	end
 
@@ -784,9 +784,9 @@ end
 
 --[[ Switching guns in the same series ]]
 function Pubg.findInSeries (cmd)
-	if "first" == cmd then
+	if 'first' == cmd then
 		Pubg.gunIndex = 1
-	elseif "next" == cmd then
+	elseif 'next' == cmd then
 		-- if Pubg.gunIndex < #Pubg.gun[Pubg.bulletType] then
 		-- 	Pubg.gunIndex = Pubg.gunIndex + 1
 		-- end
@@ -794,7 +794,7 @@ function Pubg.findInSeries (cmd)
 		local nextIndex = (Pubg.gunIndex + 1) % (len + 1)
 		local realIndex = nextIndex == 0 and 1 or nextIndex
 		Pubg.gunIndex = realIndex
-	elseif "last" == cmd then
+	elseif 'last' == cmd then
 		Pubg.gunIndex = #Pubg.gun[Pubg.bulletType]
 	end
 
@@ -803,11 +803,11 @@ end
 
 --[[ Script running status ]]
 function Pubg.runStatus ()
-	if UserConfig.startControl == "capslock" then
-		return IsKeyLockOn("capslock")
-	elseif UserConfig.startControl == "numlock" then
-		return IsKeyLockOn("numlock")
-	elseif UserConfig.startControl == "G_bind" then
+	if UserConfig.startControl == 'capslock' then
+		return IsKeyLockOn('capslock')
+	elseif UserConfig.startControl == 'numlock' then
+		return IsKeyLockOn('numlock')
+	elseif UserConfig.startControl == 'G_bind' then
 		return Pubg.isStart
 	end
 end
@@ -824,13 +824,13 @@ end
 
 --[[ 一键舔包，仅拾取进背包的物品，无法拾取需穿戴的物品 ]]
 function Pubg.fastLickBox ()
-	PressAndReleaseKey("lshift")
-	PressAndReleaseKey("lctrl")
-	PressAndReleaseKey("lalt")
-	PressAndReleaseKey("rshift")
-	PressAndReleaseKey("rctrl")
-	PressAndReleaseKey("ralt")
-	PressAndReleaseKey("tab")
+	PressAndReleaseKey('lshift')
+	PressAndReleaseKey('lctrl')
+	PressAndReleaseKey('lalt')
+	PressAndReleaseKey('rshift')
+	PressAndReleaseKey('rctrl')
+	PressAndReleaseKey('ralt')
+	PressAndReleaseKey('tab')
 	Sleep(20 + Pubg.sleep)
 	PressAndReleaseMouseButton(1)
 
@@ -862,18 +862,18 @@ function Pubg.fastLickBox ()
 		Pubg.randomOffset(lastItemCp[1]),
 		Pubg.randomOffset(lastItemCp[2])
 	)
-	PressAndReleaseKey("tab")
+	PressAndReleaseKey('tab')
 end
 
 --[[ 一键拾取功能，支持所有分辨率 ]]
 function Pubg.fastPickup ()
-	PressAndReleaseKey("lshift")
-	PressAndReleaseKey("lctrl")
-	PressAndReleaseKey("lalt")
-	PressAndReleaseKey("rshift")
-	PressAndReleaseKey("rctrl")
-	PressAndReleaseKey("ralt")
-	PressAndReleaseKey("tab")
+	PressAndReleaseKey('lshift')
+	PressAndReleaseKey('lctrl')
+	PressAndReleaseKey('lalt')
+	PressAndReleaseKey('rshift')
+	PressAndReleaseKey('rctrl')
+	PressAndReleaseKey('ralt')
+	PressAndReleaseKey('tab')
 	Sleep(20 + Pubg.sleep)
 	PressAndReleaseMouseButton(1)
 
@@ -905,18 +905,18 @@ function Pubg.fastPickup ()
 		Pubg.randomOffset(lastItemCp[1]),
 		Pubg.randomOffset(lastItemCp[2])
 	)
-	PressAndReleaseKey("tab")
+	PressAndReleaseKey('tab')
 end
 
 --[[ 背包清空之术，就算战死，也要让敌人舔个空盒！ ]]
 function Pubg.fastDiscard ()
-	PressAndReleaseKey("lshift")
-	PressAndReleaseKey("lctrl")
-	PressAndReleaseKey("lalt")
-	PressAndReleaseKey("rshift")
-	PressAndReleaseKey("rctrl")
-	PressAndReleaseKey("ralt")
-	PressAndReleaseKey("tab")
+	PressAndReleaseKey('lshift')
+	PressAndReleaseKey('lctrl')
+	PressAndReleaseKey('lalt')
+	PressAndReleaseKey('rshift')
+	PressAndReleaseKey('rctrl')
+	PressAndReleaseKey('ralt')
+	PressAndReleaseKey('tab')
 	Sleep(10 + Pubg.sleep)
 	PressAndReleaseMouseButton(1)
 	local lastItemCp = {
@@ -994,45 +994,45 @@ function Pubg.fastDiscard ()
 		Pubg.randomOffset(lastItemCp[1]),
 		Pubg.randomOffset(lastItemCp[2])
 	)
-	PressAndReleaseKey("tab")
+	PressAndReleaseKey('tab')
 end
 
 --[[ G key command binding ]]
 function Pubg.runCmd (cmd)
-	if cmd == "" then cmd = "none" end
+	if cmd == '' then cmd = 'none' end
 	local switch = {
-		["none"] = function () end,
-		[".45"] = Pubg.setBulletType,
-		["9mm"] = Pubg.setBulletType,
-		["5.56"] = Pubg.setBulletType,
-		["7.62"] = Pubg.setBulletType,
-		["scopeX1"] = Pubg.setScope,
-		["scopeX2"] = Pubg.setScope,
-		["scopeX3"] = Pubg.setScope,
-		["scopeX4"] = Pubg.setScope,
-		["scopeX6"] = Pubg.setScope,
-		["UMP45"] = Pubg.setGun,
-		["Tommy Gun"] = Pubg.setGun,
-		["Vector"] = Pubg.setGun,
-		["Micro UZI"] = Pubg.setGun,
-		["M416"] = Pubg.setGun,
-		["SCAR-L"] = Pubg.setGun,
-		["QBZ"] = Pubg.setGun,
-		["G36C"] = Pubg.setGun,
-		["M16A4"] = Pubg.setGun,
-		["AKM"] = Pubg.setGun,
-		["Beryl M762"] = Pubg.setGun,
-		["DP-28"] = Pubg.setGun,
-		["first"] = Pubg.findInSeries,
-		["next"] = Pubg.findInSeries,
-		["last"] = Pubg.findInSeries,
-		["first_in_canUse"] = Pubg.findInCanUse,
-		["next_in_canUse"] = Pubg.findInCanUse,
-		["last_in_canUse"] = Pubg.findInCanUse,
-		["fast_pickup"] = Pubg.fastPickup,
-		["fast_discard"] = Pubg.fastDiscard,
-		["fast_lick_box"] = Pubg.fastLickBox,
-		["off"] = function ()
+		['none'] = function () end,
+		['.45'] = Pubg.setBulletType,
+		['9mm'] = Pubg.setBulletType,
+		['5.56'] = Pubg.setBulletType,
+		['7.62'] = Pubg.setBulletType,
+		['scopeX1'] = Pubg.setScope,
+		['scopeX2'] = Pubg.setScope,
+		['scopeX3'] = Pubg.setScope,
+		['scopeX4'] = Pubg.setScope,
+		['scopeX6'] = Pubg.setScope,
+		['UMP45'] = Pubg.setGun,
+		['Tommy Gun'] = Pubg.setGun,
+		['Vector'] = Pubg.setGun,
+		['Micro UZI'] = Pubg.setGun,
+		['M416'] = Pubg.setGun,
+		['SCAR-L'] = Pubg.setGun,
+		['QBZ'] = Pubg.setGun,
+		['G36C'] = Pubg.setGun,
+		['M16A4'] = Pubg.setGun,
+		['AKM'] = Pubg.setGun,
+		['Beryl M762'] = Pubg.setGun,
+		['DP-28'] = Pubg.setGun,
+		['first'] = Pubg.findInSeries,
+		['next'] = Pubg.findInSeries,
+		['last'] = Pubg.findInSeries,
+		['first_in_canUse'] = Pubg.findInCanUse,
+		['next_in_canUse'] = Pubg.findInCanUse,
+		['last_in_canUse'] = Pubg.findInCanUse,
+		['fast_pickup'] = Pubg.fastPickup,
+		['fast_discard'] = Pubg.fastDiscard,
+		['fast_lick_box'] = Pubg.fastLickBox,
+		['off'] = function ()
 			Pubg.changeIsStart(false)
 		end,
 	}
@@ -1054,7 +1054,7 @@ function Pubg.outputLogRender ()
 		Pubg.renderDom.switchTable = Pubg.outputLogGunSwitchTable()
 	end
 	local resStr = table.concat({
-		"\n>> [\"", Pubg.renderDom.combo_key, "\"] = \"", Pubg.renderDom.cmd, "\" <<\n",
+		'\n>> [\'', Pubg.renderDom.combo_key, '\'] = \'', Pubg.renderDom.cmd, '\' <<\n',
 		Pubg.renderDom.separator,
 		Pubg.renderDom.switchTable,
 		Pubg.renderDom.separator,
@@ -1069,9 +1069,9 @@ end
 
 --[[ Output switching table ]]
 function Pubg.outputLogGunSwitchTable ()
-	local forList = { ".45", "9mm", "5.56", "7.62" }
+	local forList = { '.45', '9mm', '5.56', '7.62' }
 	local allCount = 0
-	local resStr = "      canUse_i\t      series_i\t      Series\t      ratio\t      ctrl ratio\t      Gun Name\n\n"
+	local resStr = '      canUse_i\t      series_i\t      Series\t      ratio\t      ctrl ratio\t      Gun Name\n\n'
 
 	for i = 1, #forList do
 		local type = forList[i]
@@ -1080,10 +1080,10 @@ function Pubg.outputLogGunSwitchTable ()
 		for j = 1, #UserConfig.canUse[type] do
 			if UserConfig.canUse[type][j][2] >= 1 then
 				local gunName = UserConfig.canUse[type][j][1]
-				local tag = gunName == Pubg.gun[Pubg.bulletType][Pubg.gunIndex] and "=> " or "      "
+				local tag = gunName == Pubg.gun[Pubg.bulletType][Pubg.gunIndex] and '=> ' or '      '
 				gunCount = gunCount + 1
 				allCount = allCount + 1
-				resStr = table.concat({ resStr, tag, allCount, "\t", tag, gunCount, "\t", tag, type, "\t", tag, UserConfig.canUse[type][j][3], "\t", tag, UserConfig.canUse[type][j][4], "\t", tag, gunName, "\n" })
+				resStr = table.concat({ resStr, tag, allCount, '\t', tag, gunCount, '\t', tag, type, '\t', tag, UserConfig.canUse[type][j][3], '\t', tag, UserConfig.canUse[type][j][4], '\t', tag, gunName, '\n' })
 			end
 		end
 
@@ -1099,11 +1099,11 @@ function Pubg.outputLogGunInfo ()
 	local gunName = Pubg.gun[k][i]
 
 	return table.concat({
-		"Currently scope: [ " .. Pubg.scope_current .. " ]\n",
-		"Currently series: [ ", k, " ]\n",
-		"Currently index in series: [ ", i, " / ", #Pubg.gun[k], " ]\n",
-		"Currently index in canUse: [ ", Pubg.allCanUse_index, " / ", Pubg.allCanUse_count, " ]\n",
-		"Recoil table of [ ", gunName, " ]:\n",
+		'Currently scope: [ ' .. Pubg.scope_current .. ' ]\n',
+		'Currently series: [ ', k, ' ]\n',
+		'Currently index in series: [ ', i, ' / ', #Pubg.gun[k], ' ]\n',
+		'Currently index in canUse: [ ', Pubg.allCanUse_index, ' / ', Pubg.allCanUse_count, ' ]\n',
+		'Recoil table of [ ', gunName, ' ]:\n',
 		Pubg.outputLogRecoilTable(),
 	})
 end
@@ -1112,16 +1112,16 @@ end
 function Pubg.outputLogRecoilTable ()
 	local k = Pubg.bulletType
 	local i = Pubg.gunIndex
-	local resStr = "{ "
+	local resStr = '{ '
 	for j = 1, #Pubg.gunOptions[k][i].ballistic do
 		local num = Pubg.gunOptions[k][i].ballistic[j]
 		resStr = table.concat({ resStr, num })
 		if j ~= #Pubg.gunOptions[k][i].ballistic then
-			resStr = table.concat({ resStr, ", " })
+			resStr = table.concat({ resStr, ', ' })
 		end
 	end
 
-	resStr = table.concat({ resStr, " }\n" })
+	resStr = table.concat({ resStr, ' }\n' })
 
 	return resStr
 end
@@ -1129,17 +1129,17 @@ end
 --[[ log of Pubg.auto ]]
 function Pubg.autoLog (options, y)
 	Pubg.renderDom.autoLog = table.concat({
-		"----------------------------------- Automatically counteracting gun recoil -----------------------------------\n",
-		"------------------------------------------------------------------------------------------------------------------------------\n",
-		"bullet index: ", Pubg.bulletIndex, "    target counter: ", options.ballistic[Pubg.bulletIndex], "    current counter: ", Pubg.counter, "\n",
-		"D-value(target - current): ", options.ballistic[Pubg.bulletIndex], " - ", Pubg.counter, " = ", options.ballistic[Pubg.bulletIndex] - Pubg.counter, "\n",
-		"move: math.ceil((", Pubg.currentTime, " - ", Pubg.startTime, ") / (", options.interval, " * (", Pubg.bulletIndex, " - 1)) * ", options.ballistic[Pubg.bulletIndex], ") - ", Pubg.counter, " = ", y, "\n",
-		"------------------------------------------------------------------------------------------------------------------------------\n",
+		'----------------------------------- Automatically counteracting gun recoil -----------------------------------\n',
+		'------------------------------------------------------------------------------------------------------------------------------\n',
+		'bullet index: ', Pubg.bulletIndex, '    target counter: ', options.ballistic[Pubg.bulletIndex], '    current counter: ', Pubg.counter, '\n',
+		'D-value(target - current): ', options.ballistic[Pubg.bulletIndex], ' - ', Pubg.counter, ' = ', options.ballistic[Pubg.bulletIndex] - Pubg.counter, '\n',
+		'move: math.ceil((', Pubg.currentTime, ' - ', Pubg.startTime, ') / (', options.interval, ' * (', Pubg.bulletIndex, ' - 1)) * ', options.ballistic[Pubg.bulletIndex], ') - ', Pubg.counter, ' = ', y, '\n',
+		'------------------------------------------------------------------------------------------------------------------------------\n',
 	})
 end
 
 function Pubg.PressOrRelaseAimKey (toggle)
-	if UserConfig.autoPressAimKey ~= "" then
+	if UserConfig.autoPressAimKey ~= '' then
 		if toggle then
 			PressKey(UserConfig.autoPressAimKey)
 		else
@@ -1150,20 +1150,20 @@ end
 
 --[[ Automatic press gun ]]  --GHUB与LGS不同的方法 
 function Pubg.OnEvent_NoRecoil (event, arg, family)
-	if event == "MOUSE_BUTTON_PRESSED" and arg == 1 and family == "mouse" then
+	if event == 'MOUSE_BUTTON_PRESSED' and arg == 1 and family == 'mouse' then
 		if not Pubg.runStatus() then return false end
-		if UserConfig.aimingSettings ~= "default" and not IsMouseButtonPressed(3) then
+		if UserConfig.aimingSettings ~= 'default' and not IsMouseButtonPressed(3) then
 			Pubg.PressOrRelaseAimKey(true)
 		end
-		if Pubg.isAimingState("ADS") or Pubg.isAimingState("Aim") then
+		if Pubg.isAimingState('ADS') or Pubg.isAimingState('Aim') then
 			Pubg.startTime = GetRunningTime()
 			Pubg.G1 = true
-            OutputLogMessage("Start Shooting....\n")
+            OutputLogMessage('Start Shooting....\n')
             Pubg.shooting()
 		end
 	end
 
-	if event == "MOUSE_BUTTON_RELEASED" and arg == 1 and family == "mouse" then
+	if event == 'MOUSE_BUTTON_RELEASED' and arg == 1 and family == 'mouse' then
 		Pubg.PressOrRelaseAimKey(false)
 		Pubg.G1 = false
 		Pubg.counter = 0 -- Initialization counter
@@ -1179,7 +1179,7 @@ function Pubg.shooting()
     repeat
         Pubg.auto(Pubg.gunOptions[Pubg.bulletType][Pubg.gunIndex])
     until not IsMouseButtonPressed(1)
-    OutputLogMessage("Stop Shooting....\n")
+    OutputLogMessage('Stop Shooting....\n')
 end
 
 -- [[ processing instruction ]]
@@ -1191,7 +1191,7 @@ function Pubg.modifierHandle (modifier)
 		Pubg.renderDom.cmd = cmd -- Save instruction name
 		Pubg.runCmd(cmd) -- Execution instructions
 	else
-		Pubg.renderDom.cmd = ""
+		Pubg.renderDom.cmd = ''
 	end
 
 	Pubg.outputLogRender() -- Call log rendering method to output information
@@ -1200,40 +1200,40 @@ end
 --[[ Listener method ]]
 function OnEvent (event, arg, family)
 
-	-- OutputLogMessage("event = %s, arg = %s, family = %s\n", event, arg, family)
-	-- console.log("event = " .. event .. ", arg = " .. arg .. ", family = " .. family)
+	-- OutputLogMessage('event = %s, arg = %s, family = %s\n', event, arg, family)
+	-- console.log('event = ' .. event .. ', arg = ' .. arg .. ', family = ' .. family)
 
 	Pubg.OnEvent_NoRecoil(event, arg, family)
 
 	-- Switching arsenals according to different types of ammunition
-	if event == "MOUSE_BUTTON_PRESSED" and arg >=3 and arg <= 11 and family == "mouse" then
-		local modifier = "G" .. arg
-		local list = { "lalt", "lctrl", "lshift", "ralt", "rctrl", "rshift" }
+	if event == 'MOUSE_BUTTON_PRESSED' and arg >=3 and arg <= 11 and family == 'mouse' then
+		local modifier = 'G' .. arg
+		local list = { 'lalt', 'lctrl', 'lshift', 'ralt', 'rctrl', 'rshift' }
 
 		for i = 1, #list do
 			if IsModifierPressed(list[i]) then
-				modifier = list[i] .. " + " .. modifier
+				modifier = list[i] .. ' + ' .. modifier
 				break
 			end
 		end
 
 		Pubg.modifierHandle(modifier)
-	elseif event == "G_PRESSED" and arg >=1 and arg <= 12 then
-		-- if not Pubg.runStatus() and UserConfig.startControl ~= "G_bind" then return false end
-		local modifier = "F" .. arg
+	elseif event == 'G_PRESSED' and arg >=1 and arg <= 12 then
+		-- if not Pubg.runStatus() and UserConfig.startControl ~= 'G_bind' then return false end
+		local modifier = 'F' .. arg
 
 		Pubg.modifierHandle(modifier)
 	end
 
 	-- Script deactivated event
-	if event == "PROFILE_DEACTIVATED" then
+	if event == 'PROFILE_DEACTIVATED' then
 		EnablePrimaryMouseButtonEvents(false)
-		ReleaseKey("lshift")
-		ReleaseKey("lctrl")
-		ReleaseKey("lalt")
-		ReleaseKey("rshift")
-		ReleaseKey("rctrl")
-		ReleaseKey("ralt")
+		ReleaseKey('lshift')
+		ReleaseKey('lctrl')
+		ReleaseKey('lalt')
+		ReleaseKey('rshift')
+		ReleaseKey('rctrl')
+		ReleaseKey('ralt')
 		ClearLog()
 	end
 
@@ -1246,7 +1246,7 @@ function string.split (str, s)
 	if string.find(str, s) == nil then return { str } end
 
 	local res = {}
-	local reg = "(.-)" .. s .. "()"
+	local reg = '(.-)' .. s .. '()'
 	local index = 0
 	local last_i
 	
@@ -1290,21 +1290,21 @@ function table.print (val)
 
 	local function loop (val, keyType, _indent)
 		_indent = _indent or 1
-		keyType = keyType or "string"
-		local res = ""
-		local indentStr = "     " -- 缩进空格 
+		keyType = keyType or 'string'
+		local res = ''
+		local indentStr = '     ' -- 缩进空格 
 		local indent = string.rep(indentStr, _indent)
 		local end_indent = string.rep(indentStr, _indent - 1)
 		local putline = function (...)
 			local arr = { res, ... }
 			for i = 1, #arr do
-				if type(arr[i]) ~= "string" then arr[i] = tostring(arr[i]) end
+				if type(arr[i]) ~= 'string' then arr[i] = tostring(arr[i]) end
 			end
 			res = table.concat(arr)
 		end
 
-		if type(val) == "table" then
-			putline("{ ")
+		if type(val) == 'table' then
+			putline('{ ')
 
 			if #val > 0 then
 				local index = 0
@@ -1312,7 +1312,7 @@ function table.print (val)
 
 				for i = 1, #val do
 					local n = val[i]
-					if type(n) == "table" or type(n) == "function" then
+					if type(n) == 'table' or type(n) == 'function' then
 						block = true
 						break
 					end
@@ -1322,8 +1322,8 @@ function table.print (val)
 					for i = 1, #val do
 						local n = val[i]
 						index = index + 1
-						if index == 1 then putline("\n") end
-						putline(indent, loop(n, type(i), _indent + 1), "\n")
+						if index == 1 then putline('\n') end
+						putline(indent, loop(n, type(i), _indent + 1), '\n')
 						if index == #val then putline(end_indent) end
 					end
 				else
@@ -1335,40 +1335,40 @@ function table.print (val)
 				end
 
 			else
-				putline("\n")
+				putline('\n')
 				for k, v in pairs(val) do
-					putline(indent, k, " = ", loop(v, type(k), _indent + 1), "\n")
+					putline(indent, k, ' = ', loop(v, type(k), _indent + 1), '\n')
 				end
 				putline(end_indent)
 			end
 
-			putline("}, ")
-		elseif type(val) == "string" then
-			val = string.gsub(val, "\a", "\\a") -- 响铃(BEL)
-			val = string.gsub(val, "\b", "\\b") -- 退格(BS),将当前位置移到前一列 
-			val = string.gsub(val, "\f", "\\f") -- 换页(FF),将当前位置移到下页开头 
-			val = string.gsub(val, "\n", "\\n") -- 换行(LF),将当前位置移到下一行开头 
-			val = string.gsub(val, "\r", "\\r") -- 回车(CR),将当前位置移到本行开头 
-			val = string.gsub(val, "\t", "\\t") -- 水平指标(HT),(调用下一个TAB位置)
-			val = string.gsub(val, "\v", "\\v") -- 垂直指标(VT)
-			putline("\"", val, "\", ")
-		elseif type(val) == "boolean" then
-			putline(val and "true, " or "false, ")
-		elseif type(val) == "function" then
-			putline(tostring(val), ", ")
-		elseif type(val) == "nil" then
-			putline("nil, ")
+			putline('}, ')
+		elseif type(val) == 'string' then
+			val = string.gsub(val, '\a', '\\a') -- 响铃(BEL)
+			val = string.gsub(val, '\b', '\\b') -- 退格(BS),将当前位置移到前一列 
+			val = string.gsub(val, '\f', '\\f') -- 换页(FF),将当前位置移到下页开头 
+			val = string.gsub(val, '\n', '\\n') -- 换行(LF),将当前位置移到下一行开头 
+			val = string.gsub(val, '\r', '\\r') -- 回车(CR),将当前位置移到本行开头 
+			val = string.gsub(val, '\t', '\\t') -- 水平指标(HT),(调用下一个TAB位置)
+			val = string.gsub(val, '\v', '\\v') -- 垂直指标(VT)
+			putline('\'', val, '\', ')
+		elseif type(val) == 'boolean' then
+			putline(val and 'true, ' or 'false, ')
+		elseif type(val) == 'function' then
+			putline(tostring(val), ', ')
+		elseif type(val) == 'nil' then
+			putline('nil, ')
 		else
-			putline(val, ", ")
+			putline(val, ', ')
 		end
 
 		return res
 	end
 
 	local res = loop(val)
-	res = string.gsub(res, ",(%s*})", "%1")
-	res = string.gsub(res, ",(%s*)$", "%1")
-	res = string.gsub(res, "{%s+}", "{}")
+	res = string.gsub(res, ',(%s*})', '%1')
+	res = string.gsub(res, ',(%s*)$', '%1')
+	res = string.gsub(res, '{%s+}', '{}')
 
 	return res
 end
@@ -1376,7 +1376,7 @@ end
 -- console
 console = {}
 function console.log (str)
-	OutputLogMessage(table.print(str) .. "\n")
+	OutputLogMessage(table.print(str) .. '\n')
 end
 
 --[[ Other ]]
