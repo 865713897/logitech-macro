@@ -4,7 +4,7 @@
 
 -- 自定义函数
 -- 合并table，返回新table
-function Object.assign(table1, table2)
+function table.assign(table1, table2)
   -- 合并两张表，返回新表
   local result = {}
   for key, value in pairs(table1) do
@@ -191,9 +191,9 @@ RunConfig = {
   -- 开枪开始时间
   startTime = 0,
   -- 频率设置 (这里不能设置成0，调试会出BUG)
-  sleep = UserConfig.cpuLoad,
+  sleep = Config.cpuLoad,
   -- 防检测随机延迟
-  sleepRandom = { UserConfig.cpuLoad, UserConfig.cpuLoad + 5 },
+  sleepRandom = { Config.cpuLoad, Config.cpuLoad + 5 },
   -- 当前弹药模式
   bulletType = '5.56',
   weaponIndex = 1, -- 当前弹药下，枪械索引
@@ -345,7 +345,7 @@ RunConfig.initTraFn = function()
   for key, value in pairs(TrajectoryConfig) do
     trajectoryData[key] = RunConfig.generateTrajectoryData(key, value)
   end
-  RunConfig = Object.assign(RunConfig, trajectoryData)
+  RunConfig = table.assign(RunConfig, trajectoryData)
 end
 
 -- 生成弹道数据
@@ -507,13 +507,14 @@ RunConfig.calculateAndApplyRecoil = function(weaponInfo)
   -- 当前时间处于第几颗子弹
   local bulletIndex = math.ceil(curDuration == 0 and 1 or curDuration / weaponInfo.interval) + 1
   if (bulletIndex > weaponInfo.amount) then
-    return
+    return true
   end
   local x = 0
   local y = weaponInfo.trajectoryData[bulletIndex]
   local realY = RunConfig.getRealY(weaponInfo.crouchFactor, y)
   MoveMouseRelative(x, realY)
   Sleep(GenerateRandomNumber(RunConfig.sleepRandom[1], RunConfig.sleepRandom[2]))
+  return false;
 end
 
 -- 开枪
@@ -521,7 +522,10 @@ RunConfig.Shoot = function()
   local type = RunConfig.bulletType
   local index = RunConfig.weaponIndex
   repeat
-    RunConfig.calculateAndApplyRecoil(RunConfig.weaponInfos[type][index])
+    local flag = RunConfig.calculateAndApplyRecoil(RunConfig.weaponInfos[type][index])
+    if (flag) then
+      break
+    end
   until not IsMouseButtonPressed(1)
 end
 
