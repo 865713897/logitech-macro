@@ -42,8 +42,8 @@ end
 function GenerateRandomNumber(min, max)
   local shape = 2 -- 伽马分布形状参数
   -- 逆变换生成伽马分布随机数
-  local randomNum = (min + (max - min) * Math.random()) ^ (1 / shape)
-  return randomNum
+  local randomNum = (min + (max - min) * math.random()) ^ (1 / shape)
+  return math.round(randomNum)
 end
 
 Config = {
@@ -54,11 +54,11 @@ Config = {
     -- 腰射 | take aim
     Aim = 0.55,
     -- 二倍 | twice scope
-    scopeX2 = 1.3,
+    scopeX2 = 1.71,
     -- 三倍 | trebling scope
-    scopeX3 = 1.3,
+    scopeX3 = 2.62,
     -- 四倍 | quadruple scope
-    scopeX4 = 3.9,
+    scopeX4 = 3.63,
     -- 六倍 | sixfold scope
     scopeX6 = 2.3,
   },
@@ -172,7 +172,7 @@ WeaponsRecoil = {
   },
   ['5.56'] = {
     -- 枪械，模式，系数，下蹲系数
-    { 'M416',   1, 1, 0.8 }, -- 补偿 + 基础镜 + 直角 + 枪托 + 扩容 | Komp + Reddot + Triangular grip + Gunstock + Mag
+    { 'M416',   1, 1, 0.8749 }, -- 补偿 + 基础镜 + 直角 + 枪托 + 扩容 | Komp + Reddot + Triangular grip + Gunstock + Mag
     { 'M16A4',  2, 1, 0.8 }, -- 补偿 + 基础镜 + 枪托 + 扩容 | Komp + Reddot + Gunstock + Mag
     { 'QBZ',    1, 1, 0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
     { 'SCAR_L', 0, 1, 0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
@@ -192,6 +192,10 @@ RunConfig = {
   startTime = 0,
   -- 频率设置 (这里不能设置成0，调试会出BUG)
   sleep = Config.cpuLoad,
+  -- 垂直偏移量
+  verticalOffset = 0,
+  -- 水平偏移量
+  horizontalOffset = 0,
   -- 防检测随机延迟
   sleepRandom = { Config.cpuLoad, Config.cpuLoad + 5 },
   -- 当前弹药模式
@@ -230,11 +234,16 @@ TrajectoryConfig = {
     trajectory = {
       { 1,  0 },
       { 2,  35 },
-      { 4,  18 },
-      { 10, 24 },
-      { 15, 32 },
-      { 30, 30 },
-      { 40, 37 },
+      { 3,  12.5 },
+      { 4,  15.5 },
+      { 7, 23 },
+      { 8, 20 },
+      { 15, 24 },
+      { 20, 24 },
+      { 25, 28.5 },
+      { 30, 23.5 },
+      { 35, 27 },
+      { 40, 29 },
     } },
   ['M16A4'] = { interval = 108,
     bulletType = '5.56',
@@ -249,10 +258,11 @@ TrajectoryConfig = {
       { 1,  0 },
       { 2,  28 },
       { 5,  18 },
-      { 10, 21 },
-      { 15, 26 },
-      { 20, 31 },
-      { 40, 28 },
+      { 10, 22 },
+      { 15, 24 },
+      { 20, 33 },
+      { 25, 26 },
+      { 40, 27 },
     } },
   ['SCAR_L'] = { interval = 96,
     bulletType = '5.56',
@@ -280,9 +290,11 @@ TrajectoryConfig = {
     trajectory = {
       { 1,  0 },
       { 2,  42 },
-      { 5,  25 },
+      { 5,  24 },
       { 10, 32 },
-      { 40, 40 },
+      { 20, 38 },
+      { 30, 40.5 },
+      { 40, 41 },
     } },
   ['Beryl_M762'] = { interval = 86,
     bulletType = '7.62',
@@ -290,8 +302,10 @@ TrajectoryConfig = {
       { 1,  0 },
       { 2,  42 },
       { 5,  25 },
-      { 10, 32 },
-      { 40, 40 },
+      { 10, 28 },
+      { 15, 30 },
+      { 30, 38 },
+      { 40, 39 },
     } },
   ['DP_28'] = { interval = 100,
     bulletType = '7.62',
@@ -307,7 +321,7 @@ TrajectoryConfig = {
       { 1,  0 },
       { 5,  18 },
       { 15, 30 },
-      { 35, 32 },
+      { 35, 34 },
     } },
   ['Tommy_Gun'] = { interval = 84,
     bulletType = '.45',
@@ -318,7 +332,7 @@ TrajectoryConfig = {
       { 8,  24 },
       { 10, 30 },
       { 15, 40 },
-      { 50, 45 },
+      { 50, 44 },
     } },
   ['Vector'] = { interval = 55,
     bulletType = '9mm',
@@ -363,6 +377,7 @@ RunConfig.generateTrajectoryData = function(weaponName, weaponInfo)
   end
   -- 生成弹道数据
   local trajectoryData = {}
+  local trajectoryData2 = {}
   for i = 1, #weaponInfo.trajectory do
     local bulletNum = weaponInfo.trajectory[i][1]
     if (i ~= 1) then
@@ -373,11 +388,18 @@ RunConfig.generateTrajectoryData = function(weaponName, weaponInfo)
       bulletIndex = bulletIndex + 1
     end
   end
+  for i = 1, #trajectoryData do
+    if (i == 1) then
+      trajectoryData2[i] = trajectoryData[i]
+    else
+      trajectoryData2[i] = trajectoryData[i] + trajectoryData2[i - 1]
+    end
+  end
   return {
     duration = weaponInfo.interval * #trajectoryData, -- 总耗时
     amount = #trajectoryData,                         -- 子弹数
     interval = weaponInfo.interval,                   -- 每颗子弹耗时
-    trajectoryData = trajectoryData,                  --  弹道数据
+    trajectoryData = trajectoryData2,                  --  弹道数据
     crouchFactor = curWeaponRecoil[4]                 -- 下蹲系数
   }
 end
@@ -415,21 +437,14 @@ RunConfig.outputWeaponInfo = function()
   local curType = RunConfig.bulletType
   local curIndex = RunConfig.weaponIndex
   local curScope = RunConfig.currentScope
-  print(' ——————————————————————————————————————————————————————————————————————————————————————')
-  print('| 当前子弹类型：' .. RunConfig.bulletType .. '         当前子弹类型下枪械：' ..
-    RunConfig.weaponNames[curType][curIndex] .. '         当前倍镜：' .. curScope)
-  print('|                                                                                      ')
-  print('|                                                                                      ')
-  print('|                                                                                      ')
-  print('|                                                                                      ')
-  print('|                                                                                      ')
-  print('|                                                                                      ')
-  print(' ——————————————————————————————————————————————————————————————————————————————————————')
+  ClearLog()
+  OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
+  OutputLogMessage('\n')
+  OutputLogMessage('| current bulletType: ' .. RunConfig.bulletType .. '         current weapon: ' ..
+    RunConfig.weaponNames[curType][curIndex] .. '         current scope: ' .. curScope)
+  OutputLogMessage('\n')
+  OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
 end
-
-RunConfig.initTraFn()
-RunConfig.init()
-RunConfig.outputWeaponInfo()
 
 -- 设置子弹类型
 RunConfig.setBulletType = function(type)
@@ -507,22 +522,27 @@ RunConfig.getRealY = function(crouchFactor, y)
   elseif (IsMouseButtonPressed(3)) then
     realY = y * RunConfig[RunConfig.currentScope]
   end
-  return math.random(realY)
+  return math.round(realY)
 end
 
 -- 执行压枪操作
 RunConfig.calculateAndApplyRecoil = function(weaponInfo)
   local curDuration = GetRunningTime() - RunConfig.startTime
+  -- OutputLogMessage(curDuration)
+  -- OutputLogMessage('\n')
   -- 当前时间处于第几颗子弹
-  local bulletIndex = math.ceil(curDuration == 0 and 1 or curDuration / weaponInfo.interval) + 1
-  if (bulletIndex > weaponInfo.amount or bulletIndex == RunConfig.bulletIndex) then
+  local bulletIndex = math.ceil((curDuration == 0 and 1 or curDuration) / weaponInfo.interval) + 1
+  if (bulletIndex > weaponInfo.amount) then
     return
   end
   RunConfig.bulletIndex = bulletIndex
   local x = 0
-  local y = weaponInfo.trajectoryData[bulletIndex]
+  local y = math.ceil(curDuration / (weaponInfo.interval * (bulletIndex - 1)) * weaponInfo.trajectoryData[bulletIndex]) - RunConfig.verticalOffset
   local realY = RunConfig.getRealY(weaponInfo.crouchFactor, y)
+  -- OutputLogMessage(y)
+  -- OutputLogMessage('\n')
   MoveMouseRelative(x, realY)
+  RunConfig.verticalOffset = RunConfig.verticalOffset + y
   Sleep(GenerateRandomNumber(RunConfig.sleepRandom[1], RunConfig.sleepRandom[2]))
 end
 
@@ -534,6 +554,11 @@ RunConfig.Shoot = function()
     RunConfig.calculateAndApplyRecoil(RunConfig.weaponInfos[type][index])
   until not IsMouseButtonPressed(1)
 end
+
+EnablePrimaryMouseButtonEvents(true)
+RunConfig.initTraFn()
+RunConfig.init()
+RunConfig.outputWeaponInfo()
 
 function OnEvent(event, arg, family)
   -- 监听
@@ -552,7 +577,7 @@ function OnEvent(event, arg, family)
 
   -- 点击鼠标左键开枪
   if (event == 'MOUSE_BUTTON_PRESSED' and arg == 1 and family == 'mouse') then
-    if (not RunConfig.isStartScript()) then
+    if (not RunConfig.isStartScript() or not IsMouseButtonPressed(3)) then
       return
     end
     RunConfig.startTime = GetRunningTime()
@@ -562,5 +587,18 @@ function OnEvent(event, arg, family)
   if (event == 'MOUSE_BUTTON_RELEASED' and arg == 1 and family == 'mouse') then
     RunConfig.setRandomseed()
     RunConfig.bulletIndex = 1
+    RunConfig.verticalOffset = 0
+    RunConfig.horizontalOffset = 0
   end
+  -- 脚本退出
+  if event == 'PROFILE_DEACTIVATED' then
+		EnablePrimaryMouseButtonEvents(false)
+		ReleaseKey('lshift')
+		ReleaseKey('lctrl')
+		ReleaseKey('lalt')
+		ReleaseKey('rshift')
+		ReleaseKey('rctrl')
+		ReleaseKey('ralt')
+		ClearLog()
+	end
 end
