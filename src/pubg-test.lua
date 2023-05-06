@@ -173,10 +173,10 @@ WeaponsRecoil = {
   ['5.56'] = {
     -- 枪械，模式，系数，下蹲系数
     { 'M416',   1, 1, 0.8749 }, -- 补偿 + 基础镜 + 直角 + 枪托 + 扩容 | Komp + Reddot + Triangular grip + Gunstock + Mag
-    { 'M16A4',  2, 1, 0.8 }, -- 补偿 + 基础镜 + 枪托 + 扩容 | Komp + Reddot + Gunstock + Mag
-    { 'QBZ',    1, 1, 0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
-    { 'SCAR_L', 0, 1, 0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
-    { 'G36C',   0, 1, 0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
+    { 'M16A4',  2, 1, 0.8 },    -- 补偿 + 基础镜 + 枪托 + 扩容 | Komp + Reddot + Gunstock + Mag
+    { 'QBZ',    1, 1, 0.8 },    -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
+    { 'SCAR_L', 0, 1, 0.8 },    -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
+    { 'G36C',   0, 1, 0.8 },    -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
   },
   ['7.62'] = {
     -- 枪械，模式，系数，下蹲系数
@@ -236,8 +236,8 @@ TrajectoryConfig = {
       { 2,  35 },
       { 3,  12.5 },
       { 4,  15.5 },
-      { 7, 23 },
-      { 8, 20 },
+      { 7,  23 },
+      { 8,  20 },
       { 15, 24 },
       { 20, 24 },
       { 25, 28.5 },
@@ -399,7 +399,7 @@ RunConfig.generateTrajectoryData = function(weaponName, weaponInfo)
     duration = weaponInfo.interval * #trajectoryData, -- 总耗时
     amount = #trajectoryData,                         -- 子弹数
     interval = weaponInfo.interval,                   -- 每颗子弹耗时
-    trajectoryData = trajectoryData2,                  --  弹道数据
+    trajectoryData = trajectoryData2,                 --  弹道数据
     crouchFactor = curWeaponRecoil[4]                 -- 下蹲系数
   }
 end
@@ -525,33 +525,26 @@ RunConfig.getRealY = function(crouchFactor, y)
   return math.round(realY)
 end
 
--- 执行压枪操作
-RunConfig.calculateAndApplyRecoil = function(weaponInfo)
-  local curDuration = GetRunningTime() - RunConfig.startTime
-  -- OutputLogMessage(curDuration)
-  -- OutputLogMessage('\n')
-  -- 当前时间处于第几颗子弹
-  local bulletIndex = math.ceil((curDuration == 0 and 1 or curDuration) / weaponInfo.interval) + 1
-  if (bulletIndex > weaponInfo.amount) then
-    return
-  end
-  RunConfig.bulletIndex = bulletIndex
-  local x = 0
-  local y = math.ceil(curDuration / (weaponInfo.interval * (bulletIndex - 1)) * weaponInfo.trajectoryData[bulletIndex]) - RunConfig.verticalOffset
-  local realY = RunConfig.getRealY(weaponInfo.crouchFactor, y)
-  -- OutputLogMessage(y)
-  -- OutputLogMessage('\n')
-  MoveMouseRelative(x, realY)
-  RunConfig.verticalOffset = RunConfig.verticalOffset + y
-  Sleep(GenerateRandomNumber(RunConfig.sleepRandom[1], RunConfig.sleepRandom[2]))
-end
-
 -- 开枪
 RunConfig.Shoot = function()
   local type = RunConfig.bulletType
   local index = RunConfig.weaponIndex
   repeat
-    RunConfig.calculateAndApplyRecoil(RunConfig.weaponInfos[type][index])
+    local weaponInfo = RunConfig.weaponInfos[type][index]
+    local curDuration = GetRunningTime() - RunConfig.startTime
+    -- 当前时间处于第几颗子弹
+    local bulletIndex = math.ceil((curDuration == 0 and 1 or curDuration) / weaponInfo.interval) + 1
+    if (bulletIndex > weaponInfo.amount) then
+      return
+    end
+    RunConfig.bulletIndex = bulletIndex
+    local x = 0
+    local y = math.ceil(curDuration / (weaponInfo.interval * (bulletIndex - 1)) * weaponInfo.trajectoryData[bulletIndex]) -
+    RunConfig.verticalOffset
+    local realY = RunConfig.getRealY(weaponInfo.crouchFactor, y)
+    MoveMouseRelative(x, realY)
+    RunConfig.verticalOffset = RunConfig.verticalOffset + y
+    Sleep(GenerateRandomNumber(RunConfig.sleepRandom[1], RunConfig.sleepRandom[2]))
   until not IsMouseButtonPressed(1)
 end
 
@@ -592,13 +585,13 @@ function OnEvent(event, arg, family)
   end
   -- 脚本退出
   if event == 'PROFILE_DEACTIVATED' then
-		EnablePrimaryMouseButtonEvents(false)
-		ReleaseKey('lshift')
-		ReleaseKey('lctrl')
-		ReleaseKey('lalt')
-		ReleaseKey('rshift')
-		ReleaseKey('rctrl')
-		ReleaseKey('ralt')
-		ClearLog()
-	end
+    EnablePrimaryMouseButtonEvents(false)
+    ReleaseKey('lshift')
+    ReleaseKey('lctrl')
+    ReleaseKey('lalt')
+    ReleaseKey('rshift')
+    ReleaseKey('rctrl')
+    ReleaseKey('ralt')
+    ClearLog()
+  end
 end
