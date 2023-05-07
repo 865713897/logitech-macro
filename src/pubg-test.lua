@@ -173,15 +173,17 @@ WeaponsRecoil = {
   ['5.56'] = {
     -- 枪械，模式，系数，下蹲系数
     { 'M416',   1, 1, 0.8749 }, -- 补偿 + 基础镜 + 直角 + 枪托 + 扩容 | Komp + Reddot + Triangular grip + Gunstock + Mag
-    { 'M16A4',  2, 1, 0.8 },    -- 补偿 + 基础镜 + 枪托 + 扩容 | Komp + Reddot + Gunstock + Mag
+    { 'AUG',    1, 1, 0.8 },    -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
     { 'QBZ',    1, 1, 0.8 },    -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
+    { 'M16A4',  2, 1, 0.8 },    -- 补偿 + 基础镜 + 枪托 + 扩容 | Komp + Reddot + Gunstock + Mag
     { 'SCAR_L', 0, 1, 0.8 },    -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
     { 'G36C',   0, 1, 0.8 },    -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
   },
   ['7.62'] = {
     -- 枪械，模式，系数，下蹲系数
-    { 'AKM',        1, 1, 0.8 }, -- 补偿 + 基础镜 + 扩容 | Komp + Reddot + Mag
     { 'Beryl_M762', 1, 1, 0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
+    { 'ACE32',      1, 1, 0.8 }, -- 补偿 + 基础镜 + 直角 + 扩容 | Komp + Reddot + Triangular grip + Mag
+    { 'AKM',        1, 1, 0.8 }, -- 补偿 + 基础镜 + 扩容 | Komp + Reddot + Mag
     { 'DP_28',      0, 1, 0.8 }, -- 基础镜 | Reddot
   },
 }
@@ -245,6 +247,21 @@ TrajectoryConfig = {
       { 35, 27 },
       { 40, 29 },
     } },
+  ['AUG'] = { interval = 84,
+    bulletType = '5.56',
+    trajectory = {
+      { 1,  0 },
+      { 2,  35 },
+      { 3,  12.5 },
+      { 4,  15.5 },
+      { 7,  23 },
+      { 8,  20 },
+      { 15, 25 },
+      { 20, 33 },
+      { 25, 28.5 },
+      { 35, 27 },
+      { 40, 29.5 },
+    } },
   ['M16A4'] = { interval = 108,
     bulletType = '5.56',
     trajectory = {
@@ -306,6 +323,20 @@ TrajectoryConfig = {
       { 15, 30 },
       { 30, 38 },
       { 40, 39 },
+    } },
+  ['ACE32'] = { interval = 87,
+    bulletType = '7.62',
+    trajectory = {
+      { 1,  0 },
+      { 2,  38 },
+      { 5,  19 },
+      { 10, 24 },
+      { 15, 24 },
+      { 20, 28 },
+      { 23, 30 },
+      { 25, 34 },
+      { 30, 28 },
+      { 40, 31 },
     } },
   ['DP_28'] = { interval = 100,
     bulletType = '7.62',
@@ -540,7 +571,7 @@ RunConfig.Shoot = function()
     RunConfig.bulletIndex = bulletIndex
     local x = 0
     local y = math.ceil(curDuration / (weaponInfo.interval * (bulletIndex - 1)) * weaponInfo.trajectoryData[bulletIndex]) -
-    RunConfig.verticalOffset
+        RunConfig.verticalOffset
     local realY = RunConfig.getRealY(weaponInfo.crouchFactor, y)
     MoveMouseRelative(x, realY)
     RunConfig.verticalOffset = RunConfig.verticalOffset + y

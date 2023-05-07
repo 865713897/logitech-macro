@@ -1,4 +1,13 @@
 ---@diagnostic disable: undefined-global
+
+-- 自定义函数
+-- 伽马随机分布
+function GenerateRandomNumber(min, max, shape)
+    -- 逆变换生成伽马分布随机数
+    local randomNum = (min + (max - min) * math.random()) ^ (1 / shape)
+    return math.round(randomNum)
+  end
+
 -- 用户配置
 UserConfig = {
     -- 开启宏按键
@@ -41,7 +50,7 @@ function GatlingShoot()
         PressKey(UserConfig.shootKey)
         Sleep(math.random(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 20, baseDelay + 30)))
         ReleaseKey(UserConfig.shootKey)
-        Sleep(math.random(28, 38))
+        Sleep(math.random(26, 36))
     until not IsPressed(UserConfig.shootKeyG)
 end
 
