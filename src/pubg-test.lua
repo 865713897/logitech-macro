@@ -1,7 +1,5 @@
 ---@diagnostic disable: duplicate-set-field
--- 测试压枪
 ---@diagnostic disable: undefined-global
-
 -- 自定义函数
 -- 合并table，返回新table
 function table.assign(table1, table2)
