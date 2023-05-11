@@ -1,15 +1,31 @@
----@diagnostic disable: undefined-global
-
+---@diagnostic disable: undefined-global, duplicate-set-field
 -- 自定义函数
--- 伽马随机分布
-function GenerateRandomNumber(min, max, shape)
-    -- 逆变换生成伽马分布随机数
-    local randomNum = (min + (max - min) * math.random()) ^ (1 / shape)
-    return math.round(randomNum)
-  end
+-- 四舍五入
+function math.round(number)
+    local floor = math.floor(number)
+    local ceil = math.ceil(number)
+    local fractionalPart = number - floor
+    if (fractionalPart < 0.5) then
+        return floor
+    else
+        return ceil
+    end
+end
+
+function GenerateRandomNumber()
+    local prevNum = 0
+    local currentNum = 0
+    return function(min, max)
+        while (prevNum == currentNum) do
+            currentNum = math.round(min + (max - min) * math.random())
+        end
+        prevNum = currentNum
+        return currentNum
+    end
+end
 
 -- 用户配置
-UserConfig = {
+Config = {
     -- 开启宏按键
     startScript = 'capslock', -- scrolllock | capslock | numlock
     -- 绑定开枪按键
@@ -25,10 +41,11 @@ UserConfig = {
 }
 
 EnablePrimaryMouseButtonEvents(true)
+EnablePrimaryColor(true)
 
 -- 是否开启宏
 function IsStartScript()
-    return IsKeyLockOn(UserConfig.startScript)
+    return IsKeyLockOn(Config.startScript)
 end
 
 -- 判断按键是否按下
@@ -45,13 +62,15 @@ end
 -- 加特林点击
 function GatlingShoot()
     local baseDelay = 140
+    local randomFn1 = GenerateRandomNumber()
+    local randomFn2 = GenerateRandomNumber()
     repeat
         math.randomseed(GetRunningTime())
-        PressKey(UserConfig.shootKey)
-        Sleep(math.random(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 20, baseDelay + 30)))
-        ReleaseKey(UserConfig.shootKey)
-        Sleep(math.random(26, 36))
-    until not IsPressed(UserConfig.shootKeyG)
+        PressKey(Config.shootKey)
+        Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 20, baseDelay + 30)))
+        ReleaseKey(Config.shootKey)
+        Sleep(randomFn2(26, 36))
+    until not IsPressed(Config.shootKeyG)
 end
 
 -- 加特林连刺
@@ -62,19 +81,21 @@ function GatlingStab()
         PressAndReleaseMouseButton(3)
         Sleep(math.random(280, 320))
         -- 点击绑定攻击键
-        PressAndReleaseKey(UserConfig.shootKey)
+        PressAndReleaseKey(Config.shootKey)
         Sleep(math.random(60, 93))
     until not IsPressed(5)
 end
 
 -- 闪蹲
 function TapCtrl()
+    local randomFn1 = GenerateRandomNumber()
+    local randomFn2 = GenerateRandomNumber()
     repeat
         math.randomseed(GetRunningTime())
-        PressKey(UserConfig.ctrlKey)
-        Sleep(math.random(48, 69))
-        ReleaseKey(UserConfig.ctrlKey)
-        Sleep(math.random(28, 44))
+        PressKey(Config.ctrlKey)
+        Sleep(randomFn1(40, 50))
+        ReleaseKey(Config.ctrlKey)
+        Sleep(randomFn2(26, 36))
     until not IsPressed(5)
 end
 
@@ -101,7 +122,7 @@ function XkQuickAttack()
     PressMouseButton(3)
     Sleep(math.random(45, 55))
     ReleaseMouseButton(3)
-    Sleep(math.random(590, 610))
+    Sleep(math.random(580, 590))
     PressKey('f')
     Sleep(math.random(30, 40))
     ReleaseKey('f')
@@ -121,7 +142,7 @@ function IsSystemMonitor(key)
     end
 end
 
-UserConfig.Gkey5BindEvents = {
+Config.Gkey5BindEvents = {
     GatlingStab,   -- 加特林连刺
     XkQuickAttack, -- 虚空重刀
     -- TapCtrl        -- 闪蹲
@@ -145,21 +166,21 @@ function OnEvent(event, arg, family)
         GatlingShoot()
     elseif (IsPressed(4) and newArg == 4) then
         -- shootKeyG按下，但未开启脚本，执行绑定按键按下操作
-        PressKey(UserConfig.shootKey)
+        PressKey(Config.shootKey)
     elseif (not IsPressed(4) and newArg == 4) then
         -- shootKeyG释放
-        ReleaseKey(UserConfig.shootKey)
+        ReleaseKey(Config.shootKey)
     elseif (IsPressed(5) and newArg == 5 and IsStartScript()) then
         -- G5被按下，根据index执行Gkey5BindEvents中的事件
-        UserConfig.Gkey5BindEvents[UserConfig.Gkey5EventIndex]()
-    elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == UserConfig.tripleJumpKeyG) then
+        Config.Gkey5BindEvents[Config.Gkey5EventIndex]()
+    elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == Config.tripleJumpKeyG) then
         -- tripleJumpKeyG按下，执行三级跳脚本
         TripleJump()
-    elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == UserConfig.GkeyChangeEvent) then
+    elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == Config.GkeyChangeEvent) then
         -- 循环增大index
-        local len = #UserConfig.Gkey5BindEvents
-        local newIndex = (UserConfig.Gkey5EventIndex + 1) % (len + 1)
+        local len = #Config.Gkey5BindEvents
+        local newIndex = (Config.Gkey5EventIndex + 1) % (len + 1)
         local realIndex = newIndex == 0 and 1 or newIndex
-        UserConfig.Gkey5EventIndex = realIndex
+        Config.Gkey5EventIndex = realIndex
     end
 end
