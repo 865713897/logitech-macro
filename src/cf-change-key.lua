@@ -41,7 +41,6 @@ Config = {
 }
 
 EnablePrimaryMouseButtonEvents(true)
-EnablePrimaryColor(true)
 
 -- 是否开启宏
 function IsStartScript()
@@ -61,7 +60,7 @@ end
 
 -- 加特林点击
 function GatlingShoot()
-    local baseDelay = 140
+    local baseDelay = 130
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat

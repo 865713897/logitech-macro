@@ -560,27 +560,18 @@ end
 RunConfig.Shoot = function()
   local type = RunConfig.bulletType
   local index = RunConfig.weaponIndex
-  local prevBulletIndex = 1
   repeat
     local weaponInfo = RunConfig.weaponInfos[type][index]
     local curDuration = GetRunningTime() - RunConfig.startTime
-    local prevY = 0
     -- 当前时间处于第几颗子弹
     local bulletIndex = math.ceil((curDuration == 0 and 1 or curDuration) / weaponInfo.interval) + 1
     if (bulletIndex > weaponInfo.amount) then
       return
     end
     RunConfig.bulletIndex = bulletIndex
-    if (bulletIndex ~= prevBulletIndex) then
-      -- 进入下一颗子弹，判断上一颗子弹枪械是否回正
-      -- 上一颗子弹武器未回正距离
-      prevY = weaponInfo.trajectoryData - RunConfig.verticalOffset
-      prevY = prevY <= 0 and 0 or prevY
-      prevBulletIndex = bulletIndex
-    end
     local x = 0
     local y = math.ceil(curDuration / (weaponInfo.interval * (bulletIndex - 1)) * weaponInfo.trajectoryData[bulletIndex]) -
-        RunConfig.verticalOffset + prevY
+        RunConfig.verticalOffset
     local realY = RunConfig.getRealY(weaponInfo.crouchFactor, y)
     MoveMouseRelative(x, realY)
     RunConfig.verticalOffset = RunConfig.verticalOffset + y
