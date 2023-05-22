@@ -36,12 +36,17 @@ function math.round(number)
   end
 end
 
--- 伽马随机分布
-function GenerateRandomNumber(min, max)
-  local shape = 2 -- 伽马分布形状参数
-  -- 逆变换生成伽马分布随机数
-  local randomNum = (min + (max - min) * math.random()) ^ (1 / shape)
-  return math.round(randomNum)
+-- 随机数
+function GenerateRandomNumber()
+  local prevNum = 0
+  local currentNum = 0
+  return function(min, max)
+      while (prevNum == currentNum) do
+          currentNum = math.round(min + (max - min) * math.random())
+      end
+      prevNum = currentNum
+      return currentNum
+  end
 end
 
 Config = {
@@ -556,6 +561,7 @@ end
 
 -- 开枪
 RunConfig.Shoot = function()
+  local randomFn = GenerateRandomNumber()
   local type = RunConfig.bulletType
   local index = RunConfig.weaponIndex
   repeat
@@ -573,7 +579,7 @@ RunConfig.Shoot = function()
     local realY = RunConfig.getRealY(weaponInfo.crouchFactor, y)
     MoveMouseRelative(x, realY)
     RunConfig.verticalOffset = RunConfig.verticalOffset + y
-    Sleep(GenerateRandomNumber(RunConfig.sleepRandom[1], RunConfig.sleepRandom[2]))
+    Sleep(randomFn(RunConfig.sleepRandom[1], RunConfig.sleepRandom[2]))
   until not IsMouseButtonPressed(1)
 end
 
