@@ -1,3 +1,4 @@
+---@diagnostic disable: duplicate-set-field
 ---@diagnostic disable: undefined-global
 --[[ Script Start ]]
 
