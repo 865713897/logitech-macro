@@ -199,6 +199,30 @@ function XkQuickAttack()
     Sleep(math.random(120, 140))
 end
 
+-- 瞬狙
+function Shunju()
+    PressMouseButton(3)
+    Sleep(math.random(30, 40))
+    ReleaseMouseButton(3)
+    Sleep(math.random(30, 40))
+    PressKey('i')
+    Sleep(math.random(20, 25))
+    ReleaseKey('i')
+    Sleep(math.random(20, 25))
+    PressKey('q')
+    Sleep(math.random(100, 110))
+    ReleaseKey('q')
+    Sleep(math.random(80, 90))
+    PressKey('q')
+    Sleep(math.random(100, 110))
+    ReleaseKey('q')
+end
+
+Config.Gkey4BindEvents = {
+    GatlingShoot,
+    Shunju
+}
+
 Config.Gkey5BindEvents = {
     GatlingStab,   -- 加特林连刺
     XkQuickAttack, -- 虚空重刀宏
@@ -233,7 +257,6 @@ function RunCmd(cmd)
         ['next'] = UpdateEventIndex,
         ['resetIndex'] = ResetEventIndex
     }
-    
 end
 
 function ModifierHandle(comboKey)
