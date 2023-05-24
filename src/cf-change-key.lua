@@ -39,32 +39,33 @@ end
 Config = {
     -- 开启宏按键
     startScript = 'capslock', -- scrolllock | capslock | numlock
-    -- 蹲键
-    ctrlKey = 'lctrl',
     -- 绑定开枪按键
     shootKey = 'i',
-    -- 开枪绑定的G键
-    shootKeyG = 4,
-    -- 三级跳绑定G键
-    tripleJumpKeyG = 11,
-    -- G键5循环事件index
-    Gkey5EventIndex = 1,
-    -- G键11循环事件index
-    Gkey11EventIndex = 1,
     -- 事件index
     eventIndex = {
+        ['4'] = 1,
         ['5'] = 1,
         ['11'] = 1
     },
-    -- 切换事件Gkey
-    GkeyChangeEvent = 10,
+    -- 绑定功能键
+    gBind = {
+        ['G4'] = 'play4',
+        ['G5'] = 'play5',
+        ['G11'] = 'play11',
+        ['lalt + G4'] = 'next4',
+        ['lalt + G5'] = 'next5',
+        ['lalt + G11'] = 'next11',
+    },
+    -- 信息
+    infos = {
+        ['4'] = { 'gatlingShoot', 'instantSpy' },
+        ['5'] = { 'gatlingStab', 'xkQuickAttack' },
+        ['11'] = { 'tripleJump', 'doubleJump' }
+    }
 }
 
--- 绑定功能键
-Gbind = {
-    ['lalt + G5'] = '5-next',
-    ['lalt + G11'] = '11-next'
-}
+-- 函数绑定
+FncEventBind = {}
 
 -- 可用修饰符列表
 ModifierList = { 'lalt', 'lctrl', 'lshift', 'ralt', 'rctrl', 'rshift' }
@@ -72,12 +73,12 @@ ModifierList = { 'lalt', 'lctrl', 'lshift', 'ralt', 'rctrl', 'rshift' }
 EnablePrimaryMouseButtonEvents(true)
 
 -- 是否开启宏
-function IsStartScript()
+Config.isStartScript = function()
     return IsKeyLockOn(Config.startScript)
 end
 
 -- 判断按键是否按下
-function IsPressed(key)
+Config.isPressed = function(key)
     if (type(key) == 'number' and key <= 5 and key >= 1) then
         return IsMouseButtonPressed(key)
     elseif type(key) == 'string' then
@@ -88,7 +89,7 @@ function IsPressed(key)
 end
 
 -- 加特林点击
-function GatlingShoot()
+Config.gatlingShoot = function(key)
     local baseDelay = 140
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
@@ -98,11 +99,11 @@ function GatlingShoot()
         Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 25)))
         ReleaseKey(Config.shootKey)
         Sleep(randomFn2(20, 30))
-    until not IsPressed(Config.shootKeyG)
+    until not Config.isPressed(key)
 end
 
 -- 加特林连刺
-function GatlingStab(key)
+Config.gatlingStab = function(key)
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
@@ -113,7 +114,7 @@ function GatlingStab(key)
         -- 点击绑定攻击键
         PressAndReleaseKey(Config.shootKey)
         Sleep(randomFn2(40, 73))
-    until not IsPressed(key)
+    until not Config.isPressed(key)
 end
 
 -- 闪蹲
@@ -122,15 +123,15 @@ function TapCtrl(key)
     local randomFn2 = GenerateRandomNumber()
     repeat
         math.randomseed(GetRunningTime())
-        PressKey(Config.ctrlKey)
+        PressKey('lctrl')
         Sleep(randomFn1(40, 50))
-        ReleaseKey(Config.ctrlKey)
+        ReleaseKey('lctrl')
         Sleep(randomFn2(26, 36))
-    until not IsPressed(key)
+    until not Config.isPressed(key)
 end
 
 -- 二级跳
-function DoubleJump()
+Config.doubleJump = function()
     math.randomseed(GetRunningTime())
     -- 跳跳蹲
     PressKey('spacebar')
@@ -147,7 +148,7 @@ function DoubleJump()
 end
 
 -- 三级跳
-function TripleJump()
+Config.tripleJump = function()
     math.randomseed(GetRunningTime())
     PressKey('w')
     Sleep(50)
@@ -183,7 +184,7 @@ function TripleJump()
 end
 
 -- 虚空重刀宏
-function XkQuickAttack()
+Config.xkQuickAttack = function(key)
     math.randomseed(GetRunningTime())
     PressMouseButton(3)
     Sleep(math.random(45, 55))
@@ -200,7 +201,7 @@ function XkQuickAttack()
 end
 
 -- 瞬狙
-function Shunju()
+Config.instantSpy = function(key)
     PressMouseButton(3)
     Sleep(math.random(30, 40))
     ReleaseMouseButton(3)
@@ -218,93 +219,106 @@ function Shunju()
     ReleaseKey('q')
 end
 
-Config.Gkey4BindEvents = {
-    GatlingShoot,
-    Shunju
-}
-
-Config.Gkey5BindEvents = {
-    GatlingStab,   -- 加特林连刺
-    XkQuickAttack, -- 虚空重刀宏
-}
-
-Config.Gkey11BindEvents = {
-    TripleJump -- 三级跳
-}
-
-BindEvents = {
-    ['5'] = { GatlingStab, XkQuickAttack },
-    ['11'] = { TripleJump, DoubleJump }
-}
-
 -- 更新event index
-function UpdateEventIndex(key)
-    local len = #BindEvents[key]
+Config.updateEventIndex = function(key)
+    local len = #FncEventBind[key]
     local nextIndex = (Config.eventIndex[key] + 1) % (len + 1)
     local realIndex = nextIndex == 0 and 1 or nextIndex
     Config.eventIndex[key] = realIndex
 end
 
 -- 重置event index
-function ResetEventIndex()
+Config.resetEventIndex = function()
     for k, v in pairs(Config.eventIndex) do
         Config.eventIndex[k] = 1
     end
 end
 
-function RunCmd(cmd)
-    local cmdSet = {
-        ['next'] = UpdateEventIndex,
-        ['resetIndex'] = ResetEventIndex
-    }
+-- 输出当前
+Config.outputMessage = function()
+    ClearLog()
+    OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
+    for k, v in pairs(Config.infos) do
+        local index = Config.eventIndex[k]
+        OutputLogMessage('key' .. k .. 'events:   ' .. v[index])
+    end
+    OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
 end
 
-function ModifierHandle(comboKey)
-    local cmd = Gbind[comboKey]
-    if (cmd) then
-        RunConfig.runCmd(cmd)
+Config.runCmd = function(cmd)
+    local cmdSet = {
+        ['next4'] = function()
+            Config.updateEventIndex('4')
+        end,
+        ['next5'] = function()
+            Config.updateEventIndex('5')
+        end,
+        ['next11'] = function()
+            Config.updateEventIndex('11')
+        end,
+        ['play4'] = function()
+            local _eventIndex = Config.eventIndex['4'];
+            FncEventBind['4'][_eventIndex](4)
+        end,
+        ['play5'] = function()
+            local _eventIndex = Config.eventIndex['5'];
+            FncEventBind['5'][_eventIndex](5)
+        end,
+        ['play11'] = function()
+            local _eventIndex = Config.eventIndex['11'];
+            FncEventBind['11'][_eventIndex]()
+        end,
+        ['resetIndex'] = Config.resetEventIndex
+    }
+    if (cmdSet[cmd]) then
+        cmdSet[cmd]()
     end
 end
+
+Config.modifierHandle = function(comboKey)
+    local cmd = Config.gBind[comboKey]
+    if (cmd) then
+        Config.runCmd(cmd)
+    end
+end
+
+-- 初始化
+Config.init = function()
+    for k, v in pairs(Config.infos) do
+        local t = {};
+        for i = 1, #v do
+            table.insert(t, Config[v[i]])
+        end
+        FncEventBind[k] = t;
+    end
+end
+
+Config.init()
 
 -- 监听事件
 function OnEvent(event, arg, family)
     -- 重置arg
     if arg == 1 then
         arg = 4
-    else
+    elseif arg == 4 then
         arg = 1
     end
     if (event == 'MOUSE_BUTTON_PRESSED' and arg >= 3 and arg <= 11 and family == 'mouse') then
         -- 监听3-11的可绑定按键
-        local modifier = 'G' .. arg
-        for i = 1, #ModifierList do
-            if (IsModifierPressed(ModifierList[i])) then
-                -- 其中某一个修饰符被按下
-                modifier = ModifierList[i] .. ' + ' .. modifier
-                break
+        if (Config.isStartScript()) then
+            local modifier = 'G' .. arg
+            for i = 1, #ModifierList do
+                if (Config.isPressed(ModifierList[i])) then
+                    -- 其中某一个修饰符被按下
+                    modifier = ModifierList[i] .. ' + ' .. modifier
+                    break
+                end
             end
+            Config.modifierHandle(modifier)
+        elseif arg == 4 then
+            PressKey(Config.shootKey)
         end
+    elseif (event == 'MOUSE_BUTTON_RELEASED' and arg == 4 and family == 'mouse' and not Config.isStartScript()) then
+        ReleaseKey(Config.shootKey)
     end
-    -- if (IsPressed(4) and IsStartScript() and newArg == 4) then
-    --     -- shootKeyG按下并且打开脚本，执行加特林连点
-    --     GatlingShoot()
-    -- elseif (IsPressed(4) and newArg == 4) then
-    --     -- shootKeyG按下，但未开启脚本，执行绑定按键按下操作
-    --     PressKey(Config.shootKey)
-    -- elseif (not IsPressed(4) and newArg == 4) then
-    --     -- shootKeyG释放
-    --     ReleaseKey(Config.shootKey)
-    -- elseif (IsPressed(5) and newArg == 5 and IsStartScript()) then
-    --     -- G5被按下，根据index执行Gkey5BindEvents中的事件
-    --     Config.Gkey5BindEvents[Config.Gkey5EventIndex](5)
-    -- elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == 11) then
-    --     -- tripleJumpKeyG按下，执行三级跳脚本
-    --     Config.Gkey11BindEvents[Config.Gkey5EventIndex]()
-    -- elseif (event == 'MOUSE_BUTTON_PRESSED' and newArg == Config.GkeyChangeEvent) then
-    --     -- 循环增大index
-    --     local len = #Config.Gkey5BindEvents
-    --     local newIndex = (Config.Gkey5EventIndex + 1) % (len + 1)
-    --     local realIndex = newIndex == 0 and 1 or newIndex
-    --     Config.Gkey5EventIndex = realIndex
-    -- end
 end
