@@ -68,7 +68,7 @@ Config = {
 FncEventBind = {}
 
 -- 可用修饰符列表
-ModifierList = { 'lalt', 'lctrl', 'lshift', 'ralt', 'rctrl', 'rshift' }
+ModifierList = { 'lalt', 'ralt', 'rctrl', 'rshift' }
 
 EnablePrimaryMouseButtonEvents(true)
 
@@ -238,10 +238,13 @@ end
 Config.outputMessage = function()
     ClearLog()
     OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
+    OutputLogMessage('\n')
     for k, v in pairs(Config.infos) do
         local index = Config.eventIndex[k]
-        OutputLogMessage('key' .. k .. 'events:   ' .. v[index])
+        OutputLogMessage('        key' .. k .. 'events:   ' .. v[index])
+        OutputLogMessage('\n')
     end
+    OutputLogMessage('\n')
     OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
 end
 
@@ -280,6 +283,7 @@ Config.modifierHandle = function(comboKey)
     if (cmd) then
         Config.runCmd(cmd)
     end
+    Config.outputMessage()
 end
 
 -- 初始化
@@ -305,17 +309,20 @@ function OnEvent(event, arg, family)
     end
     if (event == 'MOUSE_BUTTON_PRESSED' and arg >= 3 and arg <= 11 and family == 'mouse') then
         -- 监听3-11的可绑定按键
-        if (Config.isStartScript()) then
-            local modifier = 'G' .. arg
-            for i = 1, #ModifierList do
-                if (Config.isPressed(ModifierList[i])) then
-                    -- 其中某一个修饰符被按下
-                    modifier = ModifierList[i] .. ' + ' .. modifier
-                    break
-                end
+        local modifier = 'G' .. arg
+        for i = 1, #ModifierList do
+            if (Config.isPressed(ModifierList[i])) then
+                -- 其中某一个修饰符被按下
+                modifier = ModifierList[i] .. ' + ' .. modifier
+                break
             end
+        end
+        local isChange = string.find(modifier, '+')
+        if (isChange) then
             Config.modifierHandle(modifier)
-        elseif arg == 4 then
+        elseif (Config.isStartScript()) then
+            Config.modifierHandle(modifier)
+        elseif (arg == 4) then
             PressKey(Config.shootKey)
         end
     elseif (event == 'MOUSE_BUTTON_RELEASED' and arg == 4 and family == 'mouse' and not Config.isStartScript()) then
