@@ -51,6 +51,7 @@ Config = {
     gBind = {
         ['G4'] = 'play4',
         ['G5'] = 'play5',
+        ['G10'] = 'resetIndex',
         ['G11'] = 'play11',
         ['lalt + G4'] = 'next4',
         ['lalt + G5'] = 'next5',
@@ -58,7 +59,7 @@ Config = {
     },
     -- 信息
     infos = {
-        ['4'] = { 'gatlingShoot', 'instantSpy' },
+        ['4'] = { 'gatlingShoot', 'hudieShoot', 'instantSpy' },
         ['5'] = { 'gatlingStab', 'xkQuickAttack' },
         ['11'] = { 'tripleJump', 'doubleJump' }
     }
@@ -90,20 +91,26 @@ end
 
 -- 加特林点击
 Config.gatlingShoot = function(key)
+    if (not IsMouseButtonPressed(key)) then
+        return
+    end
     local baseDelay = 140
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
         math.randomseed(GetRunningTime())
         PressKey(Config.shootKey)
-        Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 25)))
+        Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 20)))
         ReleaseKey(Config.shootKey)
-        Sleep(randomFn2(20, 30))
+        Sleep(randomFn2(22, 32))
     until not Config.isPressed(key)
 end
 
 -- 加特林连刺
 Config.gatlingStab = function(key)
+    if (not IsMouseButtonPressed(key)) then
+        return
+    end
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
@@ -185,6 +192,9 @@ end
 
 -- 虚空重刀宏
 Config.xkQuickAttack = function(key)
+    if (not IsMouseButtonPressed(key)) then
+        return
+    end
     math.randomseed(GetRunningTime())
     PressMouseButton(3)
     Sleep(math.random(45, 55))
@@ -217,6 +227,20 @@ Config.instantSpy = function(key)
     PressKey('q')
     Sleep(math.random(100, 110))
     ReleaseKey('q')
+end
+
+-- 蝴蝶
+Config.hudieShoot = function()
+    local baseDelay = 70
+    local randomFn1 = GenerateRandomNumber()
+    local randomFn2 = GenerateRandomNumber()
+    repeat
+        math.randomseed(GetRunningTime())
+        PressKey(Config.shootKey)
+        Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 25)))
+        ReleaseKey(Config.shootKey)
+        Sleep(randomFn2(20, 30))
+    until not Config.isPressed(key)
 end
 
 -- 更新event index
@@ -306,6 +330,10 @@ function OnEvent(event, arg, family)
         arg = 4
     elseif arg == 4 then
         arg = 1
+    elseif arg == 2 then
+        arg = 3
+    elseif arg == 3 then
+        arg = 2
     end
     if (event == 'MOUSE_BUTTON_PRESSED' and arg >= 3 and arg <= 11 and family == 'mouse') then
         -- 监听3-11的可绑定按键
