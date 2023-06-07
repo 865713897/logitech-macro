@@ -59,7 +59,7 @@ Config = {
     },
     -- 信息
     infos = {
-        ['4'] = { 'gatlingShoot', 'hudieShoot', 'instantSpy' },
+        ['4'] = { 'gatlingShoot', 'instantSpy' },
         ['5'] = { 'gatlingStab', 'xkQuickAttack' },
         ['11'] = { 'tripleJump', 'doubleJump' }
     }
@@ -94,7 +94,7 @@ Config.gatlingShoot = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
-    local baseDelay = 140
+    local baseDelay = 135
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
@@ -102,7 +102,7 @@ Config.gatlingShoot = function(key)
         PressKey(Config.shootKey)
         Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 20)))
         ReleaseKey(Config.shootKey)
-        Sleep(randomFn2(22, 32))
+        Sleep(randomFn2(20, 36))
     until not Config.isPressed(key)
 end
 
@@ -120,7 +120,7 @@ Config.gatlingStab = function(key)
         Sleep(randomFn1(270, 280))
         -- 点击绑定攻击键
         PressAndReleaseKey(Config.shootKey)
-        Sleep(randomFn2(40, 73))
+        Sleep(randomFn2(40, 63))
     until not Config.isPressed(key)
 end
 
