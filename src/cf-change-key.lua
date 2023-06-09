@@ -94,7 +94,7 @@ Config.gatlingShoot = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
-    local baseDelay = 135
+    local baseDelay = 144
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
@@ -102,7 +102,7 @@ Config.gatlingShoot = function(key)
         PressKey(Config.shootKey)
         Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 20)))
         ReleaseKey(Config.shootKey)
-        Sleep(randomFn2(20, 36))
+        Sleep(randomFn2(22, 36))
     until not Config.isPressed(key)
 end
 
