@@ -94,15 +94,15 @@ Config.gatlingShoot = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
-    local baseDelay = 144
+    local baseDelay = 140
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
         math.randomseed(GetRunningTime())
         PressKey(Config.shootKey)
-        Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 20)))
+        Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 25)))
         ReleaseKey(Config.shootKey)
-        Sleep(randomFn2(22, 36))
+        Sleep(randomFn2(20, 30))
     until not Config.isPressed(key)
 end
 
@@ -212,20 +212,23 @@ end
 
 -- 瞬狙
 Config.instantSpy = function(key)
+    if (not IsMouseButtonPressed(key)) then
+        return
+    end
     PressMouseButton(3)
-    Sleep(math.random(30, 40))
+    Sleep(math.random(20, 30))
     ReleaseMouseButton(3)
-    Sleep(math.random(30, 40))
+    Sleep(math.random(20, 30))
     PressKey('i')
-    Sleep(math.random(20, 25))
+    Sleep(math.random(20, 30))
     ReleaseKey('i')
-    Sleep(math.random(20, 25))
+    Sleep(math.random(20, 30))
     PressKey('q')
-    Sleep(math.random(100, 110))
+    Sleep(math.random(70, 86))
     ReleaseKey('q')
-    Sleep(math.random(80, 90))
+    Sleep(math.random(76, 88))
     PressKey('q')
-    Sleep(math.random(100, 110))
+    Sleep(math.random(70, 86))
     ReleaseKey('q')
 end
 
