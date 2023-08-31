@@ -100,9 +100,9 @@ Config.gatlingShoot = function(key)
     repeat
         math.randomseed(GetRunningTime())
         PressKey(Config.shootKey)
-        Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 25)))
+        Sleep(randomFn1(baseDelay, baseDelay + 26))
         ReleaseKey(Config.shootKey)
-        Sleep(randomFn2(20, 36))
+        Sleep(randomFn2(18, 34))
     until not Config.isPressed(key)
 end
 
