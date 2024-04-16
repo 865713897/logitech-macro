@@ -12,6 +12,16 @@ function math.round(number)
     end
 end
 
+-- 分割字符串，返回数组
+function string.split(str, separator)
+    local result = {}
+    local pattern = string.format('([^%s]+)', separator)
+    for match in string.gmatch(str, pattern) do
+        table.insert(result, match)
+    end
+    return result
+end
+
 -- 保留小数
 function KeepDecimal(num, n)
     n = n or 2
@@ -49,7 +59,8 @@ ChineseTextMap = {
     ['placeCard1'] = '挑战-放置卡片(位置1)',
     ['placeCard2'] = '挑战-放置卡片(位置2)',
     ['placeCard3'] = '挑战-放置卡片(位置3)',
-    ['placeCard4'] = '挑战-放置卡片(位置4)'
+    ['placeCard4'] = '挑战-放置卡片(位置4)',
+    ['updateCardIndex'] = '更新卡片索引位置'
 }
 
 -- 可用修饰符列表
@@ -65,11 +76,12 @@ Config = {
     gameMode = { 'zombie', 'pve', 'sport' },
     -- 绑定功能按键
     gBind = {
-        ['G4'] = 'play4',
-        ['lalt + G4'] = 'next4',
+        ['G4'] = 'play_4',
+        ['lalt + G4'] = 'next_4',
         ['ralt + G4'] = 'changeMode',
-        ['G5'] = 'play5',
-        ['lalt + G5'] = 'next5',
+        ['G5'] = 'play_5',
+        ['lalt + G5'] = 'next_5',
+        ['G7'] = 'play_7'
     },
     -- 按键事件默认下标
     defaultEventIndex = {
@@ -84,12 +96,20 @@ Config = {
     -- 挑战模式
     pve = {
         ['4'] = { 'pressAndReleaseKey' },
-        ['5'] = { 'placeCard1', 'placeCard2', 'placeCard3', 'placeCard4' }
+        ['5'] = { 'placeCard1', 'placeCard2', 'placeCard3', 'placeCard4' },
+        ['7'] = { 'updateCardIndex' }
     },
     -- 竞技模式
     sport = {
         ['4'] = { 'instantSpy' },
         ['5'] = { 'quickCtrl' }
+    },
+    -- 挑战模式卡片位置
+    cardPosition = {
+        ['1'] = { { -120, -140, 0, 0 }, { 180, 200, 73, 80 } },
+        ['2'] = { { -40, -60, 0, 0 }, { 130, 150, 73, 80 } },
+        ['3'] = { { 10, 20, 0, 0 }, { 110, 120, 73, 80 } },
+        ['4'] = { { 80, 90, 0, 0 }, { 40, 50, 73, 80 } }
     }
 }
 
@@ -104,10 +124,8 @@ CF = {
     },
     -- 事件函数绑定列表
     eventFuncList = {},
-    -- 卡片点位信息
-    cardPoints = {
-
-    }
+    -- 目前处于第几张卡片
+    cardIndex = 1
 }
 
 EnablePrimaryMouseButtonEvents(true)
@@ -222,19 +240,19 @@ CF.placeCard1 = function(key)
     math.randomseed(GetRunningTime())
     local randomFn = GenerateRandomNumber()
     PressAndReleaseKey('e')
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(0, randomFn(3, 6))
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(randomFn(-120, -140), 0)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(randomFn(180, 200), 0)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(0, randomFn(73, 80))
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
 end
 
 -- 放置卡片2
@@ -245,19 +263,19 @@ CF.placeCard2 = function(key)
     math.randomseed(GetRunningTime())
     local randomFn = GenerateRandomNumber()
     PressAndReleaseKey('e')
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(0, randomFn(3, 6))
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(randomFn(-40, -60), 0)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(randomFn(130, 150), 0)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(0, randomFn(73, 80))
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
 end
 
 -- 放置卡片3
@@ -268,19 +286,19 @@ CF.placeCard3 = function(key)
     math.randomseed(GetRunningTime())
     local randomFn = GenerateRandomNumber()
     PressAndReleaseKey('e')
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(0, randomFn(3, 6))
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(randomFn(10, 20), 0)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(randomFn(110, 120), 0)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(0, randomFn(73, 80))
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
 end
 
 -- 放置卡片4
@@ -291,19 +309,19 @@ CF.placeCard4 = function(key)
     math.randomseed(GetRunningTime())
     local randomFn = GenerateRandomNumber()
     PressAndReleaseKey('e')
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(0, randomFn(3, 6))
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(randomFn(80, 90), 0)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(randomFn(40, 50), 0)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     MoveMouseRelative(0, randomFn(73, 80))
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
 end
 
 -- 长按攻击键键-再次点击松开
@@ -323,7 +341,7 @@ CF.pressAndReleaseKey = function(key)
         PressKey(Config.shootKey)
         CF.hasPressed = true
     end
-    Sleep(randomFn(40, 60))
+    Sleep(randomFn(50, 70))
 end
 
 -- 切换模式
@@ -361,29 +379,27 @@ CF.updateEventIndex = function(key)
     CF.outputMessage()
 end
 
+-- 更新卡片索引位置
+CF.updateCardIndex = function()
+    local cardNums = #Config.cardPosition
+    local nextIndex = (CF.cardIndex + 1) % (cardNums + 1)
+    local realIndex = nextIndex == 0 and 1 or nextIndex
+    CF.cardIndex = realIndex
+    -- CF.outputMessage()
+end
+
 -- 运行命令
 CF.runCmd = function(cmd)
-    local cmdSet = {
-        ['next4'] = function()
-            CF.updateEventIndex('4')
-        end,
-        ['next5'] = function()
-            CF.updateEventIndex('5')
-        end,
-        ['play4'] = function()
-            local _eventIndex = CF.eventIndex['4'];
-            CF.eventFuncList['4'][_eventIndex](4)
-        end,
-        ['play5'] = function()
-            local _eventIndex = CF.eventIndex['5'];
-            CF.eventFuncList['5'][_eventIndex](5)
-        end,
-        ['changeMode'] = function()
-            CF.changeGameMode()
-        end
-    }
-    if (cmdSet[cmd]) then
-        cmdSet[cmd]()
+    local cmdGroup = string.split(cmd, '_')
+    local type = cmdGroup[0]
+    local key = cmdGroup[1]
+    if type == 'next' then
+        CF.updateEventIndex(key)
+    elseif type == 'play' then
+        local _eventIndex = CF.eventIndex[key]
+        CF.eventFuncList[key][_eventIndex](key)
+    elseif type == 'changeMode' then
+        CF.changeGameMode()
     end
 end
 
