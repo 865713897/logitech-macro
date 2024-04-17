@@ -107,7 +107,7 @@ Config = {
     },
     -- 挑战模式
     pve = {
-        ['1'] = { 'pressAndReleaseKey' },
+        ['4'] = { 'pressAndReleaseKey' },
         ['5'] = { 'dropCard' },
         ['7'] = { 'updateCardIndex' }
     },
@@ -116,7 +116,7 @@ Config = {
         { { -120, -140, 0, 0 }, { 180, 200, 70, 76 } },
         { { -40, -60, 0, 0 },   { 130, 150, 70, 76 } },
         { { 10, 20, 0, 0 },     { 110, 120, 70, 76 } },
-        { { 80, 90, 0, 0 },     { 40, 50, 70, 76 } }
+        { { 76, 90, 0, 0 },     { 40, 50, 70, 76 } }
     }
 }
 
@@ -161,27 +161,30 @@ CF.updateEventIndex = function(key)
     CF.eventIndex[key] = realIndex
 end
 
+-- 更新卡片索引位置
+CF.updateCardIndex = function()
+    local cardNums = #Config.cardPosition
+    local nextIndex = (CF.cardIndex + 1) % (cardNums + 1)
+    local realIndex = nextIndex == 0 and 1 or nextIndex
+    CF.cardIndex = realIndex
+    CF.outputMessage()
+end
+
 -- 加特林速点
 CF.gatlingQuickShoot = function(key)
-    if (not IsMouseButtonPressed(key)) then
-        return
-    end
     math.randomseed(GetRunningTime())
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
         PressMouseButton(1)
-        Sleep(randomFn1(78, 96))
-        ReleaseMouseButton(1)
-        Sleep(randomFn2(20, 36))
+        Sleep(randomFn1(82, 104))
+        ReleaseKey(Config.shootKey)
+        Sleep(randomFn2(20, 38))
     until not CF.isPressed(key)
 end
 
 -- 加特林连刺
 CF.gatlingStab = function(key)
-    if (not IsMouseButtonPressed(key)) then
-        return
-    end
     math.randomseed(GetRunningTime())
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
@@ -215,6 +218,7 @@ CF.xkQuickAttack = function(key)
     Sleep(math.random(120, 140))
 end
 
+-- 挑战放置卡片
 CF.dropCard = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
@@ -259,6 +263,20 @@ CF.pressAndReleaseKey = function(key)
     Sleep(randomFn(50, 70))
 end
 
+-- 切换模式
+CF.changeGameMode = function()
+    local len = #Config.gameMode
+    local nextIndex = (CF.gameModeIndex + 1) % (len + 1)
+    local realIndex = nextIndex == 0 and 1 or nextIndex
+    CF.eventFuncList = {}
+    CF.gameModeIndex = realIndex
+    for k, v in pairs(Config.defaultEventIndex) do
+        CF.eventIndex[k] = v
+    end
+    CF.cardIndex = 1
+    CF.initEventFuncList()
+end
+
 -- 输出当前信息
 CF.outputMessage = function()
     -- 当前游戏模式
@@ -296,25 +314,19 @@ CF.initEventFuncList = function()
     CF.outputMessage()
 end
 
--- 切换模式
-CF.changeGameMode = function()
-    local len = #Config.gameMode
-    local nextIndex = (CF.gameModeIndex + 1) % (len + 1)
-    local realIndex = nextIndex == 0 and 1 or nextIndex
-    CF.eventFuncList = {}
-    CF.gameModeIndex = realIndex
-    for k, v in pairs(Config.defaultEventIndex) do
-        CF.eventIndex[k] = v
-    end
-    CF.cardIndex = 1
-    CF.initEventFuncList()
-end
-
 -- 执行指令函数
 CF.runCmd = function(cmd)
     local cmdGroup = string.split(cmd, '_')
-    local cmdName = cmdGroup[1]
-    local cmdIndex = cmdGroup[2]
+    local type = cmdGroup[1]
+    local key = cmdGroup[2]
+    if type == 'next' then
+        CF.updateEventIndex(key)
+    elseif type == 'play' then
+        local _eventIndex = CF.eventIndex[key]
+        CF.eventFuncList[key][_eventIndex](tonumber(key))
+    elseif type == 'changeMode' then
+        CF.changeGameMode()
+    end
 end
 
 -- 处理修饰符
@@ -326,6 +338,9 @@ CF.modifierHandler = function(modifier)
         CF.runCmd(cmd)
     end
 end
+
+-- 初始化
+CF.initEventFuncList()
 
 -- 打开对鼠标左键的监听
 EnablePrimaryMouseButtonEvents(true)
