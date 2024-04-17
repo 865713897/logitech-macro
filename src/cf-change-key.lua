@@ -1,4 +1,4 @@
----@diagnostic disable: undefined-global, duplicate-set-field
+---@diagnostic disable: undefined-global, duplicate-set-field, param-type-mismatch
 -- 自定义函数
 -- 四舍五入
 function math.round(number)
@@ -9,6 +9,35 @@ function math.round(number)
         return floor
     else
         return ceil
+    end
+end
+
+-- 分割字符串，返回数组
+function string.split(str, separator)
+    local result = {}
+    local pattern = string.format('([^%s]+)', separator)
+    for match in string.gmatch(str, pattern) do
+        table.insert(result, match)
+    end
+    return result
+end
+
+-- 获取表长度
+function GetTableLength(t)
+    local i = 0
+    for k, v in pairs(t) do
+        i = i + 1
+    end
+    return i
+end
+
+-- 保留小数
+function KeepDecimal(num, n)
+    n = n or 2
+    if (num < 0) then
+        return -(math.abs(num) - math.abs(num) % 0.1 ^ n)
+    else
+        return num - num % 0.1 ^ n
     end
 end
 
@@ -25,61 +54,96 @@ function GenerateRandomNumber()
     end
 end
 
--- 分割字符串，返回数组
-function string.split(str, separator)
-    local result = {}
-    local pattern = string.format('([^%s]+)', separator)
-    for match in string.gmatch(str, pattern) do
-        table.insert(result, match)
-    end
-    return result
-end
-
--- 用户配置
-Config = {
-    -- 开启宏按键
-    startScript = 'capslock', -- scrolllock | capslock | numlock
-    -- 绑定开枪按键
-    shootKey = 'i',
-    -- 事件index
-    eventIndex = {
-        ['4'] = 1,
-        ['5'] = 1,
-        ['11'] = 1
-    },
-    -- 绑定功能键
-    gBind = {
-        ['G4'] = 'play4',
-        ['G5'] = 'play5',
-        ['G10'] = 'resetIndex',
-        ['G11'] = 'play11',
-        ['lalt + G4'] = 'next4',
-        ['lalt + G5'] = 'next5',
-        ['lalt + G11'] = 'next11',
-    },
-    -- 信息
-    infos = {
-        ['4'] = { 'gatlingShoot', 'instantSpy' },
-        ['5'] = { 'gatlingStab', 'xkQuickAttack' },
-        ['11'] = { 'tripleJump', 'doubleJump' }
-    }
+-- 中文对照表
+ChineseTextMap = {
+    ['zombie'] = '生化模式',
+    ['pve'] = '挑战模式',
+    ['sport'] = '竞技模式',
+    ['gatlingQuickShoot'] = '加特林速点宏',
+    ['quickCtrl'] = '闪蹲宏',
+    ['gatlingStab'] = '加特林连刺宏',
+    ['xkQuickAttack'] = '虚空重刀宏',
+    ['instantSpy'] = '一键瞬狙宏',
+    ['pressAndReleaseKey'] = '挑战攻击释放双手',
+    ['dropCard'] = '挑战-放置卡片',
+    ['updateCardIndex'] = '更新卡片索引位置'
 }
-
--- 函数绑定
-FncEventBind = {}
 
 -- 可用修饰符列表
 ModifierList = { 'lalt', 'ralt', 'rctrl', 'rshift' }
 
+-- 用户配置信息
+Config = {
+    -- 开启宏按键配置
+    startMacroKey = 'capslock', -- scrolllock | capslock | numlock
+    -- 射击按键配置
+    shootKey = 'i',
+    -- 游戏模式列表
+    gameMode = {
+        'zombie',
+        'pve',
+        -- 'sport'
+    },
+    -- 绑定功能按键
+    gBind = {
+        ['G4'] = 'play_4',
+        ['lalt + G4'] = 'next_4',
+        ['ralt + G5'] = 'changeMode',
+        ['G5'] = 'play_5',
+        ['lalt + G5'] = 'next_5',
+        ['G7'] = 'play_7'
+    },
+    -- 按键事件默认下标
+    defaultEventIndex = {
+        ['4'] = 1,
+        ['5'] = 1,
+        ['7'] = 1
+    },
+    -- 生化模式绑定按键函数信息
+    zombie = {
+        ['4'] = { 'gatlingQuickShoot' },
+        ['5'] = { 'gatlingStab', 'xkQuickAttack' }
+    },
+    -- 挑战模式
+    pve = {
+        ['4'] = { 'pressAndReleaseKey' },
+        ['5'] = { 'dropCard' },
+        ['7'] = { 'updateCardIndex' }
+    },
+    -- 竞技模式
+    sport = {
+        ['4'] = { 'instantSpy' },
+        ['5'] = { 'quickCtrl' }
+    },
+    -- 挑战模式卡片位置
+    cardPosition = {
+        { { -120, -140, 0, 0 }, { 180, 200, 70, 76 } },
+        { { -40, -60, 0, 0 },   { 130, 150, 70, 76 } },
+        { { 10, 20, 0, 0 },     { 110, 120, 70, 76 } },
+        { { 80, 90, 0, 0 },     { 40, 50, 70, 76 } }
+    }
+}
+
+-- 游戏运行时配置
+CF = {
+    -- 游戏模式下标
+    gameModeIndex = 2,
+    -- 按键事件下标
+    eventIndex = {
+        ['4'] = 1,
+        ['5'] = 1,
+        ['7'] = 1
+    },
+    -- 事件函数绑定列表
+    eventFuncList = {},
+    -- 目前处于第几张卡片
+    cardIndex = 1
+}
+
 EnablePrimaryMouseButtonEvents(true)
 
--- 是否开启宏
-Config.isStartScript = function()
-    return IsKeyLockOn(Config.startScript)
-end
-
 -- 判断按键是否按下
-Config.isPressed = function(key)
+CF.isPressed = function(key)
     if (type(key) == 'number' and key <= 5 and key >= 1) then
         return IsMouseButtonPressed(key)
     elseif type(key) == 'string' then
@@ -89,109 +153,66 @@ Config.isPressed = function(key)
     end
 end
 
--- 加特林点击
-Config.gatlingShoot = function(key)
+-- 一键瞬狙
+CF.instantSpy = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
-    local baseDelay = 140
+    math.randomseed(GetRunningTime())
+    local randomFn = GenerateRandomNumber()
+    PressMouseButton(3)
+    Sleep(randomFn(20, 30))
+    ReleaseMouseButton(3)
+    Sleep(randomFn(20, 30))
+    PressKey('i')
+    Sleep(randomFn(20, 30))
+    ReleaseKey('i')
+    Sleep(randomFn(20, 30))
+    PressKey('q')
+    Sleep(randomFn(70, 86))
+    ReleaseKey('q')
+    Sleep(randomFn(76, 88))
+    PressKey('q')
+    Sleep(randomFn(70, 86))
+    ReleaseKey('q')
+end
+
+-- 加特林速点
+CF.gatlingQuickShoot = function(key)
+    if (not IsMouseButtonPressed(key)) then
+        return
+    end
+    math.randomseed(GetRunningTime())
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
-        math.randomseed(GetRunningTime())
         PressKey(Config.shootKey)
-        Sleep(randomFn1(baseDelay, baseDelay + 26))
+        Sleep(randomFn1(78, 96))
         ReleaseKey(Config.shootKey)
-        Sleep(randomFn2(18, 34))
-    until not Config.isPressed(key)
+        Sleep(randomFn2(20, 36))
+    until not CF.isPressed(key)
 end
 
 -- 加特林连刺
-Config.gatlingStab = function(key)
+CF.gatlingStab = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
+    math.randomseed(GetRunningTime())
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
-        math.randomseed(GetRunningTime())
         -- 点击鼠标右键
         PressAndReleaseMouseButton(3)
         Sleep(randomFn1(270, 280))
         -- 点击绑定攻击键
         PressAndReleaseKey(Config.shootKey)
         Sleep(randomFn2(40, 63))
-    until not Config.isPressed(key)
+    until not CF.isPressed(key)
 end
 
--- 闪蹲
-function TapCtrl(key)
-    local randomFn1 = GenerateRandomNumber()
-    local randomFn2 = GenerateRandomNumber()
-    repeat
-        math.randomseed(GetRunningTime())
-        PressKey('lctrl')
-        Sleep(randomFn1(40, 50))
-        ReleaseKey('lctrl')
-        Sleep(randomFn2(26, 36))
-    until not Config.isPressed(key)
-end
-
--- 二级跳
-Config.doubleJump = function()
-    math.randomseed(GetRunningTime())
-    -- 跳跳蹲
-    PressKey('spacebar')
-    Sleep(math.random(137, 139))
-    ReleaseKey('spacebar')
-    Sleep(math.random(490, 495))
-    PressKey('spacebar')
-    Sleep(math.random(137, 139))
-    ReleaseKey('spacebar')
-    Sleep(math.random(94, 96))
-    PressKey('lctrl')
-    Sleep(math.random(60, 65))
-    ReleaseKey('lctrl')
-end
-
--- 三级跳
-Config.tripleJump = function()
-    math.randomseed(GetRunningTime())
-    PressKey('w')
-    Sleep(50)
-    PressKey('s')
-    Sleep(500)
-    PressKey('lctrl')
-    Sleep(90)
-    ReleaseKey('lctrl')
-    Sleep(90)
-    PressKey('lctrl')
-    Sleep(90)
-    ReleaseKey('lctrl')
-    Sleep(90)
-    PressKey('lctrl')
-    Sleep(90)
-    ReleaseKey('lctrl')
-    Sleep(90)
-    PressKey('lctrl')
-    Sleep(90)
-    ReleaseKey('lctrl')
-    Sleep(200)
-    PressKey('spacebar')
-    Sleep(math.random(135, 137))
-    ReleaseKey('spacebar')
-    Sleep(math.random(95, 97))
-    PressKey('lctrl')
-    Sleep(math.random(62, 64))
-    ReleaseKey('lctrl')
-    Sleep(3)
-    ReleaseKey('s')
-    Sleep(2)
-    ReleaseKey('w')
-end
-
--- 虚空重刀宏
-Config.xkQuickAttack = function(key)
+-- 虚空重刀宏i
+CF.xkQuickAttack = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
@@ -210,121 +231,162 @@ Config.xkQuickAttack = function(key)
     Sleep(math.random(120, 140))
 end
 
--- 瞬狙
-Config.instantSpy = function(key)
-    if (not IsMouseButtonPressed(key)) then
-        return
-    end
-    PressMouseButton(3)
-    Sleep(math.random(20, 30))
-    ReleaseMouseButton(3)
-    Sleep(math.random(20, 30))
-    PressKey('i')
-    Sleep(math.random(20, 30))
-    ReleaseKey('i')
-    Sleep(math.random(20, 30))
-    PressKey('q')
-    Sleep(math.random(70, 86))
-    ReleaseKey('q')
-    Sleep(math.random(76, 88))
-    PressKey('q')
-    Sleep(math.random(70, 86))
-    ReleaseKey('q')
-end
-
--- 蝴蝶
-Config.hudieShoot = function()
-    local baseDelay = 70
+-- 闪蹲
+CF.quickCtrl = function(key)
+    math.randomseed(GetRunningTime())
     local randomFn1 = GenerateRandomNumber()
     local randomFn2 = GenerateRandomNumber()
     repeat
-        math.randomseed(GetRunningTime())
-        PressKey(Config.shootKey)
-        Sleep(randomFn1(math.random(baseDelay, baseDelay + 10), math.random(baseDelay + 15, baseDelay + 25)))
+        PressKey('lctrl')
+        Sleep(randomFn1(40, 68))
+        ReleaseKey('lctrl')
+        Sleep(randomFn2(26, 46))
+    until not CF.isPressed(key)
+end
+
+CF.dropCard = function(key)
+    if (not IsMouseButtonPressed(key)) then
+        return
+    end
+    local index = CF.cardIndex or 1
+    local curPosition = Config.cardPosition[index]
+    local pointOne = curPosition[1]
+    local pointTwo = curPosition[2]
+    math.randomseed(GetRunningTime())
+    local randomFn = GenerateRandomNumber()
+    PressAndReleaseKey('e')
+    Sleep(randomFn(50, 70))
+    MoveMouseRelative(0, randomFn(3, 6))
+    Sleep(randomFn(50, 70))
+    MoveMouseRelative(randomFn(pointOne[1], pointOne[2]), 0)
+    Sleep(randomFn(50, 70))
+    PressAndReleaseMouseButton(1)
+    Sleep(randomFn(50, 70))
+    MoveMouseRelative(randomFn(pointTwo[1], pointTwo[2]), randomFn(pointTwo[3], pointTwo[4]))
+    Sleep(randomFn(50, 70))
+    PressAndReleaseMouseButton(1)
+    Sleep(randomFn(50, 70))
+end
+
+-- 长按攻击键键-再次点击松开
+CF.pressAndReleaseKey = function(key)
+    if (not IsMouseButtonPressed(key)) then
+        return
+    end
+    local hasPressed = CF.hasPressed or false
+    math.randomseed(GetRunningTime())
+    local randomFn = GenerateRandomNumber()
+    if (hasPressed) then
         ReleaseKey(Config.shootKey)
-        Sleep(randomFn2(20, 30))
-    until not Config.isPressed(key)
+        CF.hasPressed = false
+        Sleep(randomFn(180, 190))
+        PressAndReleaseKey('r')
+    else
+        PressKey(Config.shootKey)
+        CF.hasPressed = true
+    end
+    Sleep(randomFn(50, 70))
+end
+
+-- 切换模式
+CF.changeGameMode = function()
+    local len = #Config.gameMode
+    local nextIndex = (CF.gameModeIndex + 1) % (len + 1)
+    local realIndex = nextIndex == 0 and 1 or nextIndex
+    CF.eventFuncList = {}
+    CF.gameModeIndex = realIndex
+    for k, v in pairs(Config.defaultEventIndex) do
+        CF.eventIndex[k] = v
+    end
+    CF.cardIndex = 1
+    CF.initEventFuncList()
+end
+
+-- 初始化事件函数绑定列表
+CF.initEventFuncList = function()
+    -- 当前游戏模式
+    local curGameMode = Config.gameMode[CF.gameModeIndex]
+    for key, value in pairs(Config[curGameMode]) do
+        local t = {}
+        for i = 1, #value do
+            table.insert(t, CF[value[i]])
+        end
+        CF.eventFuncList[key] = t
+    end
+    CF.outputMessage()
 end
 
 -- 更新event index
-Config.updateEventIndex = function(key)
-    local len = #FncEventBind[key]
-    local nextIndex = (Config.eventIndex[key] + 1) % (len + 1)
+CF.updateEventIndex = function(key)
+    local len = #CF.eventFuncList[key]
+    local nextIndex = (CF.eventIndex[key] + 1) % (len + 1)
     local realIndex = nextIndex == 0 and 1 or nextIndex
-    Config.eventIndex[key] = realIndex
+    CF.eventIndex[key] = realIndex
+    CF.outputMessage()
 end
 
--- 重置event index
-Config.resetEventIndex = function()
-    for k, v in pairs(Config.eventIndex) do
-        Config.eventIndex[k] = 1
+-- 更新卡片索引位置
+CF.updateCardIndex = function()
+    local cardNums = #Config.cardPosition
+    local nextIndex = (CF.cardIndex + 1) % (cardNums + 1)
+    local realIndex = nextIndex == 0 and 1 or nextIndex
+    CF.cardIndex = realIndex
+    CF.outputMessage()
+end
+
+-- 运行命令
+CF.runCmd = function(cmd)
+    local cmdGroup = string.split(cmd, '_')
+    local type = cmdGroup[1]
+    local key = cmdGroup[2]
+    if type == 'next' then
+        CF.updateEventIndex(key)
+    elseif type == 'play' then
+        local _eventIndex = CF.eventIndex[key]
+        CF.eventFuncList[key][_eventIndex](tonumber(key))
+    elseif type == 'changeMode' then
+        CF.changeGameMode()
     end
 end
 
--- 输出当前
-Config.outputMessage = function()
+-- 输出当前信息
+CF.outputMessage = function()
+    -- 当前游戏模式
+    local curGameMode = Config.gameMode[CF.gameModeIndex]
     ClearLog()
     OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
     OutputLogMessage('\n')
-    for k, v in pairs(Config.infos) do
-        local index = Config.eventIndex[k]
-        OutputLogMessage('        key' .. k .. 'events:   ' .. v[index])
+    OutputLogMessage('\n')
+    OutputLogMessage('      当前游戏模式:          ' .. ChineseTextMap[curGameMode])
+    OutputLogMessage('\n')
+    OutputLogMessage('\n')
+    for k, v in pairs(Config[curGameMode]) do
+        local index = CF.eventIndex[k]
+        OutputLogMessage('      按键' .. k .. '绑定事件:         ' .. ChineseTextMap[v[index]])
+        if curGameMode == 'pve' and k == '5' then
+            OutputLogMessage('(当前卡片下标:' .. CF.cardIndex .. ')')
+        end
         OutputLogMessage('\n')
     end
     OutputLogMessage('\n')
     OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
 end
 
-Config.runCmd = function(cmd)
-    local cmdSet = {
-        ['next4'] = function()
-            Config.updateEventIndex('4')
-        end,
-        ['next5'] = function()
-            Config.updateEventIndex('5')
-        end,
-        ['next11'] = function()
-            Config.updateEventIndex('11')
-        end,
-        ['play4'] = function()
-            local _eventIndex = Config.eventIndex['4'];
-            FncEventBind['4'][_eventIndex](4)
-        end,
-        ['play5'] = function()
-            local _eventIndex = Config.eventIndex['5'];
-            FncEventBind['5'][_eventIndex](5)
-        end,
-        ['play11'] = function()
-            local _eventIndex = Config.eventIndex['11'];
-            FncEventBind['11'][_eventIndex]()
-        end,
-        ['resetIndex'] = Config.resetEventIndex
-    }
-    if (cmdSet[cmd]) then
-        cmdSet[cmd]()
+-- 触发按键
+CF.modifierHandle = function(comboKey)
+    local cmd = Config.gBind[comboKey]
+    if (cmd) then
+        CF.runCmd(cmd)
     end
 end
 
-Config.modifierHandle = function(comboKey)
-    local cmd = Config.gBind[comboKey]
-    if (cmd) then
-        Config.runCmd(cmd)
-    end
-    Config.outputMessage()
+-- 检查是否开启宏
+CF.isStartMacro = function()
+    return IsKeyLockOn(Config.startMacroKey)
 end
 
 -- 初始化
-Config.init = function()
-    for k, v in pairs(Config.infos) do
-        local t = {};
-        for i = 1, #v do
-            table.insert(t, Config[v[i]])
-        end
-        FncEventBind[k] = t;
-    end
-end
-
-Config.init()
+CF.initEventFuncList()
 
 -- 监听事件
 function OnEvent(event, arg, family)
@@ -342,7 +404,7 @@ function OnEvent(event, arg, family)
         -- 监听3-11的可绑定按键
         local modifier = 'G' .. arg
         for i = 1, #ModifierList do
-            if (Config.isPressed(ModifierList[i])) then
+            if (CF.isPressed(ModifierList[i])) then
                 -- 其中某一个修饰符被按下
                 modifier = ModifierList[i] .. ' + ' .. modifier
                 break
@@ -350,13 +412,13 @@ function OnEvent(event, arg, family)
         end
         local isChange = string.find(modifier, '+')
         if (isChange) then
-            Config.modifierHandle(modifier)
-        elseif (Config.isStartScript()) then
-            Config.modifierHandle(modifier)
+            CF.modifierHandle(modifier)
+        elseif (CF.isStartMacro()) then
+            CF.modifierHandle(modifier)
         elseif (arg == 4) then
             PressKey(Config.shootKey)
         end
-    elseif (event == 'MOUSE_BUTTON_RELEASED' and arg == 4 and family == 'mouse' and not Config.isStartScript()) then
+    elseif (event == 'MOUSE_BUTTON_RELEASED' and arg == 4 and family == 'mouse' and not CF.isStartMacro()) then
         ReleaseKey(Config.shootKey)
     end
 end
