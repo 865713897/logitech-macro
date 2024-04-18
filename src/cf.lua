@@ -41,17 +41,27 @@ function KeepDecimal(num, n)
     end
 end
 
--- 返回不重复随机数方法
-function GenerateRandomNumber()
-    local prevNum = 0
-    local currentNum = 0
-    return function(min, max)
-        while (prevNum == currentNum) do
-            currentNum = math.round(min + (max - min) * math.random())
-        end
-        prevNum = currentNum
-        return currentNum
+-- 正态分布变换
+function BoxMuller(mean, stddev)
+    -- 生成两个均匀分布的随机数
+    local u1 = math.random()
+    local u2 = math.random()
+    -- 使用Box-Muller变换转换成正态分布随机数
+    local z0 = math.sqrt(-2.0 * math.log(u1)) * math.cos(2.0 * math.pi * u2)
+    -- 使用均值和标准差进行线性变换
+    return math.round(mean + z0 * stddev)
+end
+
+-- 随机数方法
+function Random(m, n)
+    math.randomseed(GetDate("%H%M%S"):reverse())
+    local mean = (m + n) / 2
+    local sigma = (n - m) / (2 * 1.645) -- 1.645 0.9500 1.2815 0.9000
+    local random = BoxMuller(mean, sigma)
+    while (random < m) do
+        random = math.round(math.random(m, n))
     end
+    return random
 end
 
 -- 中文对照表
@@ -172,29 +182,23 @@ end
 
 -- 加特林速点
 CF.gatlingQuickShoot = function(key)
-    math.randomseed(GetRunningTime())
-    local randomFn1 = GenerateRandomNumber()
-    local randomFn2 = GenerateRandomNumber()
     repeat
         PressMouseButton(1)
-        Sleep(randomFn1(82, 104))
+        Sleep(Random(100, 180))
         ReleaseKey(Config.shootKey)
-        Sleep(randomFn2(20, 38))
+        Sleep(Random(18, 32))
     until not CF.isPressed(key)
 end
 
 -- 加特林连刺
 CF.gatlingStab = function(key)
-    math.randomseed(GetRunningTime())
-    local randomFn1 = GenerateRandomNumber()
-    local randomFn2 = GenerateRandomNumber()
     repeat
         -- 点击鼠标右键
         PressAndReleaseMouseButton(3)
-        Sleep(randomFn1(270, 280))
+        Sleep(Random(270, 280))
         -- 点击绑定攻击键
         PressAndReleaseMouseButton(1)
-        Sleep(randomFn2(40, 63))
+        Sleep(Random(40, 63))
     until not CF.isPressed(key)
 end
 
@@ -203,19 +207,18 @@ CF.xkQuickAttack = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
-    math.randomseed(GetRunningTime())
     PressMouseButton(3)
-    Sleep(math.random(45, 55))
+    Sleep(Random(45, 55))
     ReleaseMouseButton(3)
-    Sleep(math.random(580, 590))
+    Sleep(Random(580, 590))
     PressKey('f')
-    Sleep(math.random(30, 40))
+    Sleep(Random(30, 40))
     ReleaseKey('f')
-    Sleep(math.random(50, 60))
+    Sleep(Random(50, 60))
     PressMouseButton(3)
-    Sleep(math.random(45, 55))
+    Sleep(Random(45, 55))
     ReleaseMouseButton(3)
-    Sleep(math.random(120, 140))
+    Sleep(Random(120, 140))
 end
 
 -- 挑战放置卡片
@@ -227,20 +230,18 @@ CF.dropCard = function(key)
     local curPosition = Config.cardPosition[index]
     local pointOne = curPosition[1]
     local pointTwo = curPosition[2]
-    math.randomseed(GetRunningTime())
-    local randomFn = GenerateRandomNumber()
     PressAndReleaseKey('e')
-    Sleep(randomFn(50, 70))
-    MoveMouseRelative(0, randomFn(3, 6))
-    Sleep(randomFn(50, 70))
-    MoveMouseRelative(randomFn(pointOne[1], pointOne[2]), 0)
-    Sleep(randomFn(50, 70))
+    Sleep(Random(50, 70))
+    MoveMouseRelative(0, math.random(2, 6))
+    Sleep(Random(50, 70))
+    MoveMouseRelative(math.random(pointOne[1], pointOne[2]), 0)
+    Sleep(Random(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(50, 70))
-    MoveMouseRelative(randomFn(pointTwo[1], pointTwo[2]), randomFn(pointTwo[3], pointTwo[4]))
-    Sleep(randomFn(50, 70))
+    Sleep(Random(50, 70))
+    MoveMouseRelative(math.random(pointTwo[1], pointTwo[2]), math.random(pointTwo[3], pointTwo[4]))
+    Sleep(Random(50, 70))
     PressAndReleaseMouseButton(1)
-    Sleep(randomFn(50, 70))
+    Sleep(Random(50, 70))
 end
 
 -- 长按攻击键键-再次点击松开
@@ -249,18 +250,16 @@ CF.pressAndReleaseKey = function(key)
         return
     end
     local hasPressed = CF.hasPressed or false
-    math.randomseed(GetRunningTime())
-    local randomFn = GenerateRandomNumber()
     if (hasPressed) then
         PressMouseButton(1)
         CF.hasPressed = false
-        Sleep(randomFn(180, 190))
+        Sleep(Random(180, 190))
         PressAndReleaseKey('r')
     else
         ReleaseMouseButton(1)
         CF.hasPressed = true
     end
-    Sleep(randomFn(50, 70))
+    Sleep(Random(50, 70))
 end
 
 -- 切换模式
