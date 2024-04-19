@@ -31,16 +31,6 @@ function GetTableLength(t)
     return i
 end
 
--- 保留小数
-function KeepDecimal(num, n)
-    n = n or 2
-    if (num < 0) then
-        return -(math.abs(num) - math.abs(num) % 0.1 ^ n)
-    else
-        return num - num % 0.1 ^ n
-    end
-end
-
 -- 正态分布变换
 function BoxMuller(mean, stddev)
     -- 生成两个均匀分布的随机数
@@ -54,7 +44,6 @@ end
 
 -- 随机数方法
 function Random(m, n)
-    math.randomseed(GetDate("%H%M%S"):reverse())
     local mean = (m + n) / 2
     local sigma = (n - m) / (2 * 1.645) -- 1.645 0.9500 1.2815 0.9000
     local random = BoxMuller(mean, sigma)
@@ -68,14 +57,28 @@ end
 function GenerateRandomNumber()
     local prevNum = 0
     local currentNum = 0
-    math.randomseed(GetRunningTime())
-    -- math.randomseed(GetDate("%H%M%S"):reverse())
     return function(min, max)
         while (prevNum == currentNum) do
-            currentNum = math.round(min + (max - min) * math.random())
+            currentNum = Random(min, max)
         end
         prevNum = currentNum
         return currentNum
+    end
+end
+
+-- 返回一个数组，其中每个数都在min和max之间，并且数组中的所有项之和等于num
+function GenerateArrayHelper(num, arr, min, max)
+    -- 判断基准条件
+    if num <= 0 then
+        return arr
+    end
+    -- 随机生成一个数
+    local randNum = math.round(math.random(min, max))
+    if randNum <= num then
+        table.insert(arr, randNum)
+        return GenerateArrayHelper(num - randNum, arr)
+    else
+        return GenerateArrayHelper(num, arr)
     end
 end
 
@@ -89,7 +92,7 @@ ChineseTextMap = {
     ['gatlingStab'] = '加特林连刺宏',
     ['xkQuickAttack'] = '虚空重刀宏',
     ['instantSpy'] = '一键瞬狙宏',
-    ['pressAndReleaseKey'] = '挑战攻击释放双手',
+    ['continueAttack'] = '挑战攻击释放双手',
     ['dropCard'] = '挑战-放置卡片',
     ['updateCardIndex'] = '更新卡片索引位置'
 }
@@ -132,7 +135,7 @@ Config = {
     },
     -- 挑战模式
     pve = {
-        ['4'] = { 'pressAndReleaseKey' },
+        ['4'] = { 'continueAttack' },
         ['5'] = { 'dropCard' },
         ['7'] = { 'updateCardIndex' }
     },
@@ -161,6 +164,40 @@ CF = {
     -- 目前处于第几张卡片
     cardIndex = 1
 }
+
+-- 触发点击
+CF.onClick = function(key)
+    if type(key) == 'number' then
+        PressMouseButton(key)
+        Sleep(Random(30, 50))
+        ReleaseMouseButton(key)
+    else
+        PressKey(key)
+        Sleep(Random(30, 50))
+        ReleaseKey(key)
+    end
+end
+
+-- 平滑的移动鼠标
+CF.moveMouseSmooth = function(x, y, time)
+    local randomFn = GenerateRandomNumber()
+    local duration = time or randomFn(30, 60)
+    local durationArr = GenerateArrayHelper(duration, {}, 1, 5)
+    local totalDuration = #durationArr
+    local movedX, movedY = 0, 0
+    for i = 1, totalDuration do
+        local stepX, stepY = math.round(x / duration * durationArr[i]), math.round(y / duration * durationArr[i])
+        if (movedX + stepX >= x) or (movedY + stepY >= y) or i == totalDuration then
+            MoveMouseRelative(x - movedX, y - movedY)
+            Sleep(durationArr[i])
+            break
+        else
+            MoveMouseRelative(stepX, stepY)
+        end
+        movedX, movedY = movedX + stepX, movedY + stepY
+        Sleep(durationArr[i])
+    end
+end
 
 -- 判断按键是否按下
 CF.isPressed = function(key)
@@ -197,25 +234,23 @@ end
 
 -- 加特林速点
 CF.gatlingQuickShoot = function(key)
-    local randomFn = GenerateRandomNumber()
     repeat
         PressMouseButton(1)
-        Sleep(randomFn(100, 160))
+        Sleep(Random(100, 160))
         ReleaseMouseButton(1)
-        Sleep(randomFn(20, 45))
+        Sleep(Random(10, 25))
     until not CF.isPressed(key)
 end
 
 -- 加特林连刺
 CF.gatlingStab = function(key)
-    local randomFn = GenerateRandomNumber()
     repeat
         -- 点击鼠标右键
         PressAndReleaseMouseButton(3)
-        Sleep(randomFn(270, 300))
+        Sleep(Random(270, 300))
         -- 点击绑定攻击键
         PressAndReleaseMouseButton(1)
-        Sleep(randomFn(40, 63))
+        Sleep(Random(40, 63))
     until not CF.isPressed(key)
 end
 
@@ -225,17 +260,11 @@ CF.xkQuickAttack = function(key)
         return
     end
     local randomFn = GenerateRandomNumber()
-    PressMouseButton(3)
-    Sleep(randomFn(65, 80))
-    ReleaseMouseButton(3)
+    CF.onClick(3)
     Sleep(randomFn(580, 590))
-    PressKey('f')
-    Sleep(randomFn(30, 40))
-    ReleaseKey('f')
+    CF.onClick('f')
     Sleep(randomFn(50, 60))
-    PressMouseButton(3)
-    Sleep(randomFn(65, 80))
-    ReleaseMouseButton(3)
+    CF.onClick(3)
     Sleep(randomFn(120, 140))
 end
 
@@ -249,28 +278,22 @@ CF.dropCard = function(key)
     local pointOne = curPosition[1]
     local pointTwo = curPosition[2]
     local randomFn = GenerateRandomNumber()
-    PressKey('e')
-    Sleep(randomFn(40, 60))
-    ReleaseKey('e')
-    Sleep(randomFn(40, 60))
+    CF.onClick('e')
+    Sleep(Random(30, 60))
     MoveMouseRelative(0, randomFn(3, 6))
-    Sleep(randomFn(40, 60))
+    Sleep(Random(30, 60))
     MoveMouseRelative(randomFn(pointOne[1], pointOne[2]), 0)
-    Sleep(randomFn(40, 60))
-    PressMouseButton(1)
-    Sleep(randomFn(40, 60))
-    ReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(Random(30, 60))
+    CF.onClick(1)
+    Sleep(Random(30, 60))
     MoveMouseRelative(randomFn(pointTwo[1], pointTwo[2]), randomFn(pointTwo[3], pointTwo[4]))
-    Sleep(randomFn(40, 60))
-    PressMouseButton(1)
-    Sleep(randomFn(40, 60))
-    ReleaseMouseButton(1)
-    Sleep(randomFn(40, 60))
+    Sleep(Random(30, 60))
+    CF.onClick(1)
+    Sleep(Random(30, 60))
 end
 
 -- 长按攻击键键-再次点击松开
-CF.pressAndReleaseKey = function(key)
+CF.continueAttack = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
@@ -279,9 +302,7 @@ CF.pressAndReleaseKey = function(key)
     if hasPressed then
         ReleaseMouseButton(1)
         Sleep(randomFn(180, 200))
-        PressKey('r')
-        Sleep(randomFn(40, 60))
-        ReleaseKey('r')
+        CF.onClick('r')
         CF.hasPressed = false
     else
         PressMouseButton(1)
@@ -371,6 +392,9 @@ CF.initEventFuncList()
 
 -- 打开对鼠标左键的监听
 EnablePrimaryMouseButtonEvents(true)
+
+-- 设置随机数种子
+math.randomseed(GetDate("%H%M%S"):reverse())
 
 -- 监听鼠标点击事件
 function OnEvent(event, arg, family)
