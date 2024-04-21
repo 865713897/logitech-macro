@@ -59,7 +59,7 @@ function GenerateRandomNumber()
     local currentNum = 0
     return function(min, max)
         while (prevNum == currentNum) do
-            currentNum = Random(min, max)
+            currentNum = math.round(min + (max - min) * math.random())
         end
         prevNum = currentNum
         return currentNum
@@ -68,18 +68,18 @@ end
 
 -- 返回一个数组，其中每个数都在min和max之间，并且数组中的所有项之和等于num
 function GenerateArrayHelper(num, arr, min, max)
-    -- 判断基准条件
-    if num <= 0 then
-        return arr
+    local _num = num
+    while _num > 0 do
+        local randNum = math.round(math.random(min, max))
+        if _num <= math.floor(max / 2) then
+            table.insert(arr, _num)
+            _num = 0
+        elseif randNum <= _num then
+            table.insert(arr, randNum)
+            _num = _num - randNum
+        end
     end
-    -- 随机生成一个数
-    local randNum = math.round(math.random(min, max))
-    if randNum <= num then
-        table.insert(arr, randNum)
-        return GenerateArrayHelper(num - randNum, arr)
-    else
-        return GenerateArrayHelper(num, arr)
-    end
+    return arr
 end
 
 -- 中文对照表
@@ -143,7 +143,7 @@ Config = {
     cardPosition = {
         { { -120, -135, 0, 0 }, { 180, 195, 70, 76 } },
         { { -40, -55, 0, 0 },   { 130, 145, 70, 76 } },
-        { { 10, 20, 0, 0 },     { 110, 120, 70, 76 } },
+        { { 20, 30, 0, 0 },     { 100, 110, 70, 76 } },
         { { 76, 90, 0, 0 },     { 40, 50, 70, 76 } }
     }
 }
@@ -182,12 +182,17 @@ end
 CF.moveMouseSmooth = function(x, y, time)
     local randomFn = GenerateRandomNumber()
     local duration = time or randomFn(30, 60)
-    local durationArr = GenerateArrayHelper(duration, {}, 1, 5)
+    OutputLogMessage('\n')
+    OutputLogMessage(x .. 'duration: ' .. duration)
+    OutputLogMessage('\n')
+    local durationArr = GenerateArrayHelper(duration, {}, 10, 18)
     local totalDuration = #durationArr
     local movedX, movedY = 0, 0
     for i = 1, totalDuration do
+        OutputLogMessage('value: ' .. durationArr[i])
+        OutputLogMessage('\n')
         local stepX, stepY = math.round(x / duration * durationArr[i]), math.round(y / duration * durationArr[i])
-        if (movedX + stepX >= x) or (movedY + stepY >= y) or i == totalDuration then
+        if (movedX + stepX >= x) or (movedY + stepY >= y and y ~= 0) or i == totalDuration then
             MoveMouseRelative(x - movedX, y - movedY)
             Sleep(durationArr[i])
             break
@@ -236,19 +241,17 @@ end
 CF.gatlingQuickShoot = function(key)
     repeat
         PressMouseButton(1)
-        Sleep(Random(100, 160))
+        Sleep(Random(80, 110))
         ReleaseMouseButton(1)
-        Sleep(Random(10, 25))
+        Sleep(Random(20, 44))
     until not CF.isPressed(key)
 end
 
 -- 加特林连刺
 CF.gatlingStab = function(key)
     repeat
-        -- 点击鼠标右键
         PressAndReleaseMouseButton(3)
         Sleep(Random(270, 300))
-        -- 点击绑定攻击键
         PressAndReleaseMouseButton(1)
         Sleep(Random(40, 63))
     until not CF.isPressed(key)
@@ -275,21 +278,21 @@ CF.dropCard = function(key)
     end
     local index = CF.cardIndex or 1
     local curPosition = Config.cardPosition[index]
+    local randomFn = GenerateRandomNumber()
     local pointOne = curPosition[1]
     local pointTwo = curPosition[2]
-    local randomFn = GenerateRandomNumber()
     CF.onClick('e')
-    Sleep(Random(30, 60))
+    Sleep(Random(30, 50))
     MoveMouseRelative(0, randomFn(3, 6))
-    Sleep(Random(30, 60))
+    Sleep(Random(30, 50))
     MoveMouseRelative(randomFn(pointOne[1], pointOne[2]), 0)
-    Sleep(Random(30, 60))
+    Sleep(Random(30, 50))
     CF.onClick(1)
-    Sleep(Random(30, 60))
+    Sleep(Random(30, 50))
     MoveMouseRelative(randomFn(pointTwo[1], pointTwo[2]), randomFn(pointTwo[3], pointTwo[4]))
-    Sleep(Random(30, 60))
+    Sleep(Random(30, 50))
     CF.onClick(1)
-    Sleep(Random(30, 60))
+    Sleep(Random(30, 50))
 end
 
 -- 长按攻击键键-再次点击松开
