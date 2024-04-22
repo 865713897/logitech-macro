@@ -180,8 +180,7 @@ end
 
 -- 平滑的移动鼠标
 CF.moveMouseSmooth = function(x, y, time)
-    local randomFn = GenerateRandomNumber()
-    local duration = time or randomFn(30, 60)
+    local duration = time or Random(30, 60)
     OutputLogMessage('\n')
     OutputLogMessage(x .. 'duration: ' .. duration)
     OutputLogMessage('\n')
@@ -262,13 +261,27 @@ CF.xkQuickAttack = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
-    local randomFn = GenerateRandomNumber()
     CF.onClick(3)
-    Sleep(randomFn(580, 590))
+    Sleep(Random(580, 590))
     CF.onClick('f')
-    Sleep(randomFn(50, 60))
+    Sleep(Random(50, 60))
     CF.onClick(3)
-    Sleep(randomFn(120, 140))
+    Sleep(Random(120, 140))
+end
+
+-- 一键瞬狙宏
+CF.instantSpy = function(key)
+    if (not IsMouseButtonPressed(key)) then
+        return
+    end
+    CF.onClick(3)
+    Sleep(Random(20, 40))
+    CF.onClick(1)
+    Sleep(Random(20, 40))
+    CF.onClick('q')
+    Sleep(Random(20, 40))
+    CF.onClick('q')
+    Sleep(Random(20, 40))
 end
 
 -- 挑战放置卡片
@@ -300,18 +313,22 @@ CF.continueAttack = function(key)
     if (not IsMouseButtonPressed(key)) then
         return
     end
-    local randomFn = GenerateRandomNumber()
     local hasPressed = CF.hasPressed or false
     if hasPressed then
         ReleaseMouseButton(1)
-        Sleep(randomFn(180, 200))
+        Sleep(Random(180, 200))
         CF.onClick('r')
         CF.hasPressed = false
     else
         PressMouseButton(1)
         CF.hasPressed = true
     end
-    Sleep(randomFn(65, 80))
+    Sleep(Random(65, 80))
+end
+
+-- 瞬狙插件
+CF.spyPlugin = function (event, arg, family)
+    
 end
 
 -- 切换模式
