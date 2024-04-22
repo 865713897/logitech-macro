@@ -16,6 +16,10 @@ Config = {
     ['6'] = { 'resetCardIndex' },
     ['7'] = { 'increaseCardIndex' }
   },
+  -- 竞技模式
+  pvp = {
+    ['4'] = { 'instantSpy' }
+  },
   -- 鼠标按键绑定
   gBind = {
     ['rctrl+G1'] = 'changeGameMode',
@@ -38,10 +42,10 @@ Config = {
   },
   -- 试炼岛卡片坐标
   cardPosition = {
-    { { 0, 0, 3, 6 }, { -120, -135, 0, 0 }, { 180, 195, 0, 0 }, { 0, 0, 70, 76 } },
-    { { 0, 0, 3, 6 }, { -40, -55, 0, 0 },   { 130, 145, 0, 0 }, { 0, 0, 70, 76 } },
-    { { 0, 0, 3, 6 }, { 30, 40, 0, 0 },     { 90, 100, 0, 0 },  { 0, 0, 70, 76 } },
-    { { 0, 0, 3, 6 }, { 76, 90, 0, 0 },     { 40, 55, 0, 0 },   { 0, 0, 70, 76 } },
+    { { 0, 0, 3, 6 }, { -120, -135, 0, 0 }, { 180, 195, 70, 76 } },
+    { { 0, 0, 3, 6 }, { -40, -55, 0, 0 },   { 130, 145, 70, 76 } },
+    { { 0, 0, 3, 6 }, { 30, 40, 0, 0 },     { 90, 100, 70, 76 } },
+    { { 0, 0, 3, 6 }, { 76, 90, 0, 0 },     { 40, 55, 70, 76 } },
   }
 }
 
@@ -59,15 +63,16 @@ ChineseTextMap = {
   ['xkQuickAttack'] = '虚空重刀宏',
   ['instantSpy'] = '一键瞬狙宏',
   ['continueAttack'] = '挑战攻击释放双手',
-  ['dropCard'] = '挑战-放置卡片',
-  ['increaseCardIndex'] = '更新卡片索引位置'
+  ['dropCard'] = '挑战试炼岛放置卡片',
+  ['increaseCardIndex'] = '更新试炼岛卡片索引位置',
+  ['resetCardIndex'] = '重置试炼岛卡片索引位置'
 }
 
 --------------------   end   --------------------
 
 -------------------- 事件函数(运行时) --------------------
 Runtiming = {
-  curModeIndex = 1, -- 当前游戏模式下标
+  curModeIndex = 2, -- 当前游戏模式下标
   curCardIndex = 1, -- 试炼岛卡片当前下标
   eventIndex = {
     ['1'] = 1,
@@ -215,8 +220,8 @@ end
 
 -- 获取表长度
 function table.getLength(t)
-  local i
-  for k, v in pairs(t) do
+  local i = 0
+  for _, _ in pairs(t) do
     i = i + 1
   end
   return i
@@ -249,6 +254,9 @@ function GenerateRandomNumber()
   local prevNum = 0
   local currentNum = 0
   return function(min, max)
+    if (max - min) == 0 then
+      return 0
+    end
     while (prevNum == currentNum) do
       currentNum = math.round(min + (max - min) * math.random())
     end
@@ -315,7 +323,7 @@ end
 function GetTableSort(t)
   local keyT = {}
   local newT = {}
-  for k, v in pairs(t) do
+  for k, _ in pairs(t) do
     table.insert(keyT, k)
   end
   table.sort(keyT, function(a, b)
@@ -355,7 +363,7 @@ end
 
 -- 更新按键绑定事件函数下标
 function IncreaseEventIndex(key)
-  local len = #Config.eventFuncList[key]
+  local len = #Runtiming.eventFuncList[key]
   if len == 0 then
     return false
   end
@@ -367,7 +375,7 @@ end
 
 -- 重置按键绑定事件函数下标
 function ResetEventIndex(key)
-  local len = #Config.eventFuncList[key]
+  local len = #Runtiming.eventFuncList[key]
   if len == 0 then
     return false
   end
@@ -381,26 +389,45 @@ function ChangeGameMode()
   local nextIndex = (Runtiming.curModeIndex + 1) % (len + 1)
   local realIndex = nextIndex == 0 and 1 or nextIndex
   Runtiming.curModeIndex = realIndex
+  for k, _ in pairs(Runtiming.eventIndex) do
+    Runtiming.eventIndex[k] = 1
+  end
   InitEventFuncList()
 end
 
 -- 打印当前游戏模式
 function PrintGameMode()
   local curGameMode = Config.gameModeList[Runtiming.curModeIndex]
-  OutputLogMessage('当前游戏模式: ' .. ChineseTextMap[curGameMode] .. '\n')
+  OutputLogMessage('\t当前游戏模式: ' .. ChineseTextMap[curGameMode] .. '\n\n')
+end
+
+-- 返回固定长度的字符串
+function CompleteStr(str, num)
+  local start = string.len(str)
+  for i = start + 1, num do
+    str = str .. ' '
+  end
+  return str
 end
 
 -- 打印事件绑定信息
 function PrintEventInfo()
   local curGameMode = Config.gameModeList[Runtiming.curModeIndex]
   local eventList = GetTableSort(Config[curGameMode])
+  OutputLogMessage('\t按键\t\t%s\t\t中文\n', CompleteStr('方法名', 20))
+  OutputLogMessage('\t------\t\t%s\t\t------\n', CompleteStr('------', 20))
   for _, item in ipairs(eventList) do
     local key = item.key
     local value = item.value
     local index = Runtiming.eventIndex[key]
-    if type(Runtiming.eventFuncList[key][value[index]]) == 'function' then
-      local eventDesc = ChineseTextMap[value[index]]
-      local info = string.format('按键%s绑定事件: %s', key, eventDesc)
+    for i = 1, #value do
+      local eventDesc = ChineseTextMap[value[i]]
+      local info = string.format('\t\t%s\t\t%s', CompleteStr(value[i], 20), eventDesc)
+      if index == i then
+        info = string.format('\tG%s =>', CompleteStr(key, 2)) .. info
+      else 
+        info = string.format('\t%s', CompleteStr('', 5)) .. info
+      end
       if curGameMode == 'pve' and value[index] == 'dropCard' then
         info = info .. string.format('(当前卡片下标:%d)', Runtiming.curCardIndex)
       end
@@ -412,30 +439,32 @@ end
 -- 打印信息
 function PrintInfo()
   ClearLog()
-  OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
+  OutputLogMessage(' --------------------------------------------------------------------------------------------------- ')
   OutputLogMessage('\n')
   OutputLogMessage('\n')
   PrintGameMode()
   PrintEventInfo()
   OutputLogMessage('\n')
-  OutputLogMessage(' -------------------------------------------------------------------------------------------- ')
+  OutputLogMessage(' --------------------------------------------------------------------------------------------------- ')
 end
 
 -- 运行指令
 function RunCmd(cmd)
   local cmdGroup = string.split(cmd, '_')
-  local type = cmdGroup[1]
+  local _type = cmdGroup[1]
   local key = cmdGroup[2]
-  if type == 'next' then
+  if _type == 'next' then
     IncreaseEventIndex(key)
-  elseif type == 'reset' then
+  elseif _type == 'reset' then
     ResetEventIndex(key)
-  elseif type == 'play' then
+  elseif _type == 'play' then
     local eventIndex = Runtiming.eventIndex[key]
     local fn = Runtiming.eventFuncList[key][eventIndex]
     if type(fn) == 'function' then
       fn(tonumber(key))
     end
+  elseif _type == 'changeGameMode' then
+    ChangeGameMode()
   end
 end
 
@@ -472,7 +501,7 @@ function OnEvent(event, arg, family)
     for i = 1, #ModifierList do
       if (IsPressed(ModifierList[i])) then
         -- 其中某一个修饰符被按下
-        modifier = ModifierList[i] .. ' + ' .. modifier
+        modifier = ModifierList[i] .. '+' .. modifier
         break
       end
     end
