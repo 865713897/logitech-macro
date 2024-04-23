@@ -5,7 +5,7 @@ Config = {
   shootKey = 1,                              -- 攻击按键1:鼠标左键，也可设置键盘按键
   gameModeList = { 'zombie', 'pve', 'pvp' }, -- 模式列表
   defaultGameModeIndex = 2,                  -- 默认游戏模式下标
-  openDebugger = true,                       -- 是否开启调试模式（输出打印信息）
+  openDebugger = true,                      -- 是否开启调试模式（输出打印信息）
   -- 生化模式绑定按键函数信息
   zombie = {
     ['4'] = { 'gatlingStab', 'xkQuickAttack' },
@@ -57,8 +57,8 @@ Config = {
     ['lalt+G6'] = 'next_6',
     ['ralt+G6'] = 'reset_6',
     ['G7'] = 'play_7',
-    ['G10'] = 'nextGameMode',
-    ['G11'] = 'resetGameMode'
+    ['lalt+G10'] = 'nextGameMode',
+    ['lalt+G11'] = 'resetGameMode'
   },
 }
 
@@ -84,6 +84,7 @@ ChineseTextMap = {
 
 -- [[  运行时函数及部分参数模块  ]]
 Runtiming = {
+  eventIndex = {},
   eventFuncList = {} -- 运行时事件函数列表
 }
 
@@ -189,7 +190,7 @@ function Runtiming.instantSpy(key)
   end
   Utils.handleKeyClick(3)
   Sleep(Utils.random(20, 40))
-  Utils.handleKeyClick(1)
+  Utils.handleKeyClick(Config.shootKey)
   Sleep(Utils.random(20, 40))
   Utils.handleKeyClick('q')
   Sleep(Utils.random(20, 40))
@@ -198,11 +199,11 @@ function Runtiming.instantSpy(key)
 end
 
 -- 连续蹲下
-function Runtiming.nonStopSquat()
+function Runtiming.nonStopSquat(key)
   repeat
     Utils.handleKeyClick('lctrl')
-    Sleep(Utils.random(26, 46))
-  until not CF.isPressed(key)
+    Sleep(Utils.random(40, 60))
+  until not Utils.isKeyPressed(key)
 end
 
 -- [[  工具函数模块  ]]
@@ -220,6 +221,9 @@ function Utils.split(str, separator)
   local result = {}
   for match in string.gmatch(str, pattern) do
     table.insert(result, match)
+  end
+  if #result == 1 then
+    table.insert(result, '')
   end
   return table.unpack(result)
 end
@@ -272,14 +276,14 @@ function Utils.generateRandomNumber()
 end
 
 -- 触发点击
-function Utils.handleKeyClick(key)
+function Utils.handleKeyClick(key, min, max)
   if type(key) == 'number' then
     PressMouseButton(key)
-    Sleep(Utils.random(30, 50))
+    Sleep(Utils.random(min or 30, max or 50))
     ReleaseMouseButton(key)
   else
     PressKey(key)
-    Sleep(Utils.random(30, 50))
+    Sleep(Utils.random(min or 30, max or 50))
     ReleaseKey(key)
   end
 end
@@ -346,6 +350,7 @@ function Main.initEventFuncList()
   -- 当前游戏模式
   local index = Runtiming.curModeIndex
   local curGameMode = Config.gameModeList[index]
+  Runtiming.eventFuncList = {}
   for k, v in pairs(Config[curGameMode]) do
     local t = {}
     for i = 1, #v do
@@ -387,7 +392,7 @@ end
 -- 更新按键绑定事件函数下标
 function Main.increaseEventIndex(key)
   local len = #Runtiming.eventFuncList[key]
-  if len == 0 then
+  if len <= 1 then
     return false
   end
   local nextIndex = (Runtiming.eventIndex[key] + 1) % (len + 1)
@@ -399,7 +404,7 @@ end
 -- 重置按键绑定事件函数下标
 function Main.resetEventIndex(key)
   local len = #Runtiming.eventFuncList[key]
-  if len == 0 then
+  if len <= 1 then
     return false
   end
   Runtiming.eventIndex[key] = 1
@@ -412,9 +417,9 @@ function Main.nextGameMode()
   local nextIndex = (Runtiming.curModeIndex + 1) % (len + 1)
   local realIndex = nextIndex == 0 and 1 or nextIndex
   Runtiming.curModeIndex = realIndex
-  Main.initEventFuncList()
   Main.initEventIndex()
   Main.initCardIndex()
+  Main.initEventFuncList()
 end
 
 -- 重置游戏模式
@@ -434,7 +439,7 @@ function Main.printEventInfo()
   local eventList = Utils.getTableSort(Config[curGameMode])
   -- 打印表头
   OutputLogMessage('\t按键\t\t%s\t\t中文\n', Utils.completeStr('方法名', 20))
-  OutputLogMessage('\t------\t\t%s\t\t------\n', Utils.completeStr('------', 20))
+  OutputLogMessage('\t----------------------------------------------------------------------------------\n')
   -- 遍历事件列表并打印信息
   for _, item in ipairs(eventList) do
     local key = item.key
@@ -443,9 +448,9 @@ function Main.printEventInfo()
     for i = 1, #value do
       local eventName = Utils.completeStr(value[i], 20)
       local eventDesc = ChineseTextMap[value[i]]
-      local prefix = (index == i) and string.format('\tG%s =>', Utils.completeStr(key, 2)) or string.rep('\t', 2)
+      local prefix = (index == i) and string.format('\tG%s=>', Utils.completeStr(key, 2)) or Utils.completeStr('\t', 6)
       -- 打印事件信息
-      local info = string.format('%s\t%s\t\t%s', prefix, eventName, eventDesc)
+      local info = string.format('%s\t\t%s\t\t%s', prefix, eventName, eventDesc)
       if curGameMode == 'pve' and value[index] == 'dropCard' then
         info = info .. string.format('(当前卡片下标:%d)', Runtiming.curCardIndex)
       end
@@ -511,7 +516,6 @@ Main.init()
 
 -- 监听事件
 function OnEvent(event, arg, family)
-  arg = arg == 2 and 3 or 2
   if event == 'MOUSE_BUTTON_PRESSED' and arg >= 1 and arg <= 11 and family == 'mouse' then
     -- 监听3-11的可绑定按键
     local modifier = 'G' .. arg
