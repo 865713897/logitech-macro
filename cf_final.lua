@@ -4,7 +4,7 @@ Config = {
   openMacroKey = 'capslock',                 -- scrolllock | capslock | numlock
   shootKey = 1,                              -- 攻击按键1:鼠标左键，也可设置键盘按键
   gameModeList = { 'zombie', 'pve', 'pvp' }, -- 模式列表
-  defaultGameModeIndex = 2,                  -- 默认游戏模式下标
+  defaultGameModeIndex = 3,                  -- 默认游戏模式下标
   openDebugger = true,                       -- 是否开启调试模式（输出打印信息）
   -- 生化模式绑定按键函数信息
   zombie = {
@@ -204,10 +204,6 @@ end
 
 -- 一键瞬狙宏
 function Runtiming.instantSpy(key)
-  if (not Utils.isKeyPressed(key)) then
-    -- 防止多次点击多次触发重复操作
-    return false
-  end
   Utils.handleKeyClick(Config.shootKey)
   Sleep(Utils.random(20, 40))
   Utils.handleKeyClick('q')
