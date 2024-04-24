@@ -5,7 +5,7 @@ Config = {
   shootKey = 1,                              -- 攻击按键1:鼠标左键，也可设置键盘按键
   gameModeList = { 'zombie', 'pve', 'pvp' }, -- 模式列表
   defaultGameModeIndex = 2,                  -- 默认游戏模式下标
-  openDebugger = true,                      -- 是否开启调试模式（输出打印信息）
+  openDebugger = true,                       -- 是否开启调试模式（输出打印信息）
   -- 生化模式绑定按键函数信息
   zombie = {
     ['4'] = { 'gatlingStab', 'xkQuickAttack' },
@@ -13,20 +13,22 @@ Config = {
   },
   -- 挑战模式
   pve = {
-    ['4'] = { 'continueAttack' },
+    ['4'] = { 'continueAttack', 'continueGrenade' },
     ['5'] = { 'dropCard' },
     ['6'] = { 'resetCardIndex' },
     ['7'] = { 'increaseCardIndex' }
   },
   -- 竞技模式
   pvp = {
-    ['1'] = { 'instantSpy' },
+    ['3'] = { 'instantSpy' },
+    ['4'] = { 'usbQuickShoot' },
     ['5'] = { 'nonStopSquat' }
   },
   defaultCardIndex = 1, -- 默认卡片下标
   -- 默认按键事件下标
   defaultEventIndex = {
     ['1'] = 1,
+    ['3'] = 1,
     ['4'] = 1,
     ['5'] = 1,
     ['6'] = 1,
@@ -44,7 +46,7 @@ Config = {
     ['G1'] = 'play_1',
     ['lalt+G1'] = 'next_1',
     ['ralt+G1'] = 'reset_1',
-    ['G3'] = 'play_3',
+    ['G3_release'] = 'play_3',
     ['lalt+G3'] = 'next_3',
     ['ralt+G3'] = 'reset_3',
     ['G4'] = 'play_4',
@@ -71,6 +73,7 @@ ChineseTextMap = {
   ['pve'] = '挑战模式',
   ['pvp'] = '竞技模式',
   ['gatlingQuickShoot'] = '加特林速点',
+  ['usbQuickShoot'] = 'usb速点',
   ['gatlingStab'] = '加特林连刺',
   ['xkQuickAttack'] = '虚空重刀',
   ['instantSpy'] = '一键瞬狙',
@@ -78,7 +81,8 @@ ChineseTextMap = {
   ['dropCard'] = '挑战试炼岛放置卡片',
   ['increaseCardIndex'] = '更新试炼岛卡片索引位置',
   ['resetCardIndex'] = '重置试炼岛卡片索引位置',
-  ['nonStopSquat'] = '闪蹲'
+  ['nonStopSquat'] = '闪蹲',
+  ['continueGrenade'] = '挑战爆裂者一键榴弹',
 }
 
 
@@ -95,6 +99,14 @@ function Runtiming.gatlingQuickShoot(key)
     Sleep(Utils.random(80, 110))
     Utils.handleKeyUp(Config.shootKey)
     Sleep(Utils.random(20, 44))
+  until not Utils.isKeyPressed(key)
+end
+
+-- usb速点
+function Runtiming.usbQuickShoot(key)
+  repeat
+    Utils.handleKeyClick(Config.shootKey)
+    Sleep(Utils.random(50, 100))
   until not Utils.isKeyPressed(key)
 end
 
@@ -182,20 +194,25 @@ function Runtiming.continueAttack(key)
   end
 end
 
+-- 挑战-爆裂者一键榴弹
+function Runtiming.continueGrenade(key)
+  repeat
+    Utils.handleKeyClick(3)
+    Sleep(Utils.random(220, 250))
+  until not Utils.isKeyPressed(key)
+end
+
 -- 一键瞬狙宏
 function Runtiming.instantSpy(key)
   if (not Utils.isKeyPressed(key)) then
     -- 防止多次点击多次触发重复操作
     return false
   end
-  Utils.handleKeyClick(3)
-  Sleep(Utils.random(20, 40))
   Utils.handleKeyClick(Config.shootKey)
   Sleep(Utils.random(20, 40))
   Utils.handleKeyClick('q')
   Sleep(Utils.random(20, 40))
   Utils.handleKeyClick('q')
-  Sleep(Utils.random(20, 40))
 end
 
 -- 连续蹲下
@@ -276,14 +293,14 @@ function Utils.generateRandomNumber()
 end
 
 -- 触发点击
-function Utils.handleKeyClick(key, min, max)
+function Utils.handleKeyClick(key)
   if type(key) == 'number' then
     PressMouseButton(key)
-    Sleep(Utils.random(min or 30, max or 50))
+    Sleep(Utils.random(30, 50))
     ReleaseMouseButton(key)
   else
     PressKey(key)
-    Sleep(Utils.random(min or 30, max or 50))
+    Sleep(Utils.random(30, 50))
     ReleaseKey(key)
   end
 end
@@ -505,20 +522,11 @@ function Main.modifierHandler(modifier)
   end
 end
 
--- [[  罗技脚本模块  ]]
--- 打开对鼠标左键的监听
-EnablePrimaryMouseButtonEvents(true)
-
--- 设置随机数种子
-math.randomseed(GetDate("%H%M%S"):reverse())
-
-Main.init()
-
--- 监听事件
-function OnEvent(event, arg, family)
-  if event == 'MOUSE_BUTTON_PRESSED' and arg >= 1 and arg <= 11 and family == 'mouse' then
+-- 鼠标点击事件
+function Main.mouseButtonListener(arg, isPress)
+  if arg >= 3 and arg <= 11 then
     -- 监听3-11的可绑定按键
-    local modifier = 'G' .. arg
+    local modifier = isPress and 'G' .. arg or 'G' .. arg .. '_release'
     for i = 1, #ModifierList do
       if (Utils.isKeyPressed(ModifierList[i])) then
         -- 其中某一个修饰符被按下
@@ -531,5 +539,26 @@ function OnEvent(event, arg, family)
       -- 事件属于切换事件或已开启宏按钮
       Main.modifierHandler(modifier)
     end
+  end
+end
+
+-- [[  罗技脚本模块  ]]
+-- 打开对鼠标左键的监听
+EnablePrimaryMouseButtonEvents(true)
+
+-- 设置随机数种子
+math.randomseed(GetDate("%H%M%S"):reverse())
+
+Main.init()
+
+-- 监听事件
+function OnEvent(event, arg)
+  if string.find(event, 'MOUSE_BUTTON') then
+    if (arg == 2) then
+      arg = 3
+    elseif arg == 3 then
+      arg = 2
+    end
+    Main.mouseButtonListener(arg, event == 'MOUSE_BUTTON_PRESSED')
   end
 end
