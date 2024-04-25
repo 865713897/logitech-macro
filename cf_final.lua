@@ -4,8 +4,8 @@ Config = {
   openMacroKey = 'capslock',                 -- scrolllock | capslock | numlock
   shootKey = 1,                              -- 攻击按键1:鼠标左键，也可设置键盘按键
   gameModeList = { 'zombie', 'pve', 'pvp' }, -- 模式列表
-  defaultGameModeIndex = 3,                  -- 默认游戏模式下标
-  openDebugger = true,                       -- 是否开启调试模式（输出打印信息）
+  defaultGameModeIndex = 2,                  -- 默认游戏模式下标
+  openDebugger = false,                      -- 是否开启调试模式（输出打印信息）
   -- 生化模式绑定按键函数信息
   zombie = {
     ['4'] = { 'gatlingStab', 'xkQuickAttack' },
@@ -81,7 +81,8 @@ ChineseTextMap = {
   ['dropCard'] = '挑战试炼岛放置卡片',
   ['increaseCardIndex'] = '更新试炼岛卡片索引位置',
   ['resetCardIndex'] = '重置试炼岛卡片索引位置',
-  ['nonStopSquat'] = '闪蹲',
+  ['nonStopSquat'] = '一键闪蹲',
+  ['nonStopJump'] = '一键鬼跳',
   ['continueGrenade'] = '挑战爆裂者一键榴弹',
 }
 
@@ -89,7 +90,7 @@ ChineseTextMap = {
 -- [[  运行时函数及部分参数模块  ]]
 Runtiming = {
   eventIndex = {},
-  eventFuncList = {} -- 运行时事件函数列表
+  eventFuncList = {}, -- 运行时事件函数列表
 }
 
 -- 加特林速点宏
@@ -106,7 +107,7 @@ end
 function Runtiming.usbQuickShoot(key)
   repeat
     Utils.handleKeyClick(Config.shootKey)
-    Sleep(Utils.random(50, 100))
+    Sleep(Utils.random(40, 70))
   until not Utils.isKeyPressed(key)
 end
 
@@ -121,8 +122,9 @@ function Runtiming.gatlingStab(key)
 end
 
 -- 虚空重刀宏
-function Runtiming.xkQuickAttack(key)
-  if (not Utils.isKeyPressed(key)) then
+function Runtiming.xkQuickAttack()
+  local endTime = Runtiming.xkEndTime or 0
+  if GetRunningTime() - endTime < 500 then
     -- 防止多次点击多次触发重复操作
     return false
   end
@@ -132,11 +134,13 @@ function Runtiming.xkQuickAttack(key)
   Sleep(Utils.random(50, 70))
   Utils.handleKeyClick(3)
   Sleep(Utils.random(120, 140))
+  Runtiming.xkEndTime = GetRunningTime()
 end
 
 -- 挑战-试炼岛一键放置卡片
-function Runtiming.dropCard(key)
-  if (not Utils.isKeyPressed(key)) then
+function Runtiming.dropCard()
+  local endTime = Runtiming.dropCardEndTime or 0
+  if GetRunningTime() - endTime < 500 then
     -- 防止多次点击多次触发重复操作
     return false
   end
@@ -156,6 +160,7 @@ function Runtiming.dropCard(key)
       Sleep(Utils.random(50, 70))
     end
   end
+  Runtiming.dropCardEndTime = GetRunningTime()
 end
 
 -- 挑战-试炼岛卡片下标增加
@@ -177,8 +182,9 @@ function Runtiming.resetCardIndex()
 end
 
 -- 挑战-一键攻击
-function Runtiming.continueAttack(key)
-  if (not Utils.isKeyPressed(key)) then
+function Runtiming.continueAttack()
+  local endTime = Runtiming.attackEndTime or 0
+  if GetRunningTime() - endTime < 500 then
     -- 防止多次点击多次触发重复操作
     return false
   end
@@ -187,11 +193,11 @@ function Runtiming.continueAttack(key)
     Utils.handleKeyUp(Config.shootKey)
     Sleep(Utils.random(180, 200))
     Utils.handleKeyClick('r')
-    Runtiming.hasPressed = false
   else
     Utils.handleKeyDown(Config.shootKey)
-    Runtiming.hasPressed = true
   end
+  Runtiming.hasPressed = not hasPressed
+  Runtiming.attackEndTime = GetRunningTime()
 end
 
 -- 挑战-爆裂者一键榴弹
@@ -204,12 +210,17 @@ end
 
 -- 一键瞬狙宏
 function Runtiming.instantSpy(key)
-  local delay1, delay2, delay3 = Utils.random(30, 50), Utils.random(20, 40), Utils.random(20, 40)
-  Utils.handleKeyClick(Config.shootKey, delay1)
-  Sleep(delay2)
+  local endTime = Runtiming.spyEndTime or 0
+  if GetRunningTime() - endTime < 300 then
+    -- 防止多次点击多次触发重复操作
+    return false
+  end
+  Utils.handleKeyClick(Config.shootKey)
+  Sleep(Utils.random(20, 40))
   Utils.handleKeyClick('q')
-  Sleep(delay3)
+  Sleep(Utils.random(20, 40))
   Utils.handleKeyClick('q')
+  Runtiming.spyEndTime = GetRunningTime()
 end
 
 -- 连续蹲下
@@ -221,20 +232,22 @@ function Runtiming.nonStopSquat(key)
 end
 
 -- 一键鬼跳
-function Runtiming.nonStopJump()
-  if (not Utils.isKeyPressed(key)) then
+function Runtiming.nonStopJump(key)
+  local endTime = Runtiming.jumpEndTime or 0
+  if GetRunningTime() - endTime < 500 then
     -- 防止多次点击多次触发重复操作
     return false
   end
-  Utils.handleKeyClick('space')
+  Utils.handleKeyClick('spacebar')
   Sleep(Utils.random(40, 60))
   Utils.handleKeyDown('lctrl')
   repeat
-    Sleep(Utils.random(700, 800))
-    Utils.handleKeyClick('space')
+    Sleep(Utils.random(570, 600))
+    Utils.handleKeyClick('spacebar')
   until not Utils.isKeyPressed(key)
   Sleep(Utils.random(40, 60))
   Utils.handleKeyUp('lctrl')
+  Runtiming.jumpEndTime = GetRunningTime()
 end
 
 -- [[  工具函数模块  ]]
@@ -545,7 +558,6 @@ function Main.mouseButtonListener(arg, isPressed)
       modifier = 'G' .. arg
     else
       modifier = 'G' .. arg .. '_release'
-      Runtiming.releaseStartTime = GetTime()
     end
     for i = 1, #ModifierList do
       if (Utils.isKeyPressed(ModifierList[i])) then
