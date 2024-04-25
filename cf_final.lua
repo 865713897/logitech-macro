@@ -14,7 +14,7 @@ Config = {
   -- 挑战模式
   pve = {
     ['4'] = { 'continueAttack', 'continueGrenade' },
-    ['5'] = { 'dropCard' },
+    ['5'] = { 'dropCard', 'nonStopJump' },
     ['6'] = { 'resetCardIndex' },
     ['7'] = { 'increaseCardIndex' }
   },
@@ -22,7 +22,7 @@ Config = {
   pvp = {
     ['3'] = { 'instantSpy' },
     ['4'] = { 'usbQuickShoot' },
-    ['5'] = { 'nonStopSquat' }
+    ['5'] = { 'nonStopJump', 'nonStopSquat' }
   },
   defaultCardIndex = 1, -- 默认卡片下标
   -- 默认按键事件下标
@@ -153,7 +153,7 @@ function Runtiming.dropCard(key)
     Sleep(Utils.random(30, 50))
     if i ~= 1 then
       Utils.handleKeyClick(1)
-      Sleep(Utils.random(30, 50))
+      Sleep(Utils.random(50, 70))
     end
   end
 end
@@ -204,10 +204,11 @@ end
 
 -- 一键瞬狙宏
 function Runtiming.instantSpy(key)
-  Utils.handleKeyClick(Config.shootKey)
-  Sleep(Utils.random(20, 40))
+  local delay1, delay2, delay3 = Utils.random(30, 50), Utils.random(20, 40), Utils.random(20, 40)
+  Utils.handleKeyClick(Config.shootKey, delay1)
+  Sleep(delay2)
   Utils.handleKeyClick('q')
-  Sleep(Utils.random(20, 40))
+  Sleep(delay3)
   Utils.handleKeyClick('q')
 end
 
@@ -217,6 +218,23 @@ function Runtiming.nonStopSquat(key)
     Utils.handleKeyClick('lctrl')
     Sleep(Utils.random(40, 60))
   until not Utils.isKeyPressed(key)
+end
+
+-- 一键鬼跳
+function Runtiming.nonStopJump()
+  if (not Utils.isKeyPressed(key)) then
+    -- 防止多次点击多次触发重复操作
+    return false
+  end
+  Utils.handleKeyClick('space')
+  Sleep(Utils.random(40, 60))
+  Utils.handleKeyDown('lctrl')
+  repeat
+    Sleep(Utils.random(700, 800))
+    Utils.handleKeyClick('space')
+  until not Utils.isKeyPressed(key)
+  Sleep(Utils.random(40, 60))
+  Utils.handleKeyUp('lctrl')
 end
 
 -- [[  工具函数模块  ]]
@@ -289,14 +307,14 @@ function Utils.generateRandomNumber()
 end
 
 -- 触发点击
-function Utils.handleKeyClick(key)
+function Utils.handleKeyClick(key, delay)
   if type(key) == 'number' then
     PressMouseButton(key)
-    Sleep(Utils.random(30, 50))
+    Sleep(delay or Utils.random(30, 50))
     ReleaseMouseButton(key)
   else
     PressKey(key)
-    Sleep(Utils.random(30, 50))
+    Sleep(delay or Utils.random(30, 50))
     ReleaseKey(key)
   end
 end
@@ -519,10 +537,16 @@ function Main.modifierHandler(modifier)
 end
 
 -- 鼠标点击事件
-function Main.mouseButtonListener(arg, isPress)
+function Main.mouseButtonListener(arg, isPressed)
   if arg >= 3 and arg <= 11 then
     -- 监听3-11的可绑定按键
-    local modifier = isPress and 'G' .. arg or 'G' .. arg .. '_release'
+    local modifier = ''
+    if isPressed then
+      modifier = 'G' .. arg
+    else
+      modifier = 'G' .. arg .. '_release'
+      Runtiming.releaseStartTime = GetTime()
+    end
     for i = 1, #ModifierList do
       if (Utils.isKeyPressed(ModifierList[i])) then
         -- 其中某一个修饰符被按下
