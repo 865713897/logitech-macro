@@ -20,7 +20,6 @@ Config = {
   },
   -- 竞技模式
   pvp = {
-    ['3'] = { 'instantSpy' },
     ['4'] = { 'usbQuickShoot' },
     ['5'] = { 'nonStopJump', 'nonStopSquat' }
   },
@@ -204,7 +203,7 @@ end
 function Runtiming.continueGrenade(key)
   repeat
     Utils.handleKeyClick(3)
-    Sleep(Utils.random(220, 250))
+    Sleep(Utils.random(620, 670))
   until not Utils.isKeyPressed(key)
 end
 
@@ -238,12 +237,17 @@ function Runtiming.nonStopJump(key)
     -- 防止多次点击多次触发重复操作
     return false
   end
-  Utils.handleKeyClick('spacebar')
-  Sleep(Utils.random(40, 60))
-  Utils.handleKeyDown('lctrl')
+  local isFirst = true
   repeat
-    Sleep(Utils.random(570, 600))
-    Utils.handleKeyClick('spacebar')
+    local totalTime = Utils.random(637, 640)
+    local delay = Utils.random(30, 50)
+    Utils.handleKeyClick('spacebar', delay)
+    if isFirst then
+      -- 第一次起跳
+      Utils.handleKeyDown('lctrl')
+      isFirst = false
+    end
+    Sleep(totalTime - delay)
   until not Utils.isKeyPressed(key)
   Sleep(Utils.random(40, 60))
   Utils.handleKeyUp('lctrl')
