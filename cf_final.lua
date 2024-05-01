@@ -3,7 +3,7 @@
 Config = {
   openMacroKey = 'capslock',                 -- scrolllock | capslock | numlock
   shootKey = 1,                              -- 攻击按键1:鼠标左键，也可设置键盘按键
-  gameModeList = { 'zombie', 'pve', 'pvp' }, -- 模式列表
+  gameModeList = { 'zombie', 'pve', 'pvp' }, -- 模式列表 
   defaultGameModeIndex = 2,                  -- 默认游戏模式下标
   openDebugger = false,                      -- 是否开启调试模式（输出打印信息）
   -- 生化模式绑定按键函数信息
@@ -495,7 +495,7 @@ function Main.printEventInfo()
     local index = Runtiming.eventIndex[key]
     for i = 1, #value do
       local eventName = Utils.completeStr(value[i], 20)
-      local eventDesc = ChineseTextMap[value[i]]
+      local eventDesc = type(eventName) == "function" and ChineseTextMap[value[i]] or '未定义'
       local prefix = (index == i) and string.format('\tG%s=>', Utils.completeStr(key, 2)) or Utils.completeStr('\t', 6)
       -- 打印事件信息
       local info = string.format('%s\t\t%s\t\t%s', prefix, eventName, eventDesc)
