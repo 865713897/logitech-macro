@@ -3,7 +3,7 @@
 Config = {
   openMacroKey = 'capslock',                 -- scrolllock | capslock | numlock
   shootKey = 1,                              -- 攻击按键1:鼠标左键，也可设置键盘按键
-  gameModeList = { 'zombie', 'pve', 'pvp' }, -- 模式列表 
+  gameModeList = { 'zombie', 'pve', 'pvp' }, -- 模式列表
   defaultGameModeIndex = 2,                  -- 默认游戏模式下标
   openDebugger = false,                      -- 是否开启调试模式（输出打印信息）
   -- 生化模式绑定按键函数信息
@@ -20,8 +20,8 @@ Config = {
   },
   -- 竞技模式
   pvp = {
-    ['4'] = { 'usbQuickShoot' },
-    ['5'] = { 'nonStopJump', 'nonStopSquat' }
+    ['4'] = { 'rifleQuickShoot', 'nonStopSquat' },
+    ['5'] = { 'usbQuickShoot', 'tangDaoQuickShoot' },
   },
   defaultCardIndex = 1, -- 默认卡片下标
   -- 默认按键事件下标
@@ -59,7 +59,7 @@ Config = {
     ['ralt+G6'] = 'reset_6',
     ['G7'] = 'play_7',
     ['lalt+G10'] = 'nextGameMode',
-    ['lalt+G11'] = 'resetGameMode'
+    ['lalt+G11'] = 'resetGameMode',
   },
 }
 
@@ -83,6 +83,11 @@ ChineseTextMap = {
   ['nonStopSquat'] = '一键闪蹲',
   ['nonStopJump'] = '一键鬼跳',
   ['continueGrenade'] = '挑战爆裂者一键榴弹',
+  ['rifleQuickShoot'] = '步枪速点',
+  ['tangDaoQuickShoot'] = '唐刀快速刀',
+  ['autoDropCard'] = '试炼岛自动放卡攻击',
+  ['decreaseAutoDropTime'] = '减少自动放卡时间',
+  ['increaseAutoDropTime'] = '增加自动放卡时间'
 }
 
 
@@ -90,6 +95,7 @@ ChineseTextMap = {
 Runtiming = {
   eventIndex = {},
   eventFuncList = {}, -- 运行时事件函数列表
+  autoDropTime = 4000
 }
 
 -- 加特林速点宏
@@ -107,6 +113,22 @@ function Runtiming.usbQuickShoot(key)
   repeat
     Utils.handleKeyClick(Config.shootKey)
     Sleep(Utils.random(40, 70))
+  until not Utils.isKeyPressed(key)
+end
+
+-- 步枪速点
+function Runtiming.rifleQuickShoot(key)
+  repeat
+    Utils.handleKeyClick(Config.shootKey)
+    Sleep(Utils.random(75, 100))
+  until not Utils.isKeyPressed(key)
+end
+
+-- 唐刀速点
+function Runtiming.tangDaoQuickShoot(key)
+  repeat
+    Utils.handleKeyClick(Config.shootKey)
+    Sleep(Utils.random(400, 450))
   until not Utils.isKeyPressed(key)
 end
 
@@ -162,6 +184,49 @@ function Runtiming.dropCard()
   Runtiming.dropCardEndTime = GetRunningTime()
 end
 
+-- 试炼岛-自动放卡
+function Runtiming.autoDropCard()
+  Sleep(500)
+  local flag = true
+  local n = 1
+  while flag and n < 20 do
+    if Utils.isKeyPressed(2) then
+      flag = false
+      break
+    end
+    -- first -> 放卡
+    Runtiming.dropCard()
+    if Utils.isKeyPressed(2) then
+      flag = false
+      break
+    end
+    Sleep(5000)
+    -- second -> 攻击
+    Runtiming.continueAttack()
+    Sleep(Runtiming.autoDropTime)
+    Runtiming.continueAttack()
+    if Utils.isKeyPressed(2) then
+      flag = false
+      break
+    end
+    n = n + 1
+    Sleep(4000)
+  end
+end
+
+-- 试炼岛-增加自动放卡时间
+function Runtiming.increaseAutoDropTime()
+  Runtiming.autoDropTime = Runtiming.autoDropTime + 1000
+end
+
+-- 试炼岛-减少自动放卡时间
+function Runtiming.decreaseAutoDropTime()
+  if Runtiming.autoDropTime == 1000 then
+    return false
+  end
+  Runtiming.autoDropTime = Runtiming.autoDropTime - 1000
+end
+
 -- 挑战-试炼岛卡片下标增加
 function Runtiming.increaseCardIndex()
   local cardNums = #Config.cardPosition or 0
@@ -203,7 +268,7 @@ end
 function Runtiming.continueGrenade(key)
   repeat
     Utils.handleKeyClick(3)
-    Sleep(Utils.random(620, 670))
+    Sleep(Utils.random(640, 670))
   until not Utils.isKeyPressed(key)
 end
 
@@ -495,7 +560,7 @@ function Main.printEventInfo()
     local index = Runtiming.eventIndex[key]
     for i = 1, #value do
       local eventName = Utils.completeStr(value[i], 20)
-      local eventDesc = type(eventName) == "function" and ChineseTextMap[value[i]] or '未定义'
+      local eventDesc = type(Runtiming[value[i]]) == "function" and ChineseTextMap[value[i]] or '未定义'
       local prefix = (index == i) and string.format('\tG%s=>', Utils.completeStr(key, 2)) or Utils.completeStr('\t', 6)
       -- 打印事件信息
       local info = string.format('%s\t\t%s\t\t%s', prefix, eventName, eventDesc)
