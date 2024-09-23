@@ -86,7 +86,7 @@ end
 function GetUnicode()
 	local utf8 = require("utf8")
 	local str = "绑定事件"
-	local result = "utf8.char("
+	local result = "utf8_char("
 	for _, code in utf8.codes(str) do
 		result = result .. code .. ","
 	end
@@ -98,21 +98,44 @@ function GetUnicode()
 	print(result)
 end
 
+-- 字符转化
+function utf8_char(...)
+	local result = ""
+	for _, v in ipairs({ ... }) do
+		if v < 128 then
+			result = result .. string.char(v)
+		elseif v < 2048 then
+			result = result .. string.char(192 + math.floor(v / 64), 128 + (v % 64))
+		elseif v < 65536 then
+			result = result .. string.char(224 + math.floor(v / 4096), 128 + (math.floor(v / 64) % 64), 128 + (v % 64))
+		else
+			result = result
+				.. string.char(
+					240 + math.floor(v / 262144),
+					128 + (math.floor(v / 4096) % 64),
+					128 + (math.floor(v / 64) % 64),
+					128 + (v % 64)
+				)
+		end
+	end
+	return result
+end
+
 -- 中文对照表
 ChineseTextMap = {
-	["zombie"] = utf8.char(29983, 21270, 27169, 24335), -- 生化模式
-	["pve"] = utf8.char(35802, 25112, 27169, 24335), -- 挑战模式
-	["sport"] = utf8.char(31454, 20132, 27169, 24335), -- 竞技模式
-	["gatlingQuickShoot"] = utf8.char(21152, 29305, 26519, 36895), -- 加特林速点
-	["quickCtrl"] = utf8.char(38381, 20710), -- 闪蹲
-	["gatlingStab"] = utf8.char(21152, 29305, 26519, 36830), -- 加特林连刺
-	["xkQuickAttack"] = utf8.char(34394, 31354, 37325, 20992), -- 虚空重刀
-	["instantSpy"] = utf8.char(19968, 38190, 30636, 29477), -- 一键瞬狙
-	["continueAttack"] = utf8.char(35802, 25112, 25915, 20986, 25918, 21452), -- 挑战攻击释放双手
-	["dropCardFirst"] = utf8.char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 49), -- 试炼岛卡片放置：位置1
-	["dropCardSecond"] = utf8.char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 50), -- 试炼岛卡片放置：位置2
-	["dropCardThird"] = utf8.char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 51), -- 试炼岛卡片放置：位置3
-	["dropCardFourth"] = utf8.char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 52), -- 试炼岛卡片放置：位置4
+	["zombie"] = utf8_char(29983, 21270, 27169, 24335), -- 生化模式
+	["pve"] = utf8_char(35802, 25112, 27169, 24335), -- 挑战模式
+	["sport"] = utf8_char(31454, 20132, 27169, 24335), -- 竞技模式
+	["gatlingQuickShoot"] = utf8_char(21152, 29305, 26519, 36895), -- 加特林速点
+	["quickCtrl"] = utf8_char(38381, 20710), -- 闪蹲
+	["gatlingStab"] = utf8_char(21152, 29305, 26519, 36830), -- 加特林连刺
+	["xkQuickAttack"] = utf8_char(34394, 31354, 37325, 20992), -- 虚空重刀
+	["instantSpy"] = utf8_char(19968, 38190, 30636, 29477), -- 一键瞬狙
+	["continueAttack"] = utf8_char(35802, 25112, 25915, 20986, 25918, 21452), -- 挑战攻击释放双手
+	["dropCardFirst"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 49), -- 试炼岛卡片放置：位置1
+	["dropCardSecond"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 50), -- 试炼岛卡片放置：位置2
+	["dropCardThird"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 51), -- 试炼岛卡片放置：位置3
+	["dropCardFourth"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 52), -- 试炼岛卡片放置：位置4
 }
 
 -- 可用修饰符列表
@@ -238,11 +261,13 @@ CF.updateEventIndex = function(key)
 	local nextIndex = (CF.eventIndex[key] + 1) % (len + 1)
 	local realIndex = nextIndex == 0 and 1 or nextIndex
 	CF.eventIndex[key] = realIndex
+	CF.outputMessage()
 end
 
 -- 重置按键绑定事件index
 CF.resetEventIndex = function(key)
 	CF.eventIndex[key] = Config.defaultEventIndex[key]
+	CF.outputMessage()
 end
 
 -- 加特林速点
@@ -294,7 +319,7 @@ CF.instantSpy = function(key)
 end
 
 -- 试炼岛卡片放置：位置1
-CF.dropCardFirst = function()
+CF.dropCardFirst = function(key)
 	if not IsMouseButtonPressed(key) then
 		return
 	end
@@ -303,7 +328,7 @@ CF.dropCardFirst = function()
 end
 
 -- 试炼岛卡片放置：位置2
-CF.dropCardSecond = function()
+CF.dropCardSecond = function(key)
 	if not IsMouseButtonPressed(key) then
 		return
 	end
@@ -312,7 +337,7 @@ CF.dropCardSecond = function()
 end
 
 -- 试炼岛卡片放置：位置3
-CF.dropCardThird = function()
+CF.dropCardThird = function(key)
 	if not IsMouseButtonPressed(key) then
 		return
 	end
@@ -321,7 +346,7 @@ CF.dropCardThird = function()
 end
 
 -- 试炼岛卡片放置：位置4
-CF.dropCardFourth = function()
+CF.dropCardFourth = function(key)
 	if not IsMouseButtonPressed(key) then
 		return
 	end
@@ -331,9 +356,6 @@ end
 
 -- 挑战放置卡片
 CF.dropCard = function(position)
-	if not IsMouseButtonPressed(key) then
-		return
-	end
 	local randomFn = GenerateRandomNumber()
 	local pointOne = position[1]
 	local pointTwo = position[2]
@@ -391,7 +413,7 @@ CF.outputMessage = function()
 	OutputLogMessage("\n")
 	OutputLogMessage("\n")
 	OutputLogMessage(
-		"      " .. utf8.char(24403, 21069, 28216, 25103, 27169, 24335) .. ":          " .. ChineseTextMap[curGameMode]
+		"      " .. utf8_char(24403, 21069, 28216, 25103, 27169, 24335) .. ":          " .. ChineseTextMap[curGameMode]
 	)
 	OutputLogMessage("\n")
 	OutputLogMessage("\n")
@@ -399,9 +421,9 @@ CF.outputMessage = function()
 		local index = CF.eventIndex[k]
 		OutputLogMessage(
 			"      "
-				.. utf8.char(25353, 38190)
+				.. utf8_char(25353, 38190)
 				.. k
-				.. utf8.char(32465, 23450, 20107, 20214)
+				.. utf8_char(32465, 23450, 20107, 20214)
 				.. ":         "
 				.. ChineseTextMap[v[index]]
 		)
@@ -428,19 +450,20 @@ end
 -- 执行指令函数
 CF.runCmd = function(cmd)
 	local cmdGroup = string.split(cmd, "_")
-	local type = cmdGroup[1]
+	local _type = cmdGroup[1]
 	local key = cmdGroup[2]
-	if type == "next" then
+	if _type == "next" then
 		CF.updateEventIndex(key)
-	elseif type == "reset" then
+	elseif _type == "reset" then
 		CF.resetEventIndex(key)
-	elseif type == "play" then
+	elseif _type == "play" then
 		local _eventIndex = CF.eventIndex[key]
-		local fn = CF.eventFuncList[key][_eventIndex]
-		if type(fn) == "function" then
-			fn(tonumber(key))
+		local fnList = CF.eventFuncList[key]
+		if type(fnList) == "nil" then
+			return
 		end
-	elseif type == "changeMode" then
+		fnList[_eventIndex](key)
+	elseif _type == "changeMode" then
 		CF.changeGameMode()
 	end
 end
