@@ -100,24 +100,31 @@ end
 
 -- 字符转化
 function utf8_char(...)
+	local args = { ... }
 	local result = ""
-	for _, v in ipairs({ ... }) do
-		if v < 128 then
+
+	for _, v in ipairs(args) do
+		-- 验证码点的范围，Unicode 有效码点范围为 0 - 0x10FFFF
+		if v < 0 or v > 0x10FFFF then
+			error("Invalid Unicode code point: " .. tostring(v))
+		elseif v < 0x80 then
 			result = result .. string.char(v)
-		elseif v < 2048 then
-			result = result .. string.char(192 + math.floor(v / 64), 128 + (v % 64))
-		elseif v < 65536 then
-			result = result .. string.char(224 + math.floor(v / 4096), 128 + (math.floor(v / 64) % 64), 128 + (v % 64))
+		elseif v < 0x800 then
+			result = result .. string.char(0xC0 + math.floor(v / 0x40), 0x80 + (v % 0x40))
+		elseif v < 0x10000 then
+			result = result
+				.. string.char(0xE0 + math.floor(v / 0x1000), 0x80 + (math.floor(v / 0x40) % 0x40), 0x80 + (v % 0x40))
 		else
 			result = result
 				.. string.char(
-					240 + math.floor(v / 262144),
-					128 + (math.floor(v / 4096) % 64),
-					128 + (math.floor(v / 64) % 64),
-					128 + (v % 64)
+					0xF0 + math.floor(v / 0x40000),
+					0x80 + (math.floor(v / 0x1000) % 0x40),
+					0x80 + (math.floor(v / 0x40) % 0x40),
+					0x80 + (v % 0x40)
 				)
 		end
 	end
+
 	return result
 end
 
@@ -134,6 +141,21 @@ ChineseTextMap = {
 	["continueAttack"] = utf8_char(35802, 25112, 25915, 20986, 25918, 21452), -- 挑战攻击释放双手
 	["dropCardFirst"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 49), -- 试炼岛卡片放置：位置1
 	["dropCardSecond"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 50), -- 试炼岛卡片放置：位置2
+	["autoDropCardSecond"] = utf8_char(
+		35797,
+		28860,
+		23707,
+		21345,
+		29255,
+		33258,
+		21160,
+		25918,
+		32622,
+		65306,
+		20301,
+		32622,
+		50
+	),
 	["dropCardThird"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 51), -- 试炼岛卡片放置：位置3
 	["dropCardFourth"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 52), -- 试炼岛卡片放置：位置4
 }
@@ -183,6 +205,7 @@ Config = {
 	pve = {
 		["4"] = { "continueAttack" },
 		["5"] = { "dropCardFirst", "dropCardSecond", "dropCardThird", "dropCardFourth" },
+		["7"] = { "autoDropCardSecond" },
 	},
 }
 
@@ -199,6 +222,8 @@ CF = {
 	},
 	-- 事件函数绑定列表
 	eventFuncList = {},
+	-- 事件最后运行时间
+	lastRunTime = 0,
 }
 
 -- 触发点击
@@ -291,8 +316,11 @@ CF.gatlingStab = function(key)
 end
 
 -- 虚空重刀宏i
-CF.xkQuickAttack = function(key)
-	if not IsMouseButtonPressed(key) then
+CF.xkQuickAttack = function()
+	-- 如果当前时间和最后运行时间相差少于500ms
+	-- 则不执行
+	local diffTime = GetRunningTime() - CF.lastRunTime
+	if diffTime < 500 then
 		return
 	end
 	CF.onClick(3)
@@ -301,11 +329,15 @@ CF.xkQuickAttack = function(key)
 	Sleep(Random(50, 60))
 	CF.onClick(3)
 	Sleep(Random(120, 140))
+	CF.lastRunTime = GetRunningTime()
 end
 
 -- 一键瞬狙宏
-CF.instantSpy = function(key)
-	if not IsMouseButtonPressed(key) then
+CF.instantSpy = function()
+	-- 如果当前时间和最后运行时间相差少于500ms
+	-- 则不执行
+	local diffTime = GetRunningTime() - CF.lastRunTime
+	if diffTime < 500 then
 		return
 	end
 	CF.onClick(3)
@@ -316,42 +348,90 @@ CF.instantSpy = function(key)
 	Sleep(Random(20, 40))
 	CF.onClick("q")
 	Sleep(Random(20, 40))
+	CF.lastRunTime = GetRunningTime()
 end
 
 -- 试炼岛卡片放置：位置1
-CF.dropCardFirst = function(key)
-	if not IsMouseButtonPressed(key) then
+CF.dropCardFirst = function()
+	-- 如果当前时间和最后运行时间相差少于500ms
+	-- 则不执行
+	local diffTime = GetRunningTime() - CF.lastRunTime
+	if diffTime < 500 then
 		return
 	end
 	local position = { { -120, -135, 0, 0 }, { 180, 195, 70, 76 } }
 	CF.dropCard(position)
+	CF.lastRunTime = GetRunningTime()
 end
 
 -- 试炼岛卡片放置：位置2
-CF.dropCardSecond = function(key)
-	if not IsMouseButtonPressed(key) then
+CF.dropCardSecond = function()
+	-- 如果当前时间和最后运行时间相差少于500ms
+	-- 则不执行
+	local diffTime = GetRunningTime() - CF.lastRunTime
+	if diffTime < 500 then
 		return
 	end
 	local position = { { -40, -55, 0, 0 }, { 130, 145, 70, 76 } }
 	CF.dropCard(position)
+	CF.lastRunTime = GetRunningTime()
+end
+
+-- 试炼岛卡片自动放置：位置2
+CF.autoDropCardSecond = function()
+	-- 如果当前时间和最后运行时间相差少于500ms
+	-- 则不执行
+	local diffTime = GetRunningTime() - CF.lastRunTime
+	if diffTime < 500 then
+		return
+	end
+	local position = { { -40, -55, 0, 0 }, { 130, 145, 70, 76 } }
+	local count = 20
+	while count > 0 do
+		CF.dropCard(position)
+		if IsMouseButtonPressed(3) then
+			break
+		end
+		-- 等待5s
+		Sleep(5 * 1000)
+		CF.continueAttack()
+		Sleep(2 * 1000)
+		-- 2s解决战斗
+		CF.continueAttack()
+		if IsMouseButtonPressed(3) then
+			break
+		end
+		-- 再次等待5s
+		Sleep(5 * 1000)
+		count = count - 1
+	end
+	CF.lastRunTime = GetRunningTime()
 end
 
 -- 试炼岛卡片放置：位置3
-CF.dropCardThird = function(key)
-	if not IsMouseButtonPressed(key) then
+CF.dropCardThird = function()
+	-- 如果当前时间和最后运行时间相差少于500ms
+	-- 则不执行
+	local diffTime = GetRunningTime() - CF.lastRunTime
+	if diffTime < 500 then
 		return
 	end
 	local position = { { 20, 30, 0, 0 }, { 100, 110, 70, 76 } }
 	CF.dropCard(position)
+	CF.lastRunTime = GetRunningTime()
 end
 
 -- 试炼岛卡片放置：位置4
-CF.dropCardFourth = function(key)
-	if not IsMouseButtonPressed(key) then
+CF.dropCardFourth = function()
+	-- 如果当前时间和最后运行时间相差少于500ms
+	-- 则不执行
+	local diffTime = GetRunningTime() - CF.lastRunTime
+	if diffTime < 500 then
 		return
 	end
 	local position = { { 76, 90, 0, 0 }, { 40, 50, 70, 76 } }
 	CF.dropCard(position)
+	CF.lastRunTime = GetRunningTime()
 end
 
 -- 挑战放置卡片
@@ -374,8 +454,11 @@ CF.dropCard = function(position)
 end
 
 -- 长按攻击键键-再次点击松开
-CF.continueAttack = function(key)
-	if not IsMouseButtonPressed(key) then
+CF.continueAttack = function()
+	-- 如果当前时间和最后运行时间相差少于500ms
+	-- 则不执行
+	local diffTime = GetRunningTime() - CF.lastRunTime
+	if diffTime < 500 then
 		return
 	end
 	local hasPressed = CF.hasPressed or false
@@ -389,6 +472,7 @@ CF.continueAttack = function(key)
 		CF.hasPressed = true
 	end
 	Sleep(Random(65, 80))
+	CF.lastRunTime = GetRunningTime()
 end
 
 -- 切换模式
