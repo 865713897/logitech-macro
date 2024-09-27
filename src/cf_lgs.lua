@@ -86,7 +86,7 @@ end
 function GetUnicode()
 	local utf8 = require("utf8")
 	local str = "绑定事件"
-	local result = "utf8_char("
+	local result = "Utf8Char("
 	for _, code in utf8.codes(str) do
 		result = result .. code .. ","
 	end
@@ -99,7 +99,7 @@ function GetUnicode()
 end
 
 -- 字符转化
-function utf8_char(...)
+function Utf8Char(...)
 	local args = { ... }
 	local result = ""
 
@@ -128,38 +128,6 @@ function utf8_char(...)
 	return result
 end
 
--- 中文对照表
-ChineseTextMap = {
-	["zombie"] = utf8_char(29983, 21270, 27169, 24335), -- 生化模式
-	["pve"] = utf8_char(35802, 25112, 27169, 24335), -- 挑战模式
-	["sport"] = utf8_char(31454, 20132, 27169, 24335), -- 竞技模式
-	["gatlingQuickShoot"] = utf8_char(21152, 29305, 26519, 36895), -- 加特林速点
-	["quickCtrl"] = utf8_char(38381, 20710), -- 闪蹲
-	["gatlingStab"] = utf8_char(21152, 29305, 26519, 36830), -- 加特林连刺
-	["xkQuickAttack"] = utf8_char(34394, 31354, 37325, 20992), -- 虚空重刀
-	["instantSpy"] = utf8_char(19968, 38190, 30636, 29477), -- 一键瞬狙
-	["continueAttack"] = utf8_char(35802, 25112, 25915, 20986, 25918, 21452), -- 挑战攻击释放双手
-	["dropCardFirst"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 49), -- 试炼岛卡片放置：位置1
-	["dropCardSecond"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 50), -- 试炼岛卡片放置：位置2
-	["autoDropCardSecond"] = utf8_char(
-		35797,
-		28860,
-		23707,
-		21345,
-		29255,
-		33258,
-		21160,
-		25918,
-		32622,
-		65306,
-		20301,
-		32622,
-		50
-	),
-	["dropCardThird"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 51), -- 试炼岛卡片放置：位置3
-	["dropCardFourth"] = utf8_char(35797, 28889, 23707, 21345, 21360, 25918, 32622, 65306, 20301, 32622, 52), -- 试炼岛卡片放置：位置4
-}
-
 -- 可用修饰符列表
 ModifierList = { "lalt", "ralt", "rctrl", "rshift" }
 
@@ -187,7 +155,16 @@ Config = {
 		["G7"] = "play_7",
 		["lalt + G7"] = "next_7",
 		["ralt + G7"] = "reset_7",
-		["ralt + G6"] = "changeMode",
+		["G8"] = "play_8",
+		["lalt + G8"] = "next_8",
+		["ralt + G8"] = "reset_8",
+		["G10"] = "play_10",
+		["lalt + G10"] = "next_10",
+		["ralt + G10"] = "reset_10",
+		["G11"] = "play_11",
+		["lalt + G11"] = "next_11",
+		["ralt + G11"] = "reset_11",
+		["ralt + G3"] = "changeMode",
 	},
 	-- 按键事件默认下标
 	defaultEventIndex = {
@@ -205,7 +182,9 @@ Config = {
 	pve = {
 		["4"] = { "continueAttack" },
 		["5"] = { "dropCardFirst", "dropCardSecond", "dropCardThird", "dropCardFourth" },
-		["7"] = { "autoDropCardSecond" },
+		["7"] = { "autoDropCardFirst", "autoDropCardSecond" },
+		["10"] = { "addFightTime", "reduceFightTime" },
+		["11"] = { "addWaitTime", "reduceWaitTime" },
 	},
 }
 
@@ -224,6 +203,48 @@ CF = {
 	eventFuncList = {},
 	-- 事件最后运行时间
 	lastRunTime = 0,
+	-- 自动放卡战斗时间
+	fightTime = 1.5,
+	-- 自动放卡等待时间
+	waitTime = 4,
+}
+
+-- 中文对照表
+ChineseTextMap = {
+	["zombie"] = Utf8Char(29983, 21270, 27169, 24335), -- 生化模式
+	["pve"] = Utf8Char(25361, 25112, 27169, 24335), -- 挑战模式
+	["sport"] = Utf8Char(31454, 25216, 27169, 24335), -- 竞技模式
+	["gatlingQuickShoot"] = Utf8Char(21152, 29305, 26519, 36895, 28857), -- 加特林速点
+	["quickCtrl"] = Utf8Char(19968, 38190, 38378, 36466), -- 一键闪蹲
+	["gatlingStab"] = Utf8Char(21152, 29305, 26519, 36830, 21050), -- 加特林连刺
+	["xkQuickAttack"] = Utf8Char(34394, 31354, 37325, 20992), -- 虚空重刀
+	["instantSpy"] = Utf8Char(19968, 38190, 30636, 29401), -- 一键瞬狙
+	["continueAttack"] = Utf8Char(25361, 25112, 27169, 24335, 33258, 21160, 25915, 20987), -- 挑战攻击释放双手
+	["dropCardFirst"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 49), -- 试炼岛卡片放置：位置1
+	["dropCardSecond"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 50), -- 试炼岛卡片放置：位置2
+	["autoDropCardSecond"] = function()
+		return Utf8Char(35797, 28860, 23707, 21345, 29255, 33258, 21160, 25918, 32622, 65306, 20301, 32622, 50)
+	end,
+	["dropCardThird"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 51), -- 试炼岛卡片放置：位置3
+	["dropCardFourth"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 52), -- 试炼岛卡片放置：位置4
+	-- 增加战斗时间
+	["addFightTime"] = function()
+		return Utf8Char(22686, 21152, 25112, 26007, 26102, 38388, 65288, 24403, 21069, 26102, 38388, 65306)
+			.. CF.fightTime
+			.. "s"
+			.. Utf8Char(65289)
+	end,
+	-- 减少战斗时间
+	["reduceFightTime"] = Utf8Char(20943, 23569, 25112, 26007, 26102, 38388),
+	-- 增加等待时间
+	["addWaitTime"] = function()
+		return Utf8Char(22686, 21152, 31561, 24453, 26102, 38388, 65288, 24403, 21069, 26102, 38388, 65306)
+			.. CF.waitTime
+			.. "s"
+			.. Utf8Char(65289)
+	end,
+	-- 减少等待时间
+	["reduceWaitTime"] = Utf8Char(20943, 23569, 31561, 24453, 26102, 38388),
 }
 
 -- 触发点击
@@ -310,7 +331,7 @@ CF.gatlingStab = function(key)
 	repeat
 		PressAndReleaseMouseButton(3)
 		Sleep(Random(270, 300))
-		PressAndReleaseMouseButton(1)
+		PressAndReleaseMouseButton(2)
 		Sleep(Random(40, 63))
 	until not CF.isPressed(key)
 end
@@ -364,6 +385,19 @@ CF.dropCardFirst = function()
 	CF.lastRunTime = GetRunningTime()
 end
 
+-- 试炼岛卡片自动放置：位置1
+CF.autoDropCardFirst = function()
+	-- 如果当前时间和最后运行时间相差少于500ms
+	-- 则不执行
+	local diffTime = GetRunningTime() - CF.lastRunTime
+	if diffTime < 500 then
+		return
+	end
+	local position = { { -120, -135, 0, 0 }, { 180, 195, 70, 76 } }
+	CF.autoDropCard(position)
+	CF.lastRunTime = GetRunningTime()
+end
+
 -- 试炼岛卡片放置：位置2
 CF.dropCardSecond = function()
 	-- 如果当前时间和最后运行时间相差少于500ms
@@ -386,25 +420,7 @@ CF.autoDropCardSecond = function()
 		return
 	end
 	local position = { { -40, -55, 0, 0 }, { 130, 145, 70, 76 } }
-	local count = 20
-	while count > 0 do
-		CF.dropCard(position)
-		if IsMouseButtonPressed(3) then
-			break
-		end
-		-- 等待5s
-		Sleep(5 * 1000)
-		CF.continueAttack()
-		Sleep(2 * 1000)
-		-- 2s解决战斗
-		CF.continueAttack()
-		if IsMouseButtonPressed(3) then
-			break
-		end
-		-- 再次等待5s
-		Sleep(5 * 1000)
-		count = count - 1
-	end
+	CF.autoDropCard(position)
 	CF.lastRunTime = GetRunningTime()
 end
 
@@ -453,6 +469,62 @@ CF.dropCard = function(position)
 	Sleep(Random(30, 50))
 end
 
+-- 试炼岛自动放卡
+CF.autoDropCard = function(position)
+	-- 默认一次性自动放置20张卡片
+	local count = 20
+	while count > 0 do
+		CF.dropCard(position)
+		-- 等待5s
+		Sleep(5 * 1000)
+		CF.continueAttack()
+		-- 2s解决战斗
+		Sleep(CF.fightTime * 1000)
+		CF.continueAttack()
+		if CF.isPressed(2) or CF.isPressed(3) then
+			count = 0
+			break
+		end
+		-- 再次等待5s
+		Sleep(CF.waitTime * 1000)
+		count = count - 1
+	end
+end
+
+-- 增加战斗时长
+CF.addFightTime = function()
+	-- 战斗时长以0.5为单位
+	CF.fightTime = CF.fightTime + 0.5
+	CF.outputMessage()
+end
+
+-- 减少战斗时长
+CF.reduceFightTime = function()
+	-- 战斗时长以0.5为单位
+	if CF.fightTime == 0.5 then
+		return
+	end
+	CF.fightTime = CF.fightTime - 0.5
+	CF.outputMessage()
+end
+
+-- 增加等待时长
+CF.addWaitTime = function()
+	-- 等待时长以0.5为单位
+	CF.waitTime = CF.waitTime + 1
+	CF.outputMessage()
+end
+
+-- 减少等待时长
+CF.reduceWaitTime = function()
+	-- 等待时长以0.5为单位
+	if CF.waitTime == 2 then
+		return
+	end
+	CF.waitTime = CF.waitTime - 1
+	CF.outputMessage()
+end
+
 -- 长按攻击键键-再次点击松开
 CF.continueAttack = function()
 	-- 如果当前时间和最后运行时间相差少于500ms
@@ -466,13 +538,20 @@ CF.continueAttack = function()
 		ReleaseMouseButton(1)
 		Sleep(Random(180, 200))
 		CF.onClick("r")
-		CF.hasPressed = false
 	else
 		PressMouseButton(1)
-		CF.hasPressed = true
 	end
+	CF.hasPressed = not hasPressed
 	Sleep(Random(65, 80))
 	CF.lastRunTime = GetRunningTime()
+end
+
+-- 爆裂者自动榴弹
+CF.autoBombardment = function(key)
+	repeat
+		CF.onClick(2)
+		Sleep(Random(240, 280))
+	until not CF.isPressed(key)
 end
 
 -- 切换模式
@@ -488,6 +567,16 @@ CF.changeGameMode = function()
 	CF.initEventFuncList()
 end
 
+-- 获取文本
+CF.getText = function(key)
+	local value = ChineseTextMap[key]
+	if type(value) == "function" then
+		return value()
+	else
+		return value
+	end
+end
+
 -- 输出当前信息
 CF.outputMessage = function()
 	-- 当前游戏模式
@@ -497,20 +586,24 @@ CF.outputMessage = function()
 	OutputLogMessage("\n")
 	OutputLogMessage("\n")
 	OutputLogMessage(
-		"      " .. utf8_char(24403, 21069, 28216, 25103, 27169, 24335) .. ":          " .. ChineseTextMap[curGameMode]
+		"      " .. Utf8Char(24403, 21069, 28216, 25103, 27169, 24335) .. ":          " .. CF.getText(curGameMode)
 	)
 	OutputLogMessage("\n")
 	OutputLogMessage("\n")
 	for k, v in pairs(Config[curGameMode]) do
 		local index = CF.eventIndex[k]
-		OutputLogMessage(
-			"      "
-				.. utf8_char(25353, 38190)
-				.. k
-				.. utf8_char(32465, 23450, 20107, 20214)
-				.. ":         "
-				.. ChineseTextMap[v[index]]
-		)
+		for i in ipairs(v) do
+			local titleText = "                "
+			local valueText = "          " .. CF.getText(v[i])
+			if i == 1 then
+				titleText = "              G" .. k
+			end
+			if i == index then
+				valueText = "      ==> " .. v[i]
+			end
+			OutputLogMessage(titleText .. valueText)
+			OutputLogMessage("\n")
+		end
 		OutputLogMessage("\n")
 	end
 	OutputLogMessage("\n")
