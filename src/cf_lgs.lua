@@ -104,20 +104,20 @@ function Utf8Char(...)
 	local result = ""
 
 	for _, v in ipairs(args) do
-		-- 验证码点的范围，Unicode 有效码点范围为 0 - 0x10FFFF
-		if v < 0 or v > 0x10FFFF then
-			error("Invalid Unicode code point: " .. tostring(v))
+		-- 验证码点的范围，unicode 有效码点范围为 0 - 0x10ffff
+		if v < 0 or v > 0x10ffff then
+			error("invalid unicode code point: " .. tostring(v))
 		elseif v < 0x80 then
 			result = result .. string.char(v)
 		elseif v < 0x800 then
-			result = result .. string.char(0xC0 + math.floor(v / 0x40), 0x80 + (v % 0x40))
+			result = result .. string.char(0xc0 + math.floor(v / 0x40), 0x80 + (v % 0x40))
 		elseif v < 0x10000 then
 			result = result
-				.. string.char(0xE0 + math.floor(v / 0x1000), 0x80 + (math.floor(v / 0x40) % 0x40), 0x80 + (v % 0x40))
+				.. string.char(0xe0 + math.floor(v / 0x1000), 0x80 + (math.floor(v / 0x40) % 0x40), 0x80 + (v % 0x40))
 		else
 			result = result
 				.. string.char(
-					0xF0 + math.floor(v / 0x40000),
+					0xf0 + math.floor(v / 0x40000),
 					0x80 + (math.floor(v / 0x1000) % 0x40),
 					0x80 + (math.floor(v / 0x40) % 0x40),
 					0x80 + (v % 0x40)
@@ -172,6 +172,9 @@ Config = {
 		["4"] = 1,
 		["5"] = 1,
 		["7"] = 1,
+		["8"] = 1,
+		["10"] = 1,
+		["11"] = 1,
 	},
 	-- 生化模式绑定按键函数信息
 	zombie = {
@@ -183,9 +186,13 @@ Config = {
 		["4"] = { "continueAttack" },
 		["5"] = { "dropCardFirst", "dropCardSecond", "dropCardThird", "dropCardFourth" },
 		["7"] = { "autoDropCardFirst", "autoDropCardSecond" },
-		["10"] = { "addFightTime", "reduceFightTime" },
-		["11"] = { "addWaitTime", "reduceWaitTime" },
+		["8"] = { "changeTimeMode" },
+		["10"] = { "addTime" },
+		["11"] = { "reduceTime" },
 	},
+	defaultFightTime = 4, -- 默认战斗时间
+	defaultWaitTime = 1.5, -- 默认等待时间
+	defaultTimeMode = "fight", -- 默认时间模式
 }
 
 -- 运行时配置
@@ -198,11 +205,16 @@ CF = {
 		["4"] = 1,
 		["5"] = 1,
 		["7"] = 1,
+		["8"] = 1,
+		["10"] = 1,
+		["11"] = 1,
 	},
 	-- 事件函数绑定列表
 	eventFuncList = {},
 	-- 事件最后运行时间
 	lastRunTime = 0,
+	-- 时间模式
+	timeMode = "fight",
 	-- 自动放卡战斗时间
 	fightTime = 1.5,
 	-- 自动放卡等待时间
@@ -222,29 +234,52 @@ ChineseTextMap = {
 	["continueAttack"] = Utf8Char(25361, 25112, 27169, 24335, 33258, 21160, 25915, 20987), -- 挑战攻击释放双手
 	["dropCardFirst"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 49), -- 试炼岛卡片放置：位置1
 	["dropCardSecond"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 50), -- 试炼岛卡片放置：位置2
-	["autoDropCardSecond"] = function()
-		return Utf8Char(35797, 28860, 23707, 21345, 29255, 33258, 21160, 25918, 32622, 65306, 20301, 32622, 50)
-	end,
+	["autoDropCardFirst"] = Utf8Char(
+		35797,
+		28860,
+		23707,
+		21345,
+		29255,
+		33258,
+		21160,
+		25918,
+		32622,
+		65306,
+		20301,
+		32622,
+		49
+	),
+	["autoDropCardSecond"] = Utf8Char(
+		35797,
+		28860,
+		23707,
+		21345,
+		29255,
+		33258,
+		21160,
+		25918,
+		32622,
+		65306,
+		20301,
+		32622,
+		50
+	),
 	["dropCardThird"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 51), -- 试炼岛卡片放置：位置3
 	["dropCardFourth"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 52), -- 试炼岛卡片放置：位置4
-	-- 增加战斗时间
-	["addFightTime"] = function()
-		return Utf8Char(22686, 21152, 25112, 26007, 26102, 38388, 65288, 24403, 21069, 26102, 38388, 65306)
-			.. CF.fightTime
-			.. "s"
-			.. Utf8Char(65289)
+	-- 增加时间
+	["addTime"] = function()
+		local isFightMode = CF.timeMode == "fight"
+		return Utf8Char(22686, 21152) .. isFightMode and Utf8Char(25112, 26007, 26102, 38388)
+			or Utf8Char(31561, 24453, 26102, 38388) .. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306) .. isFightMode and CF.fightTime
+			or CF.waitTime .. "s）"
 	end,
-	-- 减少战斗时间
-	["reduceFightTime"] = Utf8Char(20943, 23569, 25112, 26007, 26102, 38388),
-	-- 增加等待时间
-	["addWaitTime"] = function()
-		return Utf8Char(22686, 21152, 31561, 24453, 26102, 38388, 65288, 24403, 21069, 26102, 38388, 65306)
-			.. CF.waitTime
-			.. "s"
-			.. Utf8Char(65289)
+	-- 减少时间
+	["reduceTime"] = function()
+		local isFightMode = CF.timeMode == "fight"
+		return Utf8Char(20943, 23569) .. isFightMode and Utf8Char(25112, 26007, 26102, 38388)
+			or Utf8Char(31561, 24453, 26102, 38388) .. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306) .. isFightMode and CF.fightTime
+			or CF.waitTime .. "s）"
 	end,
-	-- 减少等待时间
-	["reduceWaitTime"] = Utf8Char(20943, 23569, 31561, 24453, 26102, 38388),
 }
 
 -- 触发点击
@@ -492,36 +527,26 @@ CF.autoDropCard = function(position)
 end
 
 -- 增加战斗时长
-CF.addFightTime = function()
+CF.addTime = function()
 	-- 战斗时长以0.5为单位
-	CF.fightTime = CF.fightTime + 0.5
+	-- 等待时长以1为单位
+	if CF.timeMode == "fight" then
+		CF.fightTime = CF.fightTime + 0.5
+	else
+		CF.waitTime = CF.waitTime + 1
+	end
 	CF.outputMessage()
 end
 
 -- 减少战斗时长
-CF.reduceFightTime = function()
+CF.reduceTime = function()
 	-- 战斗时长以0.5为单位
-	if CF.fightTime == 0.5 then
-		return
+	-- 等待时长以1为单位
+	if CF.timeMode == "fight" then
+		CF.fightTime = CF.fightTime == 1 and 1 or CF.fightTime - 0.5
+	else
+		CF.waitTime = CF.waitTime == 2 and 2 or CF.waitTime - 1
 	end
-	CF.fightTime = CF.fightTime - 0.5
-	CF.outputMessage()
-end
-
--- 增加等待时长
-CF.addWaitTime = function()
-	-- 等待时长以0.5为单位
-	CF.waitTime = CF.waitTime + 1
-	CF.outputMessage()
-end
-
--- 减少等待时长
-CF.reduceWaitTime = function()
-	-- 等待时长以0.5为单位
-	if CF.waitTime == 2 then
-		return
-	end
-	CF.waitTime = CF.waitTime - 1
 	CF.outputMessage()
 end
 
@@ -564,7 +589,16 @@ CF.changeGameMode = function()
 	for k, v in pairs(Config.defaultEventIndex) do
 		CF.eventIndex[k] = v
 	end
+	CF.timeMode = Config.defaultTimeMode
+	CF.fightTime = Config.defaultFightTime
+	CF.waitTime = Config.defaultWaitTime
 	CF.initEventFuncList()
+end
+
+-- 切换等待模式 fight：战斗 wait：等待
+CF.changeTimeMode = function()
+	CF.timeMode = CF.timeMode == "fight" and "wait" or "fight"
+	CF.outputMessage()
 end
 
 -- 获取文本
@@ -581,25 +615,38 @@ end
 CF.outputMessage = function()
 	-- 当前游戏模式
 	local curGameMode = Config.gameMode[CF.gameModeIndex]
+	local eventTable = Config[curGameMode]
+	local keys = {}
+	for k in pairs(eventTable) do
+		table.insert(keys, k)
+	end
+	table.sort(keys, function(a, b)
+		return tonumber(a) < tonumber(b)
+	end)
 	ClearLog()
 	OutputLogMessage(" -------------------------------------------------------------------------------------------- ")
 	OutputLogMessage("\n")
 	OutputLogMessage("\n")
 	OutputLogMessage(
-		"      " .. Utf8Char(24403, 21069, 28216, 25103, 27169, 24335) .. ":          " .. CF.getText(curGameMode)
+		string.rep(" ", 6)
+			.. Utf8Char(24403, 21069, 28216, 25103, 27169, 24335)
+			.. string.rep(" ", 10)
+			.. CF.getText(curGameMode)
 	)
 	OutputLogMessage("\n")
 	OutputLogMessage("\n")
-	for k, v in pairs(Config[curGameMode]) do
+	for _, k in pairs(keys) do
+		local v = eventTable[k]
 		local index = CF.eventIndex[k]
 		for i in ipairs(v) do
-			local titleText = "                "
-			local valueText = "          " .. CF.getText(v[i])
-			if i == 1 then
-				titleText = "              G" .. k
-			end
+			local titleText = string.rep(" ", 18 + string.len(k))
+			local valueText = string.rep(" ", 10) .. CF.getText(v[i])
 			if i == index then
-				valueText = "      ==> " .. v[i]
+				titleText = string.rep(" ", 16) .. "G" .. k
+				valueText = "      ==>      " .. v[i]
+			end
+			if string.len(k) > 1 then
+				titleText = string.sub(titleText, 3)
 			end
 			OutputLogMessage(titleText .. valueText)
 			OutputLogMessage("\n")
