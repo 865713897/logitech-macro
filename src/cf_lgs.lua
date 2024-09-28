@@ -277,7 +277,7 @@ ChineseTextMap = {
 			.. timeModeText
 			.. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306)
 			.. timeText
-			.. "s）"
+			.. Utf8Char(115, 65289)
 	end,
 	-- 减少时间
 	["reduceTime"] = function()
@@ -289,7 +289,7 @@ ChineseTextMap = {
 			.. timeModeText
 			.. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306)
 			.. timeText
-			.. "s）"
+			.. Utf8Char(115, 65289)
 	end,
 }
 
@@ -654,7 +654,7 @@ CF.outputMessage = function()
 			local valueText = string.rep(" ", 10) .. CF.getText(v[i])
 			if i == index then
 				titleText = string.rep(" ", 26) .. "G" .. k
-				valueText = "      ==>      " .. v[i]
+				valueText = "      ==>      " .. CF.getText(v[i])
 			end
 			if string.len(k) > 1 then
 				titleText = string.sub(titleText, 3)
