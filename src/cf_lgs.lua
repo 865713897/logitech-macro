@@ -266,19 +266,30 @@ ChineseTextMap = {
 	),
 	["dropCardThird"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 51), -- 试炼岛卡片放置：位置3
 	["dropCardFourth"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 52), -- 试炼岛卡片放置：位置4
+	["changeTimeMode"] = Utf8Char(26356, 25913, 26102, 38388, 27169, 24335),
 	-- 增加时间
 	["addTime"] = function()
 		local isFightMode = CF.timeMode == "fight"
-		return Utf8Char(22686, 21152) .. isFightMode and Utf8Char(25112, 26007, 26102, 38388)
-			or Utf8Char(31561, 24453, 26102, 38388) .. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306) .. isFightMode and CF.fightTime
-			or CF.waitTime .. "s）"
+		local timeModeText = isFightMode and Utf8Char(25112, 26007, 26102, 38388)
+			or Utf8Char(31561, 24453, 26102, 38388)
+		local timeText = isFightMode and CF.fightTime or CF.waitTime
+		return Utf8Char(22686, 21152)
+			.. timeModeText
+			.. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306)
+			.. timeText
+			.. "s）"
 	end,
 	-- 减少时间
 	["reduceTime"] = function()
 		local isFightMode = CF.timeMode == "fight"
-		return Utf8Char(20943, 23569) .. isFightMode and Utf8Char(25112, 26007, 26102, 38388)
-			or Utf8Char(31561, 24453, 26102, 38388) .. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306) .. isFightMode and CF.fightTime
-			or CF.waitTime .. "s）"
+		local timeModeText = isFightMode and Utf8Char(25112, 26007, 26102, 38388)
+			or Utf8Char(31561, 24453, 26102, 38388)
+		local timeText = isFightMode and CF.fightTime or CF.waitTime
+		return Utf8Char(20943, 23569)
+			.. timeModeText
+			.. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306)
+			.. timeText
+			.. "s）"
 	end,
 }
 
@@ -630,7 +641,7 @@ CF.outputMessage = function()
 	OutputLogMessage(
 		string.rep(" ", 6)
 			.. Utf8Char(24403, 21069, 28216, 25103, 27169, 24335)
-			.. string.rep(" ", 10)
+			.. string.rep(" ", 18)
 			.. CF.getText(curGameMode)
 	)
 	OutputLogMessage("\n")
@@ -639,10 +650,10 @@ CF.outputMessage = function()
 		local v = eventTable[k]
 		local index = CF.eventIndex[k]
 		for i in ipairs(v) do
-			local titleText = string.rep(" ", 18 + string.len(k))
+			local titleText = string.rep(" ", 39 + string.len(k))
 			local valueText = string.rep(" ", 10) .. CF.getText(v[i])
 			if i == index then
-				titleText = string.rep(" ", 16) .. "G" .. k
+				titleText = string.rep(" ", 26) .. "G" .. k
 				valueText = "      ==>      " .. v[i]
 			end
 			if string.len(k) > 1 then
