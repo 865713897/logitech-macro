@@ -266,31 +266,15 @@ ChineseTextMap = {
 	),
 	["dropCardThird"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 51), -- 试炼岛卡片放置：位置3
 	["dropCardFourth"] = Utf8Char(35797, 28860, 23707, 21345, 29255, 25918, 32622, 65306, 20301, 32622, 52), -- 试炼岛卡片放置：位置4
-	["changeTimeMode"] = Utf8Char(26356, 25913, 26102, 38388, 27169, 24335),
+	["changeTimeMode"] = function()
+		local timeModeText = CF.timeMode == "fight" and Utf8Char(25915, 20987) or Utf8Char(31561, 24453)
+		local timeText = CF.timeMode == "fight" and CF.fightTime or CF.waitTime
+		return Utf8Char(33258, 21160, 25918, 21345) .. timeModeText .. Utf8Char(26102, 38388, 65306) .. timeText .. "s"
+	end,
 	-- 增加时间
-	["addTime"] = function()
-		local isFightMode = CF.timeMode == "fight"
-		local timeModeText = isFightMode and Utf8Char(25112, 26007, 26102, 38388)
-			or Utf8Char(31561, 24453, 26102, 38388)
-		local timeText = isFightMode and CF.fightTime or CF.waitTime
-		return Utf8Char(22686, 21152)
-			.. timeModeText
-			.. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306)
-			.. timeText
-			.. Utf8Char(115, 65289)
-	end,
+	["addTime"] = Utf8Char(22686, 21152, 26102, 38388),
 	-- 减少时间
-	["reduceTime"] = function()
-		local isFightMode = CF.timeMode == "fight"
-		local timeModeText = isFightMode and Utf8Char(25112, 26007, 26102, 38388)
-			or Utf8Char(31561, 24453, 26102, 38388)
-		local timeText = isFightMode and CF.fightTime or CF.waitTime
-		return Utf8Char(20943, 23569)
-			.. timeModeText
-			.. Utf8Char(65288, 24403, 21069, 26102, 38388, 65306)
-			.. timeText
-			.. Utf8Char(115, 65289)
-	end,
+	["reduceTime"] = Utf8Char(20943, 23569, 26102, 38388),
 }
 
 -- 触发点击
