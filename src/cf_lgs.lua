@@ -186,7 +186,7 @@ Config = {
 		["4"] = { "continueAttack" },
 		["5"] = { "dropCardFirst", "dropCardSecond", "dropCardThird", "dropCardFourth" },
 		["7"] = { "autoDropCardFirst", "autoDropCardSecond" },
-		["8"] = { "changeTimeMode" },
+		["8"] = { "changeTimeMode", "resetAllTime" },
 		["10"] = { "addTime" },
 		["11"] = { "reduceTime" },
 	},
@@ -275,6 +275,7 @@ ChineseTextMap = {
 	["addTime"] = Utf8Char(22686, 21152, 26102, 38388),
 	-- 减少时间
 	["reduceTime"] = Utf8Char(20943, 23569, 26102, 38388),
+	["resetAllTime"] = Utf8Char(37325, 32622, 25112, 26007, 47, 31561, 24453, 26102, 38388),
 }
 
 -- 触发点击
@@ -490,11 +491,11 @@ CF.dropCard = function(position)
 	MoveMouseRelative(0, randomFn(3, 6))
 	Sleep(Random(30, 50))
 	MoveMouseRelative(randomFn(pointOne[1], pointOne[2]), 0)
-	Sleep(Random(30, 50))
+	Sleep(Random(100, 120))
 	CF.onClick(1)
 	Sleep(Random(30, 50))
 	MoveMouseRelative(randomFn(pointTwo[1], pointTwo[2]), randomFn(pointTwo[3], pointTwo[4]))
-	Sleep(Random(30, 50))
+	Sleep(Random(130, 150))
 	CF.onClick(1)
 	Sleep(Random(30, 50))
 end
@@ -540,7 +541,7 @@ CF.reduceTime = function()
 	if CF.timeMode == "fight" then
 		CF.fightTime = CF.fightTime == 1 and 1 or CF.fightTime - 0.5
 	else
-		CF.waitTime = CF.waitTime == 2 and 2 or CF.waitTime - 1
+		CF.waitTime = CF.waitTime == 1 and 1 or CF.waitTime - 1
 	end
 	CF.outputMessage()
 end
@@ -593,6 +594,13 @@ end
 -- 切换等待模式 fight：战斗 wait：等待
 CF.changeTimeMode = function()
 	CF.timeMode = CF.timeMode == "fight" and "wait" or "fight"
+	CF.outputMessage()
+end
+
+-- 重置战斗时间以及等待时间
+CF.resetAllTime = function()
+	CF.fightTime = Config.defaultFightTime
+	CF.waitTime = Config.defaultWaitTime
 	CF.outputMessage()
 end
 
