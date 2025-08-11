@@ -588,3 +588,140 @@ function OnEvent(event, arg, family)
 		end
 	end
 end
+
+-- 鼠标平滑移动
+function Utils.smoothMove(startX, startY, endX, endY, durationMs)
+  -- 参数校验
+  if durationMs <= 0 then return end
+
+  -- 亚像素累积桶
+  local accumX, accumY = 0, 0
+
+  -- 移动参数
+  local steps = math.max(10, durationMs / 10)
+  local stepInterval = durationMs / steps
+  local randomFn = Utils.generateRandomNumber()
+
+  -- 贝塞尔曲线控制点
+  local ctrlX1 = startX + randomFn(-15, 15)
+  local ctrlY1 = startY + randomFn(-15, 15)
+  local ctrlX2 = endX + randomFn(-15, 15)
+  local ctrlY2 = endY + randomFn(-15, 15)
+
+  -- 记录当前位置（绝对坐标）
+  local currentX, currentY = startX, startY
+
+  for t = 0, 1, 1 / steps do
+    -- 三阶贝塞尔曲线计算
+    local targetX = (1 - t) ^ 3 * startX +
+        3 * (1 - t) ^ 2 * t * ctrlX1 +
+        3 * (1 - t) * t ^ 2 * ctrlX2 +
+        t ^ 3 * endX
+
+    local targetY = (1 - t) ^ 3 * startY +
+        3 * (1 - t) ^ 2 * t * ctrlY1 +
+        3 * (1 - t) * t ^ 2 * ctrlY2 +
+        t ^ 3 * endY
+
+    -- 计算理论偏移量（可能是亚像素）
+    local deltaX = targetX - currentX
+    local deltaY = targetY - currentY
+
+    -- 累积亚像素偏移
+    accumX = accumX + deltaX
+    accumY = accumY + deltaY
+
+    -- 计算实际应移动的整像素值
+    local moveX = math.floor(accumX)
+    local moveY = math.floor(accumY)
+
+    -- 执行移动（仅当累积量≥1像素）
+    if moveX ~= 0 or moveY ~= 0 then
+      MoveMouseRelative(moveX, moveY)
+      -- 更新当前位置和剩余累积量
+      currentX = currentX + moveX
+      currentY = currentY + moveY
+      accumX = accumX - moveX
+      accumY = accumY - moveY
+    end
+
+    -- 随机间隔（添加微抖动）
+    Sleep(stepInterval + randomFn(-3, 5))
+  end
+
+  -- 最终校正（确保到达终点）
+  local finalX = endX - currentX
+  local finalY = endY - currentY
+  if finalX ~= 0 or finalY ~= 0 then
+    MoveMouseRelative(finalX, finalY)
+  end
+end
+
+function Utils.humanMouseMove(startX, startY, endX, endY, maxSpeed)
+  -- 参数说明：
+  -- maxSpeed: 最大速度（像素/秒），建议值：2000-5000（需设备支持）
+
+  local distance = math.sqrt((endX - startX) ^ 2 + (endY - startY) ^ 2)
+  local totalTime = math.max(50, (distance / maxSpeed) * 1000) -- 最短50ms
+
+  -- 动态阶段划分
+  local ACCEL_PHASE = 0.2  -- 加速阶段占比
+  local CRUISE_PHASE = 0.6 -- 高速巡航
+  local DECEL_PHASE = 0.2  -- 减速
+
+  -- 亚像素累积
+  local accumX, accumY = 0, 0
+  local currentX, currentY = startX, startY
+
+  for t = 0, 1, 0.01 do -- 1%精度步进
+    -- 三阶段速度曲线
+    local progress
+    if t <= ACCEL_PHASE then
+      progress = math.pow(t / ACCEL_PHASE, 1.8) * ACCEL_PHASE -- 1.8次方加速
+    elseif t <= (ACCEL_PHASE + CRUISE_PHASE) then
+      progress = ACCEL_PHASE + (t - ACCEL_PHASE)              -- 匀速
+    else
+      progress = 1 - math.pow((1 - t) / DECEL_PHASE, 2)       -- 二次方减速
+    end
+
+    -- 目标点计算（加入惯性预测）
+    local targetX = startX + (endX - startX) * progress
+    local targetY = startY + (endY - startY) * progress
+
+    -- 亚像素级移动
+    local deltaX = targetX - currentX
+    local deltaY = targetY - currentY
+    accumX = accumX + deltaX
+    accumY = accumY + deltaY
+
+    local moveX = math.floor(accumX)
+    local moveY = math.floor(accumY)
+
+    if moveX ~= 0 or moveY ~= 0 then
+      MoveMouseRelative(moveX, moveY)
+      currentX = currentX + moveX
+      currentY = currentY + moveY
+      accumX = accumX - moveX
+      accumY = accumY - moveY
+    end
+
+    -- 动态间隔（关键提速点）
+    local interval
+    if t <= ACCEL_PHASE then
+      interval = 1                                  -- 加速阶段最小间隔1ms
+    elseif t >= (1 - DECEL_PHASE) then
+      interval = 3                                  -- 减速阶段稍慢
+    else
+      interval = math.max(1, 2 - (distance / 2000)) -- 距离越长间隔越小
+    end
+
+    Sleep(math.floor(interval))
+  end
+
+  -- 终点强制校准
+  local finalX = endX - currentX
+  local finalY = endY - currentY
+  if finalX ~= 0 or finalY ~= 0 then
+    MoveMouseRelative(finalX, finalY)
+  end
+end

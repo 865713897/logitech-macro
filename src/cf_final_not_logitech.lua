@@ -1,27 +1,30 @@
 ---@diagnostic disable: duplicate-set-field, undefined-global, param-type-mismatch
 -- [[  用户配置  ]]
 Config = {
-  openMacroKey = 'capslock',                 -- scrolllock | capslock | numlock
-  shootKey = 1,                              -- 攻击按键1:鼠标左键，也可设置键盘按键
-  gameModeList = { 'zombie', 'pve', 'pvp' }, -- 模式列表
-  defaultGameModeIndex = 2,                  -- 默认游戏模式下标
-  openDebugger = false,                      -- 是否开启调试模式（输出打印信息）
+  openMacroKey = 'capslock',                  -- scrolllock | capslock | numlock
+  shootKey = 1,                               -- 攻击按键1:鼠标左键，也可设置键盘按键
+  gameModeList = { 'pve', 'zombie', 'auto' }, -- 模式列表
+  defaultGameModeIndex = 1,                   -- 默认游戏模式下标
+  openDebugger = false,                        -- 是否开启调试模式（输出打印信息）
   -- 生化模式绑定按键函数信息
   zombie = {
-    ['4'] = { 'gatlingStab', 'xkQuickAttack' },
-    ['5'] = { 'gatlingQuickShoot' }
+    ['4'] = { 'xkQuickAttack', 'swordsmenMove' },
+    ['5'] = { 'gatlingQuickShoot', 'nonStopSquat' }
   },
   -- 挑战模式
   pve = {
     ['4'] = { 'continueAttack', 'continueGrenade' },
-    ['5'] = { 'dropCard', 'nonStopJump' },
-    ['6'] = { 'resetCardIndex' },
-    ['7'] = { 'increaseCardIndex' }
+    ['5'] = { 'dropCard1', 'dropCard2', 'dropCard3', 'dropCard4', 'dropCard5' },
   },
   -- 竞技模式
   pvp = {
     ['4'] = { 'rifleQuickShoot', 'nonStopSquat' },
     ['5'] = { 'usbQuickShoot', 'tangDaoQuickShoot' },
+  },
+  -- 挑战试炼岛-自动模式
+  auto = {
+    ['4'] = { 'autoArriveBoss' },
+    ['5'] = { 'autoArriveHs' },
   },
   defaultCardIndex = 1, -- 默认卡片下标
   -- 默认按键事件下标
@@ -31,35 +34,35 @@ Config = {
     ['4'] = 1,
     ['5'] = 1,
     ['6'] = 1,
-    ['7'] = 1
+    ['7'] = 1,
+    ['10'] = 1,
+    ['11'] = 1,
   },
   -- 试炼岛卡片坐标
   cardPosition = {
-    { { 0, 0, 3, 6 }, { -120, -135, 0, 0 }, { 180, 195, 70, 76 } },
-    { { 0, 0, 3, 6 }, { -40, -55, 0, 0 },   { 130, 145, 70, 76 } },
-    { { 0, 0, 3, 6 }, { 30, 40, 0, 0 },     { 90, 100, 70, 76 } },
-    { { 0, 0, 3, 6 }, { 76, 90, 0, 0 },     { 40, 55, 70, 76 } },
+    { { 0, 0, 3, 6 }, { -225, -245, -12, 12 }, { 500, 530, 182, 200 } },
+    { { 0, 0, 3, 6 }, { -90, -110, -12, 12 },  { 365, 395, 182, 200 } },
+    { { 0, 0, 3, 6 }, { 25, 45, -12, 12 },     { 240, 260, 182, 200 } },
+    { { 0, 0, 3, 6 }, { 160, 180, -12, 12 },   { 95, 125, 182, 200 } },
+    { { 0, 0, 3, 6 }, { 295, 315, -12, 12 },   { -10, -35, 182, 200 } },
   },
   -- 鼠标按键绑定
   modifierMap = {
-    ['G1'] = 'play_1',
-    ['lalt+G1'] = 'next_1',
-    ['ralt+G1'] = 'reset_1',
     ['G3_release'] = 'play_3',
-    ['lalt+G3'] = 'next_3',
-    ['ralt+G3'] = 'reset_3',
+    ['lalt+G3'] = 'nextGameMode',
+    ['ralt+G3'] = 'resetGameMode',
     ['G4'] = 'play_4',
     ['lalt+G4'] = 'next_4',
     ['ralt+G4'] = 'reset_4',
     ['G5'] = 'play_5',
     ['lalt+G5'] = 'next_5',
     ['ralt+G5'] = 'reset_5',
-    ['G6'] = 'play_6',
-    ['lalt+G6'] = 'next_6',
-    ['ralt+G6'] = 'reset_6',
-    ['G7'] = 'play_7',
-    ['lalt+G10'] = 'nextGameMode',
-    ['lalt+G11'] = 'resetGameMode',
+    ['G10'] = 'play_10',
+    ['lalt+G10'] = 'next_10',
+    ['ralt+G10'] = 'reset_10',
+    ['G11'] = 'play_11',
+    ['lalt+G11'] = 'next_11',
+    ['ralt+G11'] = 'reset_11',
   },
 }
 
@@ -71,13 +74,18 @@ ChineseTextMap = {
   ['zombie'] = '生化模式',
   ['pve'] = '挑战模式',
   ['pvp'] = '竞技模式',
+  ['auto'] = '挑战试炼岛-自动模式',
   ['gatlingQuickShoot'] = '加特林速点',
   ['usbQuickShoot'] = 'usb速点',
   ['gatlingStab'] = '加特林连刺',
   ['xkQuickAttack'] = '虚空重刀',
   ['instantSpy'] = '一键瞬狙',
   ['continueAttack'] = '挑战攻击释放双手',
-  ['dropCard'] = '挑战试炼岛放置卡片',
+  ['dropCard1'] = '挑战试炼岛放置卡片-位置1',
+  ['dropCard2'] = '挑战试炼岛放置卡片-位置2',
+  ['dropCard3'] = '挑战试炼岛放置卡片-位置3',
+  ['dropCard4'] = '挑战试炼岛放置卡片-位置4',
+  ['dropCard5'] = '挑战试炼岛放置卡片-位置5',
   ['increaseCardIndex'] = '更新试炼岛卡片索引位置',
   ['resetCardIndex'] = '重置试炼岛卡片索引位置',
   ['nonStopSquat'] = '一键闪蹲',
@@ -87,7 +95,11 @@ ChineseTextMap = {
   ['tangDaoQuickShoot'] = '唐刀快速刀',
   ['autoDropCard'] = '试炼岛自动放卡攻击',
   ['decreaseAutoDropTime'] = '减少自动放卡时间',
-  ['increaseAutoDropTime'] = '增加自动放卡时间'
+  ['increaseAutoDropTime'] = '增加自动放卡时间',
+  ['autoDropCardHS'] = '试炼岛自动放卡攻击(寒霜巨兽)',
+  ['swordsmenMove'] = '生化剑客瞬移',
+  ['autoArriveHs'] = '自动到达1*寒霜巨兽刷卡点',
+  ['autoArriveBoss'] = '自动到达BOSS点位',
 }
 
 
@@ -95,16 +107,25 @@ ChineseTextMap = {
 Runtiming = {
   eventIndex = {},
   eventFuncList = {}, -- 运行时事件函数列表
-  autoDropTime = 4000
+  autoDropTime = 1500,
+  maxCount = 20,      -- 自动放卡最大次数
 }
 
 -- 加特林速点宏
 function Runtiming.gatlingQuickShoot(key)
+  local exceedChance = 20 -- 20%的概率会超过35ms
   repeat
+    local upTime = 0;
+    local downTime = Utils.random(80, 110);
+    if math.random(1, 100) <= exceedChance then
+      upTime = Utils.random(36, 45)
+    else
+      upTime = Utils.random(20, 35)
+    end
     Utils.handleKeyDown(Config.shootKey)
-    Sleep(Utils.random(80, 110))
+    Sleep(downTime)
     Utils.handleKeyUp(Config.shootKey)
-    Sleep(Utils.random(20, 44))
+    Sleep(upTime)
   until not Utils.isKeyPressed(key)
 end
 
@@ -145,73 +166,137 @@ end
 -- 虚空重刀宏
 function Runtiming.xkQuickAttack()
   local endTime = Runtiming.xkEndTime or 0
-  if GetRunningTime() - endTime < 500 then
+  if GetRunningTime() - endTime < 10 then
     -- 防止多次点击多次触发重复操作
     return false
   end
   Utils.handleKeyClick(3)
-  Sleep(Utils.random(580, 600))
+  Sleep(Utils.random(530, 560))
   Utils.handleKeyClick('f')
   Sleep(Utils.random(50, 70))
   Utils.handleKeyClick(3)
-  Sleep(Utils.random(120, 140))
   Runtiming.xkEndTime = GetRunningTime()
 end
 
--- 挑战-试炼岛一键放置卡片
-function Runtiming.dropCard()
-  local endTime = Runtiming.dropCardEndTime or 0
-  if GetRunningTime() - endTime < 500 then
+-- 生化剑客瞬移
+function Runtiming.swordsmenMove()
+  local endTime = Runtiming.swordsmenEndTime or 0
+  if GetRunningTime() - endTime < 10 then
     -- 防止多次点击多次触发重复操作
     return false
   end
-  local index = Runtiming.curCardIndex or 1
+  Utils.handleKeyClick('f')
+  Sleep(Utils.random(100, 140))
+  Utils.handleKeyClick('spacebar')
+  Sleep(Utils.random(100, 140))
+  Utils.handleKeyClick('f')
+  Runtiming.swordsmenEndTime = GetRunningTime()
+end
+
+-- 挑战-试炼岛一键放置卡片
+function Runtiming.dropCard(index)
+  local endTime = Runtiming.dropCardEndTime or 0
+  if GetRunningTime() - endTime < 20 then
+    -- 防止多次点击多次触发重复操作
+    return false
+  end
   local curPosition = Config.cardPosition[index]
   local randomFn = Utils.generateRandomNumber()
   Utils.handleKeyClick('e')
-  Sleep(Utils.random(30, 50))
+  Sleep(Utils.random(30, 60))
+  local offsetY = 0
   for i = 1, #curPosition do
     local position = curPosition[i]
     local x = randomFn(position[1], position[2])
     local y = randomFn(position[3], position[4])
+    if i == 3 then
+      y = y - offsetY
+    else
+      offsetY = offsetY + y
+    end
     MoveMouseRelative(x, y)
-    Sleep(Utils.random(30, 50))
+    Sleep(Utils.random(40, 80))
     if i ~= 1 then
       Utils.handleKeyClick(1)
-      Sleep(Utils.random(50, 70))
+      Sleep(Utils.random(40, 80))
     end
   end
   Runtiming.dropCardEndTime = GetRunningTime()
 end
 
+-- 试炼岛放卡位置1
+function Runtiming.dropCard1()
+  Runtiming.dropCard(1)
+end
+
+-- 试炼岛放卡位置2
+function Runtiming.dropCard2()
+  Runtiming.dropCard(2)
+end
+
+-- 试炼岛放卡位置3
+function Runtiming.dropCard3()
+  Runtiming.dropCard(3)
+end
+
+-- 试炼岛放卡位置4
+function Runtiming.dropCard4()
+  Runtiming.dropCard(4)
+end
+
+-- 试炼岛放卡位置5
+function Runtiming.dropCard5()
+  Runtiming.dropCard(5)
+end
+
 -- 试炼岛-自动放卡
-function Runtiming.autoDropCard()
-  Sleep(500)
-  local flag = true
-  local n = 1
-  while flag and n < 20 do
+function Runtiming.autoDropCard(cd, needEscape)
+  cd = (type(cd) == "number") and { 5100, 5300 } or cd
+  needEscape = needEscape or false
+  local endTime = Runtiming.endTime or 0;
+  if GetRunningTime() - endTime < 500 then
+    -- 防止多次点击多次触发重复操作
+    return false
+  end
+  local n = 2
+  while n < Runtiming.maxCount do
     if Utils.isKeyPressed(2) then
-      flag = false
+      n = Runtiming.maxCount
       break
     end
     -- first -> 放卡
     Runtiming.dropCard()
     if Utils.isKeyPressed(2) then
-      flag = false
+      n = Runtiming.maxCount
       break
     end
-    Sleep(5000)
+    -- 放卡过后5s会召唤怪物，等待5s
+    Sleep(Utils.random(4500, 5000))
+    if needEscape then
+      Utils.handleKeyClick('h')
+      Sleep(Utils.random(30, 50))
+      Utils.handleKeyClick('h')
+      Sleep(Utils.random(30, 50))
+    end
     -- second -> 攻击
     Runtiming.continueAttack()
-    Sleep(Runtiming.autoDropTime)
+    Sleep(Utils.random(Runtiming.autoDropTime + 100, Runtiming.autoDropTime + 500))
     Runtiming.continueAttack()
     if Utils.isKeyPressed(2) then
-      flag = false
+      n = Runtiming.maxCount
       break
     end
     n = n + 1
-    Sleep(4000)
+    -- 自动放卡间隔时间，一般怪物死亡后会有5s的冷却时间，所以这里设置5s
+    -- 寒霜巨兽死亡后无冷却时间，所以设置为500ms
+    Sleep(Utils.random(cd[1], cd[2]))
   end
+  Runtiming.endTime = GetRunningTime()
+end
+
+-- 试炼岛-自动放卡(寒霜巨兽)
+function Runtiming.autoDropCardHS()
+  Runtiming.autoDropCard({ 500, 700 }, true)
 end
 
 -- 试炼岛-增加自动放卡时间
@@ -221,7 +306,7 @@ end
 
 -- 试炼岛-减少自动放卡时间
 function Runtiming.decreaseAutoDropTime()
-  if Runtiming.autoDropTime == 1000 then
+  if Runtiming.autoDropTime <= 1500 then
     return false
   end
   Runtiming.autoDropTime = Runtiming.autoDropTime - 1000
@@ -268,7 +353,7 @@ end
 function Runtiming.continueGrenade(key)
   repeat
     Utils.handleKeyClick(3)
-    Sleep(Utils.random(640, 670))
+    Sleep(Utils.random(640, 690))
   until not Utils.isKeyPressed(key)
 end
 
@@ -280,9 +365,9 @@ function Runtiming.instantSpy(key)
     return false
   end
   Utils.handleKeyClick(Config.shootKey)
-  Sleep(Utils.random(20, 40))
+  Sleep(Utils.random(30, 50))
   Utils.handleKeyClick('q')
-  Sleep(Utils.random(20, 40))
+  Sleep(Utils.random(30, 50))
   Utils.handleKeyClick('q')
   Runtiming.spyEndTime = GetRunningTime()
 end
@@ -291,7 +376,7 @@ end
 function Runtiming.nonStopSquat(key)
   repeat
     Utils.handleKeyClick('lctrl')
-    Sleep(Utils.random(40, 60))
+    Sleep(Utils.random(40, 70))
   until not Utils.isKeyPressed(key)
 end
 
@@ -317,6 +402,170 @@ function Runtiming.nonStopJump(key)
   Sleep(Utils.random(40, 60))
   Utils.handleKeyUp('lctrl')
   Runtiming.jumpEndTime = GetRunningTime()
+end
+
+-- 试炼岛-1*小黄刷卡点
+function Runtiming.autoArriveHs()
+  -- 初始化起始位置
+  Runtiming.autoArriveInit()
+  -- -- 向右移动
+  Utils.move('d', 6450, 6550)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- -- 向左移动
+  Utils.move('a', 1900, 1950)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向前移动
+  Utils.move('w', 8500, 8700)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向右移动
+  Utils.move('d', 4400, 4500)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向前移动
+  Utils.handleKeyDown('w')
+  Sleep(Utils.random(8400, 8500))
+  Utils.handleKeyClick('spacebar')
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  Sleep(Utils.random(20200, 20400))
+  Utils.handleKeyUp('w')
+  Sleep(Utils.random(100, 150))
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向右移动
+  Utils.move('d', 6600, 6650)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向后移动
+  Utils.move('s', 3850, 3950)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向右移动
+  Utils.move('d', 1100, 1200)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向后移动
+  Utils.move('s', 1700, 2400)
+end
+
+-- 试炼岛-boss点位
+function Runtiming.autoArriveBoss()
+  -- 初始化起始位置
+  Runtiming.autoArriveInit()
+  -- 向右移动
+  Utils.move('d', 6450, 6500)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向左移动
+  Utils.move('a', 1900, 1950)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向前移动
+  Utils.move('w', 8500, 8700)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向右移动
+  Utils.move('d', 5170, 5270)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向前移动
+  Utils.move('w', 320, 340)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向右移动
+  Utils.move('d', 3000, 3100)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向后移动
+  Utils.move('s', 400, 430)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向右移动
+  Utils.move('d', 900, 1000)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向前移动
+  Utils.move('w', 2600, 2700)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向右移动
+  Utils.move('d', 1600, 1700)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向前移动
+  Utils.move('w', 1700, 1800)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向右移动
+  Utils.move('d', 3800, 3900)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向后移动
+  Utils.move('s', 3600, 3700)
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 向右移动
+  Utils.handleKeyDown('d')
+  Sleep(Utils.random(4700, 4800))
+  Utils.handleKeyClick('spacebar')
+  Sleep(Utils.random(1000, 1100))
+  Utils.handleKeyUp('d')
+  Sleep(Utils.random(1500, 1600))
+  if (Utils.isOpenMacro() ~= true) then
+    return
+  end
+  -- 鼠标旋转180
+  MoveMouseRelative(960 * 4 - 570, 0)
+  Sleep(Utils.random(100, 150))
+  -- 向前移动
+  Utils.move('w', 1000, 1100)
+end
+
+-- 试炼岛-初始化点位
+function Runtiming.autoArriveInit()
+  -- 初始化起始位置
+  local randomFn = Utils.generateRandomNumber()
+  Utils.handleKeyClick('tilde')
+  Sleep(Utils.random(150, 170))
+  MoveMouseRelative(randomFn(-144, -154), randomFn(230, 236))
+  Sleep(Utils.random(150, 170))
+  Utils.handleKeyClick(1)
+  Sleep(Utils.random(150, 170))
+  MoveMouseRelative(randomFn(60, 110), randomFn(-135, -145))
+  Sleep(Utils.random(200, 250))
+  MoveMouseRelative(randomFn(10, 20), randomFn(10, 20))
+  Sleep(Utils.random(150, 170))
+  Utils.handleKeyClick(1, 100)
+  Sleep(Utils.random(300, 400))
+  Utils.handleKeyClick('tilde')
+  Sleep(Utils.random(150, 170))
+  Utils.handleKeyClick('3')
+  Sleep(Utils.random(150, 170))
 end
 
 -- [[  工具函数模块  ]]
@@ -392,11 +641,11 @@ end
 function Utils.handleKeyClick(key, delay)
   if type(key) == 'number' then
     PressMouseButton(key)
-    Sleep(delay or Utils.random(30, 50))
+    Sleep(delay or Utils.random(40, 86))
     ReleaseMouseButton(key)
   else
     PressKey(key)
-    Sleep(delay or Utils.random(30, 50))
+    Sleep(delay or Utils.random(40, 86))
     ReleaseKey(key)
   end
 end
@@ -417,6 +666,14 @@ function Utils.handleKeyUp(key)
   else
     ReleaseKey(key)
   end
+end
+
+-- 触发移动
+function Utils.move(vk, minDelay, maxDelay)
+  Utils.handleKeyDown(vk)
+  Sleep(Utils.random(minDelay, maxDelay))
+  Utils.handleKeyUp(vk)
+  Sleep(Utils.random(150, 170))
 end
 
 -- 判断按键是否按下(系统级监听)
@@ -564,9 +821,6 @@ function Main.printEventInfo()
       local prefix = (index == i) and string.format('\tG%s=>', Utils.completeStr(key, 2)) or Utils.completeStr('\t', 6)
       -- 打印事件信息
       local info = string.format('%s\t\t%s\t\t%s', prefix, eventName, eventDesc)
-      if curGameMode == 'pve' and value[index] == 'dropCard' then
-        info = info .. string.format('(当前卡片下标:%d)', Runtiming.curCardIndex)
-      end
       OutputLogMessage('%s\n', info)
     end
   end
@@ -635,8 +889,8 @@ function Main.mouseButtonListener(arg, isPressed)
         break
       end
     end
-    local isChange = string.find(modifier, '+')
-    if isChange or Utils.isOpenMacro() then
+    -- local isChange = string.find(modifier, '+')
+    if Utils.isOpenMacro() then
       -- 事件属于切换事件或已开启宏按钮
       Main.modifierHandler(modifier)
     end
@@ -655,11 +909,42 @@ Main.init()
 -- 监听事件
 function OnEvent(event, arg)
   if string.find(event, 'MOUSE_BUTTON') then
-    if (arg == 2) then
-      arg = 3
-    elseif arg == 3 then
-      arg = 2
-    end
     Main.mouseButtonListener(arg, event == 'MOUSE_BUTTON_PRESSED')
   end
+end
+
+-- [[  非罗技鼠标  ]]
+local buttons = {
+  { id = 2, name = 'G2', key = 3 },
+  { id = 3, name = 'G3', key = 2 },
+  { id = 4, name = 'G4', key = 4 },
+  { id = 5, name = 'G5', key = 5 },
+}
+
+-- 初始化状态跟踪表（键名 = G键名称，值 = 是否按下）
+local button_states = {}
+for _, btn in ipairs(buttons) do
+  button_states[btn.name] = false
+end
+
+-- 统一处理按键状态变化
+local function handle_button(btn)
+  local is_pressed = IsMouseButtonPressed(btn.id)
+  if is_pressed and not button_states[btn.name] then
+    -- 按下事件
+    OnEvent("MOUSE_BUTTON_PRESSED", btn.key)
+    button_states[btn.name] = true
+  elseif not is_pressed and button_states[btn.name] then
+    -- 释放事件
+    OnEvent("MOUSE_BUTTON_RELEASED", btn.key)
+    button_states[btn.name] = false
+  end
+end
+
+while true do
+  for _, btn in ipairs(buttons) do
+    handle_button(btn)
+  end
+  local time = Utils.isOpenMacro() and 50 or 500
+  Sleep(time) -- 实测5ms间隔可平衡响应速度（~200Hz）与CPU占用（<2%）
 end
