@@ -5,7 +5,8 @@ Config = {
   shootKey = 1,                               -- 攻击按键1:鼠标左键，也可设置键盘按键
   gameModeList = { 'pve', 'zombie', 'auto' }, -- 模式列表
   defaultGameModeIndex = 1,                   -- 默认游戏模式下标
-  openDebugger = false,                        -- 是否开启调试模式（输出打印信息）
+  openDebugger = false,                       -- 是否开启调试模式（输出打印信息）
+  scale = 1,                                  -- 系统缩放
   -- 生化模式绑定按键函数信息
   zombie = {
     ['4'] = { 'xkQuickAttack', 'swordsmenMove' },
@@ -205,10 +206,13 @@ function Runtiming.dropCard(index)
   Utils.handleKeyClick('e')
   Sleep(Utils.random(30, 60))
   local offsetY = 0
+  local scale = Config.scale
   for i = 1, #curPosition do
     local position = curPosition[i]
     local x = randomFn(position[1], position[2])
     local y = randomFn(position[3], position[4])
+    x = Utils.round(x / scale)
+    y = Utils.round(y / scale)
     if i == 3 then
       y = y - offsetY
     else
@@ -550,15 +554,14 @@ end
 function Runtiming.autoArriveInit()
   -- 初始化起始位置
   local randomFn = Utils.generateRandomNumber()
+  local scale = Config.scale
   Utils.handleKeyClick('tilde')
   Sleep(Utils.random(150, 170))
-  MoveMouseRelative(randomFn(-144, -154), randomFn(230, 236))
+  MoveMouseRelative(Utils.round(randomFn(-144, -154) / scale), Utils.round(randomFn(230, 236) / scale))
   Sleep(Utils.random(150, 170))
   Utils.handleKeyClick(1)
   Sleep(Utils.random(150, 170))
-  MoveMouseRelative(randomFn(60, 110), randomFn(-135, -145))
-  Sleep(Utils.random(200, 250))
-  MoveMouseRelative(randomFn(10, 20), randomFn(10, 20))
+  Utils.smoothMove(0, 0, Utils.round(randomFn(60, 110) / scale), Utils.round(randomFn(-135, -145) / scale), randomFn(100, 120))
   Sleep(Utils.random(150, 170))
   Utils.handleKeyClick(1, 100)
   Sleep(Utils.random(300, 400))
@@ -711,6 +714,74 @@ end
 -- 返回固定长度的字符串
 function Utils.completeStr(str, num)
   return string.format('%-' .. num .. 's', str)
+end
+
+-- 鼠标平滑移动
+function Utils.smoothMove(startX, startY, endX, endY, durationMs)
+  -- 参数校验
+  if durationMs <= 0 then return end
+
+  -- 亚像素累积桶
+  local accNumX, accNumY = 0, 0
+
+  -- 移动参数
+  local steps = math.max(10, durationMs / 10)
+  local stepInterval = durationMs / steps
+  local randomFn = Utils.generateRandomNumber()
+
+  -- 贝塞尔曲线控制点
+  local ctrlX1 = startX + randomFn(-15, 15)
+  local ctrlY1 = startY + randomFn(-15, 15)
+  local ctrlX2 = endX + randomFn(-15, 15)
+  local ctrlY2 = endY + randomFn(-15, 15)
+
+  -- 记录当前位置（绝对坐标）
+  local currentX, currentY = startX, startY
+
+  for t = 0, 1, 1 / steps do
+    -- 三阶贝塞尔曲线计算
+    local targetX = (1 - t) ^ 3 * startX +
+        3 * (1 - t) ^ 2 * t * ctrlX1 +
+        3 * (1 - t) * t ^ 2 * ctrlX2 +
+        t ^ 3 * endX
+
+    local targetY = (1 - t) ^ 3 * startY +
+        3 * (1 - t) ^ 2 * t * ctrlY1 +
+        3 * (1 - t) * t ^ 2 * ctrlY2 +
+        t ^ 3 * endY
+
+    -- 计算理论偏移量（可能是亚像素）
+    local deltaX = targetX - currentX
+    local deltaY = targetY - currentY
+
+    -- 累积亚像素偏移
+    accNumX = accNumX + deltaX
+    accNumY = accNumY + deltaY
+
+    -- 计算实际应移动的整像素值
+    local moveX = math.floor(accNumX)
+    local moveY = math.floor(accNumY)
+
+    -- 执行移动（仅当累积量≥1像素）
+    if moveX ~= 0 or moveY ~= 0 then
+      MoveMouseRelative(moveX, moveY)
+      -- 更新当前位置和剩余累积量
+      currentX = currentX + moveX
+      currentY = currentY + moveY
+      accNumX = accNumX - moveX
+      accNumY = accNumY - moveY
+    end
+
+    -- 随机间隔（添加微抖动）
+    Sleep(stepInterval + randomFn(-3, 5))
+  end
+
+  -- 最终校正（确保到达终点）
+  local finalX = endX - currentX
+  local finalY = endY - currentY
+  if finalX ~= 0 or finalY ~= 0 then
+    MoveMouseRelative(finalX, finalY)
+  end
 end
 
 -- [[  主函数  ]]
